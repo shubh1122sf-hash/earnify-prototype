@@ -93,7 +93,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
     const interval = setInterval(() => {
       let newPriceValue = 0;
       setPrice(prevPrice => {
-        const randomFactor = (Math.random() - 0.5) * 0.2; // Smaller fluctuation for live view
+        const randomFactor = (Math.random() - 0.5) * 1; // Increased fluctuation for live view
         newPriceValue = Math.max(0, prevPrice * (1 + randomFactor / 100));
         const newChange = ((newPriceValue - prevPrice) / prevPrice) * 100;
         setChange(newChange);

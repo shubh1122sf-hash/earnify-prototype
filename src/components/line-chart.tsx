@@ -75,7 +75,7 @@ export function AppLineChart({ title, description, data, dataKey, xAxisKey, foot
                 <Line
                     dataKey={dataKey}
                     type="monotone"
-                    stroke="var(--color-value)"
+                    stroke="hsl(var(--primary))"
                     strokeWidth={2}
                     dot={false}
                 />
