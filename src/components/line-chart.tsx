@@ -2,7 +2,7 @@
 "use client";
 
 import { TrendingUp } from "lucide-react";
-import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip } from "recharts";
+import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip, Area, AreaChart } from "recharts";
 
 import {
   Card,
@@ -33,7 +33,7 @@ export function AppLineChart({ title, description, data, dataKey, xAxisKey, foot
       color: "hsl(var(--primary))",
     },
   };
-  
+
   return (
     <Card>
       <CardHeader>
@@ -42,43 +42,51 @@ export function AppLineChart({ title, description, data, dataKey, xAxisKey, foot
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[250px] w-full">
-          <LineChart
-            accessibilityLayer
-            data={data}
-            margin={{
-              left: 12,
-              right: 12,
-              top: 10,
-              bottom: 10
-            }}
-          >
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey={xAxisKey}
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              tick={{ dy: 10 }}
-            />
-            <YAxis
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                tickFormatter={(value) => `$${Number(value).toFixed(2)}`}
-                domain={['dataMin', 'dataMax']}
-             />
-            <Tooltip
-              cursor={false}
-              content={<ChartTooltipContent indicator="dot" formatter={(value) => `$${Number(value).toFixed(2)}`} />}
-            />
-            <Line
-              dataKey={dataKey}
-              type="natural"
-              stroke="var(--color-value)"
-              strokeWidth={2}
-              dot={false}
-            />
-          </LineChart>
+            <AreaChart
+                accessibilityLayer
+                data={data}
+                margin={{
+                    left: 12,
+                    right: 12,
+                    top: 10,
+                    bottom: 10,
+                }}
+            >
+                <defs>
+                    <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="var(--color-value)" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="var(--color-value)" stopOpacity={0}/>
+                    </linearGradient>
+                </defs>
+                <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                <XAxis
+                    dataKey={xAxisKey}
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                    tick={{ dy: 10 }}
+                    
+                />
+                <YAxis
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                    tickFormatter={(value) => `$${Number(value).toFixed(2)}`}
+                    domain={['dataMin', 'dataMax']}
+                />
+                <Tooltip
+                    cursor={{ stroke: 'hsl(var(--muted-foreground))', strokeDasharray: '3 3' }}
+                    content={<ChartTooltipContent indicator="dot" formatter={(value) => `$${Number(value).toFixed(2)}`} />}
+                />
+                <Area
+                    dataKey={dataKey}
+                    type="natural"
+                    fill="url(#colorValue)"
+                    stroke="var(--color-value)"
+                    strokeWidth={2}
+                    dot={false}
+                />
+            </AreaChart>
         </ChartContainer>
       </CardContent>
       <CardFooter>
