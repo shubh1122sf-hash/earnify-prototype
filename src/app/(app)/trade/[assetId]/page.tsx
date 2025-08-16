@@ -1,7 +1,8 @@
 
+
 "use client";
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import {
   Card,
@@ -36,6 +37,8 @@ const assetDetails: { [key: string]: any } = {
   HDFCBANK: { name: 'HDFC Bank', icon: <Briefcase className="h-8 w-8 text-red-700" />, basePrice: 1665.80 },
 };
 
+type TimeRange = '1H' | '1D' | '1W' | '1Y';
+
 export default function TradePage({ params }: { params: { assetId: string } }) {
   const { assetId } = params;
   const searchParams = useSearchParams();
@@ -45,42 +48,84 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
   
   const [price, setPrice] = useState(asset?.basePrice || 0);
   const [change, setChange] = useState(0);
-  const [priceHistory, setPriceHistory] = useState(() => {
-    const initialHistory: {time: number; price: number}[] = [];
-    let currentPrice = asset?.basePrice || 0;
-    for(let i=0; i < 30; i++) {
-        const randomFactor = (Math.random() - 0.5) * 2;
-        currentPrice = Math.max(0, currentPrice * (1 + randomFactor / 100));
-        initialHistory.push({ time: Date.now() - (30 - i) * 1000, price: currentPrice });
-    }
-    return initialHistory;
-  });
+  const [timeRange, setTimeRange] = useState<TimeRange>('1H');
+  const [priceHistory, setPriceHistory] = useState<{time: number; price: number}[]>([]);
+  
+  const generateHistoricalData = useCallback((range: TimeRange, basePrice: number) => {
+    const now = Date.now();
+    let dataPoints = 0;
+    let interval = 0;
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const randomFactor = (Math.random() - 0.5) * 0.2; // Smaller fluctuation for per-second view
-      const newChange = Number(randomFactor.toFixed(2));
-      let newPriceValue = 0;
-      setPrice(prevPrice => {
-          newPriceValue = Math.max(0, prevPrice * (1 + randomFactor / 100));
-          return newPriceValue;
-      });
-      setChange(newChange);
-      setPriceHistory(prevHistory => [...prevHistory.slice(-29), { time: Date.now(), price: newPriceValue }]);
-    }, 1000);
-    return () => clearInterval(interval);
+    switch(range) {
+        case '1H': dataPoints = 60; interval = 60 * 1000; break; // 60 points for 1 hour
+        case '1D': dataPoints = 96; interval = 15 * 60 * 1000; break; // 96 points for 1 day (every 15 mins)
+        case '1W': dataPoints = 84; interval = 2 * 60 * 60 * 1000; break; // 84 points for 1 week (every 2 hours)
+        case '1Y': dataPoints = 52; interval = 7 * 24 * 60 * 60 * 1000; break; // 52 points for 1 year (weekly)
+    }
+
+    const history: {time: number; price: number}[] = [];
+    let currentPrice = basePrice;
+    
+    for (let i = dataPoints - 1; i >= 0; i--) {
+        const randomFactor = (Math.random() - 0.5) * 2;
+        currentPrice = Math.max(0, currentPrice * (1 - randomFactor / 100));
+        history.unshift({ time: now - i * interval, price: currentPrice });
+    }
+    
+    // Set the last point to be the current base price for consistency
+    if (history.length > 0) {
+        history[history.length-1].price = basePrice;
+    }
+    
+    setPriceHistory(history);
+    setPrice(basePrice);
   }, []);
 
+  useEffect(() => {
+    if (asset) {
+        generateHistoricalData(timeRange, asset.basePrice);
+    }
+  }, [timeRange, asset, generateHistoricalData]);
+  
+  useEffect(() => {
+    if (timeRange !== '1H') return;
+
+    const interval = setInterval(() => {
+      let newPriceValue = 0;
+      setPrice(prevPrice => {
+        const randomFactor = (Math.random() - 0.5) * 0.2; // Smaller fluctuation for live view
+        newPriceValue = Math.max(0, prevPrice * (1 + randomFactor / 100));
+        const newChange = ((newPriceValue - prevPrice) / prevPrice) * 100;
+        setChange(newChange);
+        return newPriceValue;
+      });
+      setPriceHistory(prevHistory => [...prevHistory.slice(-59), { time: Date.now(), price: newPriceValue }]);
+    }, 2000); // Update every 2 seconds for 1H view
+    return () => clearInterval(interval);
+  }, [timeRange]);
+
   const chartData = useMemo(() => {
+    const formatTime = (time: number) => {
+        switch(timeRange) {
+            case '1H': return new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            case '1D': return new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            case '1W': return new Date(time).toLocaleDateString([], { month: 'short', day: 'numeric' });
+            case '1Y': return new Date(time).toLocaleDateString([], { month: 'short', year: 'numeric' });
+            default: return new Date(time).toLocaleTimeString();
+        }
+    };
+    
     return priceHistory.map(p => ({
-        time: new Date(p.time).toLocaleTimeString(),
+        time: formatTime(p.time),
         value: p.price
-    }))
-  }, [priceHistory])
+    }));
+  }, [priceHistory, timeRange]);
 
   if (!asset) {
     return <div>Asset not found</div>;
   }
+
+  const timeRanges: TimeRange[] = ['1H', '1D', '1W', '1Y'];
 
   return (
     <div className="flex flex-col gap-6 max-w-4xl mx-auto">
@@ -90,15 +135,27 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 flex flex-col gap-2">
            <AppLineChart
-                title="Live Price Chart"
-                description="Price movement in the last 30 seconds."
+                title="Price Chart"
+                description={`Price movement for the last ${timeRange}`}
                 data={chartData}
                 dataKey="value"
                 xAxisKey="time"
-                footerText="Live data simulation"
+                footerText="Live and historical data simulation"
             />
+            <div className="flex gap-2">
+                {timeRanges.map(range => (
+                    <Button 
+                        key={range}
+                        variant={timeRange === range ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setTimeRange(range)}
+                    >
+                        {range}
+                    </Button>
+                ))}
+            </div>
         </div>
 
         <div className="flex flex-col gap-6">
@@ -108,11 +165,13 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
                 </CardHeader>
                 <CardContent className="flex items-baseline gap-4">
                     <p className="text-4xl font-bold">${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                    <div className={`flex items-center gap-1 ${change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                        {change >= 0 ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
-                        <span className="font-medium">{change.toFixed(2)}%</span>
-                        <span className="text-sm text-muted-foreground">/sec</span>
-                    </div>
+                    {timeRange === '1H' && (
+                        <div className={`flex items-center gap-1 ${change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                            {change >= 0 ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
+                            <span className="font-medium">{change.toFixed(2)}%</span>
+                            <span className="text-sm text-muted-foreground">/2s</span>
+                        </div>
+                    )}
                 </CardContent>
             </Card>
 
@@ -141,6 +200,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
 function TradeForm({ action, assetTicker, price }: { action: 'Buy' | 'Sell', assetTicker: string, price: number }) {
   const [amount, setAmount] = useState('');
   const [total, setTotal] = useState(0);
+  const balance = 10000; // Hardcoded balance
 
   useEffect(() => {
     const numericAmount = parseFloat(amount);
@@ -170,7 +230,11 @@ function TradeForm({ action, assetTicker, price }: { action: 'Buy' | 'Sell', ass
       </div>
       
       <Card className="bg-muted/50">
-        <CardContent className="p-4">
+        <CardContent className="p-4 space-y-2">
+           <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">Available Balance</span>
+            <span className="font-medium">${balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+          </div>
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Estimated Total</span>
             <span className="font-medium">${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
@@ -181,7 +245,7 @@ function TradeForm({ action, assetTicker, price }: { action: 'Buy' | 'Sell', ass
       <Button 
         className={`w-full ${action === 'Buy' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}
         onClick={handleTransaction}
-        disabled={!amount || parseFloat(amount) <= 0}
+        disabled={!amount || parseFloat(amount) <= 0 || (action === 'Buy' && total > balance)}
       >
         {action} {assetTicker}
       </Button>
