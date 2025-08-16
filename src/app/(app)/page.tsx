@@ -14,7 +14,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { AppLineChart } from "@/components/line-chart";
-import { Bitcoin, Waves } from "lucide-react";
+import { Bitcoin, Waves, LandPlot, Briefcase } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const marketData = {
   bitcoin: {
@@ -36,35 +38,13 @@ const chartData = [
   { month: "Jun", value: 67123 },
 ];
 
-const topMovers = [
-  {
-    name: "Solana",
-    ticker: "SOL",
-    price: 150.25,
-    change: 12.5,
-    icon: <Waves className="h-6 w-6 text-purple-500" />,
-  },
-  {
-    name: "Cardano",
-    ticker: "ADA",
-    price: 0.45,
-    change: 8.2,
-    icon: <Waves className="h-6 w-6 text-blue-400" />,
-  },
-  {
-    name: "Avalanche",
-    ticker: "AVAX",
-    price: 35.6,
-    change: -5.1,
-    icon: <Waves className="h-6 w-6 text-red-500" />,
-  },
-  {
-    name: "Dogecoin",
-    ticker: "DOGE",
-    price: 0.15,
-    change: 22.3,
-    icon: <Waves className="h-6 w-6 text-yellow-500" />,
-  },
+const assets = [
+    { name: 'Bitcoin', ticker: 'BTC', price: 67123.45, change: 2.5, icon: <Bitcoin className="h-6 w-6 text-orange-400" />, type: 'Crypto' },
+    { name: 'Ethereum', ticker: 'ETH', price: 3456.78, change: -1.2, icon: <Waves className="h-6 w-6 text-gray-400" />, type: 'Crypto' },
+    { name: 'Solana', ticker: 'SOL', price: 150.25, change: 12.5, icon: <Waves className="h-6 w-6 text-purple-500" />, type: 'Crypto' },
+    { name: 'Apple Inc.', ticker: 'AAPL', price: 195.89, change: 1.8, icon: <Briefcase className="h-6 w-6 text-gray-500" />, type: 'Stock' },
+    { name: 'Tesla, Inc.', ticker: 'TSLA', price: 183.01, change: -0.5, icon: <Briefcase className="h-6 w-6 text-red-600" />, type: 'Stock' },
+    { name: 'NVIDIA Corp', ticker: 'NVDA', price: 121.79, change: 3.5, icon: <Briefcase className="h-6 w-6 text-green-500" />, type: 'Stock' },
 ];
 
 export default function MarketPage() {
@@ -111,19 +91,21 @@ export default function MarketPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Top Movers</CardTitle>
+          <CardTitle>Assets</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Asset</TableHead>
+                <TableHead>Type</TableHead>
                 <TableHead className="text-right">Price</TableHead>
                 <TableHead className="text-right">24h Change</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {topMovers.map((asset) => (
+              {assets.map((asset) => (
                 <TableRow key={asset.ticker}>
                   <TableCell>
                     <div className="flex items-center gap-2">
@@ -132,6 +114,7 @@ export default function MarketPage() {
                       <span className="text-muted-foreground">{asset.ticker}</span>
                     </div>
                   </TableCell>
+                  <TableCell>{asset.type}</TableCell>
                   <TableCell className="text-right font-medium">
                     ${asset.price.toLocaleString()}
                   </TableCell>
@@ -139,6 +122,14 @@ export default function MarketPage() {
                     <Badge variant={asset.change > 0 ? "default" : "destructive"} className={`${asset.change > 0 ? 'bg-green-500/20 text-green-700' : 'bg-red-500/20 text-red-700'}`}>
                       {asset.change > 0 ? "+" : ""}{asset.change}%
                     </Badge>
+                  </TableCell>
+                  <TableCell className="text-right space-x-2">
+                    <Link href={`/trade/${asset.ticker}?action=buy`}>
+                      <Button size="sm" variant="outline" className="text-green-500 border-green-500 hover:bg-green-500/10 hover:text-green-600">Buy</Button>
+                    </Link>
+                    <Link href={`/trade/${asset.ticker}?action=sell`}>
+                      <Button size="sm" variant="outline" className="text-red-500 border-red-500 hover:bg-red-500/10 hover:text-red-600">Sell</Button>
+                    </Link>
                   </TableCell>
                 </TableRow>
               ))}

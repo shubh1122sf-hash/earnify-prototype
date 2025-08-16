@@ -9,6 +9,7 @@ import {
   BarChart,
   BookOpen,
   User,
+  ArrowRightLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -27,6 +28,11 @@ const links = [
     href: "/portfolio",
     label: "Portfolio",
     icon: Briefcase,
+  },
+  {
+    href: "/trade/BTC",
+    label: "Trade",
+    icon: ArrowRightLeft,
   },
   {
     href: "/leaderboard",
@@ -59,7 +65,7 @@ export function Nav() {
         <SidebarMenuItem key={link.href}>
           <Link href={link.href} className="w-full">
             <SidebarMenuButton
-              isActive={pathname === link.href}
+              isActive={pathname.startsWith(link.href) && (link.href !== '/' || pathname === '/')}
               tooltip={link.label}
               className="w-full justify-start"
             >
