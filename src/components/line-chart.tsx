@@ -2,7 +2,7 @@
 "use client";
 
 import { TrendingUp } from "lucide-react";
-import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip, Area, AreaChart } from "recharts";
+import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip } from "recharts";
 
 import {
   Card,
@@ -42,7 +42,7 @@ export function AppLineChart({ title, description, data, dataKey, xAxisKey, foot
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[250px] w-full">
-            <AreaChart
+            <LineChart
                 accessibilityLayer
                 data={data}
                 margin={{
@@ -52,12 +52,6 @@ export function AppLineChart({ title, description, data, dataKey, xAxisKey, foot
                     bottom: 10,
                 }}
             >
-                <defs>
-                    <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="var(--color-value)" stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor="var(--color-value)" stopOpacity={0}/>
-                    </linearGradient>
-                </defs>
                 <CartesianGrid vertical={false} strokeDasharray="3 3" />
                 <XAxis
                     dataKey={xAxisKey}
@@ -78,15 +72,14 @@ export function AppLineChart({ title, description, data, dataKey, xAxisKey, foot
                     cursor={{ stroke: 'hsl(var(--muted-foreground))', strokeDasharray: '3 3' }}
                     content={<ChartTooltipContent indicator="dot" formatter={(value) => `$${Number(value).toFixed(2)}`} />}
                 />
-                <Area
+                <Line
                     dataKey={dataKey}
-                    type="natural"
-                    fill="url(#colorValue)"
+                    type="monotone"
                     stroke="var(--color-value)"
                     strokeWidth={2}
                     dot={false}
                 />
-            </AreaChart>
+            </LineChart>
         </ChartContainer>
       </CardContent>
       <CardFooter>
