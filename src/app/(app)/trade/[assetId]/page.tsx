@@ -88,21 +88,24 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
   }, [timeRange, asset, generateHistoricalData]);
   
   useEffect(() => {
-    if (timeRange !== '1H') return;
+    if (timeRange !== '1H' || !asset) return;
 
     const interval = setInterval(() => {
-      let newPriceValue = 0;
-      setPrice(prevPrice => {
-        const randomFactor = (Math.random() - 0.5) * 1; // Increased fluctuation for live view
-        newPriceValue = Math.max(0, prevPrice * (1 + randomFactor / 100));
-        const newChange = ((newPriceValue - prevPrice) / prevPrice) * 100;
+      setPriceHistory(prevHistory => {
+        const lastPrice = prevHistory.length > 0 ? prevHistory[prevHistory.length - 1].price : asset.basePrice;
+        const randomFactor = (Math.random() - 0.5) * 1; // Fluctuation for live view
+        const newPriceValue = Math.max(0, lastPrice * (1 + randomFactor / 100));
+        
+        setPrice(newPriceValue);
+        const newChange = ((newPriceValue - lastPrice) / lastPrice) * 100;
         setChange(newChange);
-        return newPriceValue;
+        
+        return [...prevHistory.slice(-59), { time: Date.now(), price: newPriceValue }];
       });
-      setPriceHistory(prevHistory => [...prevHistory.slice(-59), { time: Date.now(), price: newPriceValue }]);
     }, 2000); // Update every 2 seconds for 1H view
+
     return () => clearInterval(interval);
-  }, [timeRange]);
+  }, [timeRange, asset]);
 
   const chartData = useMemo(() => {
     const formatTime = (time: number) => {

@@ -34,6 +34,11 @@ export function AppLineChart({ title, description, data, dataKey, xAxisKey, foot
     },
   };
 
+  const yAxisDomain = data.length > 0 ? [
+      Math.min(...data.map(item => item[dataKey])) * 0.995,
+      Math.max(...data.map(item => item[dataKey])) * 1.005,
+    ] : ['dataMin', 'dataMax'];
+
   return (
     <Card>
       <CardHeader>
@@ -66,11 +71,11 @@ export function AppLineChart({ title, description, data, dataKey, xAxisKey, foot
                     axisLine={false}
                     tickMargin={8}
                     tickFormatter={(value) => `$${Number(value).toFixed(2)}`}
-                    domain={['dataMin', 'dataMax']}
+                    domain={yAxisDomain}
                 />
                 <Tooltip
                     cursor={{ stroke: 'hsl(var(--muted-foreground))', strokeDasharray: '3 3' }}
-                    content={<ChartTooltipContent indicator="dot" formatter={(value) => `$${Number(value).toFixed(2)}`} />}
+                    content={<ChartTooltipContent indicator="dot" formatter={(value, name, props) => [`$${Number(value).toFixed(2)}`, props.payload.time]} label="" />}
                 />
                 <Line
                     dataKey={dataKey}
@@ -78,6 +83,7 @@ export function AppLineChart({ title, description, data, dataKey, xAxisKey, foot
                     stroke="hsl(var(--primary))"
                     strokeWidth={2}
                     dot={false}
+                    isAnimationActive={false}
                 />
             </LineChart>
         </ChartContainer>
