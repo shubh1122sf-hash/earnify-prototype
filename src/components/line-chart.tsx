@@ -2,7 +2,7 @@
 "use client";
 
 import { TrendingUp } from "lucide-react";
-import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip } from "recharts";
+import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip, ReferenceDot } from "recharts";
 
 import {
   Card,
@@ -38,6 +38,8 @@ export function AppLineChart({ title, description, data, dataKey, xAxisKey, foot
       Math.min(...data.map(item => item[dataKey])) * 0.995,
       Math.max(...data.map(item => item[dataKey])) * 1.005,
     ] : ['dataMin', 'dataMax'];
+  
+  const lastDataPoint = data.length > 0 ? data[data.length - 1] : null;
 
   return (
     <Card>
@@ -85,6 +87,31 @@ export function AppLineChart({ title, description, data, dataKey, xAxisKey, foot
                     dot={false}
                     isAnimationActive={false}
                 />
+                {lastDataPoint && (
+                  <ReferenceDot
+                    x={lastDataPoint[xAxisKey]}
+                    y={lastDataPoint[dataKey]}
+                    r={4}
+                    fill="hsl(var(--primary))"
+                    stroke="hsl(var(--background))"
+                    strokeWidth={2}
+                  >
+                     <foreignObject x={10} y={-10} width={100} height={20}>
+                      <div 
+                        style={{
+                          background: 'hsl(var(--primary))',
+                          color: 'hsl(var(--primary-foreground))',
+                          padding: '2px 6px',
+                          borderRadius: 'var(--radius)',
+                          fontSize: '12px',
+                          fontWeight: '500'
+                        }}
+                      >
+                       {`$${Number(lastDataPoint[dataKey]).toFixed(2)}`}
+                      </div>
+                     </foreignObject>
+                  </ReferenceDot>
+                )}
             </LineChart>
         </ChartContainer>
       </CardContent>
