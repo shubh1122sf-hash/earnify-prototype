@@ -1,3 +1,4 @@
+
 "use client";
 
 import { TrendingUp } from "lucide-react";
@@ -47,6 +48,8 @@ export function AppLineChart({ title, description, data, dataKey, xAxisKey, foot
             margin={{
               left: 12,
               right: 12,
+              top: 10,
+              bottom: 10
             }}
           >
             <CartesianGrid vertical={false} />
@@ -55,16 +58,18 @@ export function AppLineChart({ title, description, data, dataKey, xAxisKey, foot
               tickLine={false}
               axisLine={false}
               tickMargin={8}
+              tick={{ dy: 10 }}
             />
             <YAxis
                 tickLine={false}
                 axisLine={false}
                 tickMargin={8}
-                tickFormatter={(value) => `$${value}`}
+                tickFormatter={(value) => `$${Number(value).toFixed(2)}`}
+                domain={['dataMin', 'dataMax']}
              />
             <Tooltip
               cursor={false}
-              content={<ChartTooltipContent indicator="dot" />}
+              content={<ChartTooltipContent indicator="dot" formatter={(value) => `$${Number(value).toFixed(2)}`} />}
             />
             <Line
               dataKey={dataKey}
