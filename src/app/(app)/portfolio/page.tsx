@@ -1,6 +1,9 @@
 
 'use client';
 
+import { AppPieChart } from "@/components/pie-chart";
+import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -9,9 +12,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Progress } from "@/components/ui/progress";
-import { AppPieChart } from "@/components/pie-chart";
-import { Button } from "@/components/ui/button";
 
 const portfolio = {
   totalBalance: 52345.67,

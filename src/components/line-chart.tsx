@@ -1,84 +1,108 @@
 
 "use client";
 
-import { TrendingUp } from "lucide-react";
-import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip, ReferenceDot } from "recharts";
-
-import {
-  ChartContainer,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
 import { cn } from "@/lib/utils";
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+  ReferenceDot
+} from "recharts";
 
 interface AppLineChartProps {
-  data: any[];
+  data: { [key: string]: any }[];
   dataKey: string;
   xAxisKey: string;
   className?: string;
-  chartConfig?: any; // Making chartConfig optional
+  title?: string;
+  description?: string;
+  footerText?: string;
 }
 
-export function AppLineChart({ data, dataKey, xAxisKey, className, chartConfig: propChartConfig }: AppLineChartProps) {
-  const defaultChartConfig = {
-    [dataKey]: {
-      label: "Value",
-      color: "hsl(var(--primary))",
-    },
-  };
+export function AppLineChart({
+  data,
+  dataKey,
+  xAxisKey,
+  className,
+  title,
+  description,
+  footerText,
+}: AppLineChartProps) {
+  if (!data || data.length === 0) {
+    return (
+      <div className={cn("flex items-center justify-center h-full w-full text-sm text-muted-foreground", className)}>
+        No data available
+      </div>
+    );
+  }
 
-  const chartConfig = propChartConfig || defaultChartConfig;
-  
-  // Calculate domain with a buffer
-  const yAxisDomain = data.length > 0 ? [
-      Math.min(...data.map(item => item[dataKey])) * 0.98,
-      Math.max(...data.map(item => item[dataKey])) * 1.02,
-    ] : [0, 100]; // Default domain if no data
-  
-  const lastDataPoint = data.length > 0 ? data[data.length - 1] : null;
+  const yAxisDomain = [
+    Math.min(...data.map((item) => item[dataKey])) * 0.95,
+    Math.max(...data.map((item) => item[dataKey])) * 1.05,
+  ];
+
+  const lastDataPoint = data[data.length - 1];
 
   return (
-    <ChartContainer config={chartConfig} className={cn("h-[250px] w-full", className)}>
-        <LineChart
-            accessibilityLayer
+    <div className="flex flex-col gap-4">
+      {title && (
+        <div>
+          <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
+          {description && (
+            <p className="text-sm text-muted-foreground">{description}</p>
+          )}
+        </div>
+      )}
+      <div className={cn("h-[250px] w-full", className)}>
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart
             data={data}
             margin={{
-                left: -10,
-                right: 20,
-                top: 20,
-                bottom: 10,
+              top: 5,
+              right: 20,
+              left: -10,
+              bottom: 5,
             }}
-        >
-            <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="hsl(var(--border) / 0.5)" />
+          >
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border) / 0.5)" />
             <XAxis
-                dataKey={xAxisKey}
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                tick={{ dy: 10, fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
-                interval="preserveStartEnd"
+              dataKey={xAxisKey}
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
             />
             <YAxis
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                tickFormatter={(value) => `$${Number(value).toFixed(2)}`}
-                domain={yAxisDomain}
-                orientation="right"
-                tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              orientation="right"
+              domain={yAxisDomain}
+              tickFormatter={(value) => `$${Number(value).toFixed(2)}`}
+              tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
             />
             <Tooltip
-                cursor={{ stroke: 'hsl(var(--muted-foreground))', strokeDasharray: '3 3' }}
-                content={<ChartTooltipContent indicator="dot" formatter={(value, name, props) => [`$${Number(value).toFixed(2)}`, props.payload.time]} label="" />}
+              cursor={{ strokeDasharray: '3 3' }}
+              contentStyle={{
+                background: 'white',
+                border: '1px solid #e5e7eb',
+                borderRadius: '0.5rem',
+              }}
+              formatter={(value: number) => [`$${value.toFixed(2)}`, "Price"]}
             />
             <Line
-                dataKey={dataKey}
-                type="linear"
-                stroke="hsl(var(--primary))"
-                strokeWidth={2}
-                dot={false}
-                isAnimationActive={false} // Disable animation for live effect
+              type="monotone"
+              dataKey={dataKey}
+              stroke="hsl(var(--primary))"
+              strokeWidth={2}
+              dot={false}
+              isAnimationActive={false}
             />
-            {lastDataPoint && (
+             {lastDataPoint && (
               <ReferenceDot
                 x={lastDataPoint[xAxisKey]}
                 y={lastDataPoint[dataKey]}
@@ -86,24 +110,14 @@ export function AppLineChart({ data, dataKey, xAxisKey, className, chartConfig: 
                 fill="hsl(var(--primary))"
                 stroke="hsl(var(--background))"
                 strokeWidth={2}
-              >
-                  <foreignObject x={15} y={-10} width={100} height={20}>
-                    <div 
-                      style={{
-                        background: 'hsl(var(--primary))',
-                        color: 'hsl(var(--primary-foreground))',
-                        padding: '2px 8px',
-                        borderRadius: 'var(--radius)',
-                        fontSize: '12px',
-                        fontWeight: '600'
-                      }}
-                    >
-                      {`$${Number(lastDataPoint[dataKey]).toFixed(2)}`}
-                    </div>
-                  </foreignObject>
-              </ReferenceDot>
+              />
             )}
-        </LineChart>
-    </ChartContainer>
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+       {footerText && (
+          <div className="text-sm text-center text-muted-foreground">{footerText}</div>
+        )}
+    </div>
   );
 }

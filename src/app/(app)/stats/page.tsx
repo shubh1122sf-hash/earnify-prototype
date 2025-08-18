@@ -1,9 +1,9 @@
+
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription
 } from "@/components/ui/card";
 import { Users, DollarSign, BarChart2, TrendingUp } from "lucide-react";
 import { AppLineChart } from "@/components/line-chart";
@@ -74,22 +74,30 @@ export default function StatsPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <AppLineChart
-            title="Trading Volume"
-            description="Monthly trading volume across the platform."
-            data={volumeData}
-            dataKey="Volume"
-            xAxisKey="date"
-            footerText="Volume is increasing"
-        />
-        <AppLineChart
-            title="User Growth"
-            description="Active users on the platform over time."
-            data={userData}
-            dataKey="Users"
-            xAxisKey="date"
-            footerText="Steady user acquisition"
-        />
+        <Card>
+            <CardContent className="p-6">
+                <AppLineChart
+                    title="Trading Volume"
+                    description="Monthly trading volume across the platform."
+                    data={volumeData}
+                    dataKey="Volume"
+                    xAxisKey="date"
+                    footerText="Volume is increasing"
+                />
+            </CardContent>
+        </Card>
+        <Card>
+            <CardContent className="p-6">
+                 <AppLineChart
+                    title="User Growth"
+                    description="Active users on the platform over time."
+                    data={userData}
+                    dataKey="Users"
+                    xAxisKey="date"
+                    footerText="Steady user acquisition"
+                />
+            </CardContent>
+        </Card>
       </div>
     </div>
   );

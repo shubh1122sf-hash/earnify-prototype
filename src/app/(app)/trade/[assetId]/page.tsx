@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
@@ -19,7 +18,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { Briefcase, Bitcoin, Waves, TrendingUp, TrendingDown } from "lucide-react";
+import { TrendingUp, TrendingDown } from "lucide-react";
 import { AppLineChart } from "@/components/line-chart";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
@@ -100,7 +99,8 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
         const newChange = ((newPriceValue - lastPrice) / lastPrice) * 100;
         setChange(newChange);
         
-        return [...prevHistory.slice(-59), { time: Date.now(), price: newPriceValue }];
+        const newHistory = [...prevHistory.slice(-59), { time: Date.now(), price: newPriceValue }];
+        return newHistory;
       });
     }, 2000); 
 
@@ -147,7 +147,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
                 <div className="flex items-baseline gap-4">
                     <p className="text-4xl font-bold">${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                     {timeRange === '1H' && (
-                        <div className={`flex items-center gap-1 ${change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        <div className={`flex items-center gap-1 ${change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                             {change >= 0 ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
                             <span className="font-medium">{change.toFixed(2)}%</span>
                         </div>
