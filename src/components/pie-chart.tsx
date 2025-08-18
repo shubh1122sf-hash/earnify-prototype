@@ -4,14 +4,6 @@
 import { Pie, PieChart, ResponsiveContainer, Tooltip, Legend, Cell } from "recharts";
 
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   ChartContainer,
   ChartTooltipContent,
 } from "@/components/ui/chart";
@@ -39,12 +31,24 @@ export function AppPieChart({ data, className }: AppPieChartProps) {
 
 
   return (
-    <ChartContainer config={chartConfig} className={cn("h-[200px] w-full", className)}>
+    <ChartContainer config={chartConfig} className={cn("h-[150px] w-[150px]", className)}>
         <ResponsiveContainer width="100%" height="100%">
             <PieChart>
             <Tooltip
                 cursor={false}
-                content={<ChartTooltipContent hideLabel />}
+                content={<ChartTooltipContent 
+                    hideLabel 
+                    formatter={(value, name, props) => {
+                        const total = data.reduce((acc, curr) => acc + curr.value, 0);
+                        const percentage = ((value / total) * 100).toFixed(2);
+                        return (
+                            <div className="flex flex-col">
+                               <span className="font-bold">{name}: ${Number(value).toLocaleString()}</span>
+                               <span className="text-muted-foreground">{percentage}% of portfolio</span>
+                            </div>
+                        )
+                    }}
+                />}
             />
             <Pie
                 data={data}
@@ -52,29 +56,15 @@ export function AppPieChart({ data, className }: AppPieChartProps) {
                 nameKey="name"
                 cx="50%"
                 cy="50%"
-                outerRadius={80}
-                innerRadius={60}
-                paddingAngle={5}
+                outerRadius={60}
+                innerRadius={40}
+                paddingAngle={2}
                 labelLine={false}
             >
                 {data.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                    <Cell key={`cell-${index}`} fill={entry.fill} stroke={entry.fill} />
                 ))}
             </Pie>
-             <Legend
-                content={({ payload }) => {
-                return (
-                    <ul className="flex flex-wrap gap-x-4 gap-y-2 justify-center mt-4 text-sm">
-                    {payload?.map((entry, index) => (
-                        <li key={`item-${index}`} className="flex items-center gap-2">
-                        <span className="h-2 w-2 rounded-full" style={{ backgroundColor: entry.color }} />
-                        <span className="text-muted-foreground">{entry.value}</span>
-                        </li>
-                    ))}
-                    </ul>
-                )
-                }}
-            />
             </PieChart>
       </ResponsiveContainer>
     </ChartContainer>
