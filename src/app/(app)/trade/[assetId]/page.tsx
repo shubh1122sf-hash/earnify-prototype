@@ -40,18 +40,28 @@ type TimeRange = '1H' | '1D' | '1W' | '1Y';
 export default function TradePage({ params }: { params: { assetId: string } }) {
   const { assetId } = params;
   
-  const asset = assetDetails[assetId.toUpperCase()];
-  
+  const [asset, setAsset] = useState<any>(null);
   const [price, setPrice] = useState(0);
   const [change, setChange] = useState(0);
   const [timeRange, setTimeRange] = useState<TimeRange>('1H');
   const [priceHistory, setPriceHistory] = useState<{time: number; price: number}[]>([]);
   const [initialAction, setInitialAction] = useState('buy');
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    setInitialAction(searchParams.get('action') || 'buy');
+    setIsClient(true);
   }, []);
+
+  useEffect(() => {
+    if (isClient) {
+      const searchParams = new URLSearchParams(window.location.search);
+      setInitialAction(searchParams.get('action') || 'buy');
+      const upperCaseAssetId = assetId.toUpperCase();
+      if (assetDetails[upperCaseAssetId]) {
+        setAsset(assetDetails[upperCaseAssetId]);
+      }
+    }
+  }, [assetId, isClient]);
   
   const generateHistoricalData = useCallback((range: TimeRange, basePrice: number) => {
     const now = Date.now();
@@ -127,10 +137,10 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
     }));
   }, [priceHistory, timeRange]);
 
-  if (!asset) {
+  if (!isClient || !asset) {
     return (
       <div className="flex h-full w-full items-center justify-center">
-        <p>Asset not found. Please select an asset from the market page.</p>
+        <p>Loading Asset...</p>
       </div>
     );
   }
