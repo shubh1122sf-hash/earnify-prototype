@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { AppPieChart } from "@/components/pie-chart";
+import { ClientPieChart } from "@/components/client-pie-chart";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -26,11 +26,6 @@ const initialPortfolio = {
 };
 
 export default function PortfolioPage() {
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   const chartData = initialPortfolio.holdings.map((h) => ({ 
     name: h.ticker, 
@@ -59,13 +54,7 @@ export default function PortfolioPage() {
         <div className="bg-card p-6 rounded-xl shadow-sm border">
             <h3 className="text-lg font-semibold text-card-foreground mb-4">Allocation</h3>
             <div className="h-[150px] w-full">
-              {isClient ? (
-                  <AppPieChart data={chartData} />
-              ) : (
-                <div className="flex items-center justify-center h-full">
-                   <Skeleton className="h-[150px] w-[150px] rounded-full" />
-                </div>
-              )}
+              <ClientPieChart data={chartData} />
             </div>
         </div>
         

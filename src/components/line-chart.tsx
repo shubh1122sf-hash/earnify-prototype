@@ -11,7 +11,6 @@ import {
   YAxis,
   ReferenceDot,
 } from "recharts";
-import { Skeleton } from "./ui/skeleton";
 
 interface AppLineChartProps {
   data: { [key: string]: any }[];
@@ -30,11 +29,6 @@ export function AppLineChart({
   description,
   footerText,
 }: AppLineChartProps) {
-  if (!data || data.length === 0) {
-    return (
-       <Skeleton className="h-full w-full" />
-    );
-  }
 
   const yAxisDomain = [
     Math.min(...data.map((item) => item[dataKey])) * 0.98,

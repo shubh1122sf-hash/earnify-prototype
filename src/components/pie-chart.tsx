@@ -2,7 +2,6 @@
 "use client";
 
 import { Pie, PieChart, ResponsiveContainer, Tooltip, Cell } from "recharts";
-import { Skeleton } from "./ui/skeleton";
 
 interface AppPieChartProps {
   data: { name: string; value: number }[];
@@ -17,13 +16,6 @@ const COLORS = [
 ];
 
 export function AppPieChart({ data }: AppPieChartProps) {
-    if (!data || data.length === 0) {
-    return (
-        <div className="flex items-center justify-center h-full">
-            <Skeleton className="h-[150px] w-[150px] rounded-full" />
-        </div>
-    );
-  }
   return (
     <ResponsiveContainer width="100%" height="100%">
       <PieChart>

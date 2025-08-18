@@ -17,7 +17,7 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { TrendingUp, TrendingDown } from "lucide-react";
-import { AppLineChart } from "@/components/line-chart";
+import { ClientLineChart } from "@/components/client-line-chart";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const assetDetails: { [key: string]: any } = {
@@ -46,10 +46,8 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
   const [timeRange, setTimeRange] = useState<TimeRange>('1H');
   const [priceHistory, setPriceHistory] = useState<{time: number; price: number}[]>([]);
   const [initialAction, setInitialAction] = useState('buy');
-  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true);
     const upperCaseAssetId = assetId.toUpperCase();
     if (assetDetails[upperCaseAssetId]) {
       setAsset(assetDetails[upperCaseAssetId]);
@@ -57,11 +55,11 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
   }, [assetId]);
 
   useEffect(() => {
-    if (isClient) {
+    if (typeof window !== 'undefined') {
       const searchParams = new URLSearchParams(window.location.search);
       setInitialAction(searchParams.get('action') || 'buy');
     }
-  }, [isClient]);
+  }, []);
   
   const generateHistoricalData = useCallback((range: TimeRange, basePrice: number) => {
     const now = Date.now();
@@ -173,13 +171,11 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
              </CardHeader>
              <CardContent className="p-0">
                 <div className="h-[350px] w-full">
-                  {isClient && (
-                    <AppLineChart
-                        data={chartData}
-                        dataKey="value"
-                        xAxisKey="time"
-                    />
-                  )}
+                  <ClientLineChart
+                      data={chartData}
+                      dataKey="value"
+                      xAxisKey="time"
+                  />
                 </div>
              </CardContent>
            </Card>
