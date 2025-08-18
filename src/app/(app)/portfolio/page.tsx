@@ -24,11 +24,11 @@ const portfolio = {
   totalPnl: 2345.67,
   totalPnlPercent: 4.69,
   todayPnl: 1234.56,
-  todayPnlPercent: 75, // Assuming this is a percentage for the progress bar
+  todayPnlPercent: 75,
   weekPnl: 3456.78,
-  weekPnlPercent: 60, // Assuming this is a percentage for the progress bar
+  weekPnlPercent: 60,
   monthPnl: 5678.90,
-  monthPnlPercent: 45, // Assuming this is a percentage for the progress bar
+  monthPnlPercent: 45,
   holdings: [
     {
       name: "Tata Steel",
