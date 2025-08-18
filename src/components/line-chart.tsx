@@ -17,7 +17,6 @@ interface AppLineChartProps {
   data: { [key: string]: any }[];
   dataKey: string;
   xAxisKey: string;
-  className?: string;
   title?: string;
   description?: string;
   footerText?: string;
@@ -27,14 +26,13 @@ export function AppLineChart({
   data,
   dataKey,
   xAxisKey,
-  className,
   title,
   description,
   footerText,
 }: AppLineChartProps) {
   if (!data || data.length === 0) {
     return (
-      <div className={cn("flex items-center justify-center h-full w-full text-sm text-muted-foreground", className)}>
+      <div className="flex items-center justify-center h-full w-full text-sm text-muted-foreground">
         No data available
       </div>
     );
@@ -48,7 +46,7 @@ export function AppLineChart({
   const lastDataPoint = data[data.length - 1];
 
   return (
-    <div className="flex flex-col gap-4 h-full">
+    <div className="flex flex-col gap-4 h-full w-full">
       {title && (
         <div>
           <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
@@ -57,7 +55,7 @@ export function AppLineChart({
           )}
         </div>
       )}
-      <div className={cn("h-full w-full", className)}>
+      <div className="flex-grow">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={data}

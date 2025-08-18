@@ -7,7 +7,6 @@ import {
   Card,
   CardContent,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -57,10 +56,10 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
     let interval = 0;
 
     switch(range) {
-        case '1H': dataPoints = 60; interval = 60 * 1000; break; // 60 points for 1 hour
-        case '1D': dataPoints = 96; interval = 15 * 60 * 1000; break; // 96 points for 1 day (every 15 mins)
-        case '1W': dataPoints = 84; interval = 2 * 60 * 60 * 1000; break; // 84 points for 1 week (every 2 hours)
-        case '1Y': dataPoints = 52; interval = 7 * 24 * 60 * 60 * 1000; break; // 52 points for 1 year (weekly)
+        case '1H': dataPoints = 60; interval = 60 * 1000; break;
+        case '1D': dataPoints = 96; interval = 15 * 60 * 1000; break;
+        case '1W': dataPoints = 84; interval = 2 * 60 * 60 * 1000; break;
+        case '1Y': dataPoints = 52; interval = 7 * 24 * 60 * 60 * 1000; break;
     }
 
     const history: {time: number; price: number}[] = [];
@@ -154,12 +153,14 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
                     )}
                 </div>
              </CardHeader>
-             <CardContent className="h-[350px] p-0">
-                <AppLineChart
-                    data={chartData}
-                    dataKey="value"
-                    xAxisKey="time"
-                />
+             <CardContent className="p-0">
+                <div className="h-[350px] w-full">
+                  <AppLineChart
+                      data={chartData}
+                      dataKey="value"
+                      xAxisKey="time"
+                  />
+                </div>
              </CardContent>
            </Card>
             <div className="flex gap-2">

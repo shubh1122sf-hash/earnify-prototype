@@ -15,17 +15,17 @@ const portfolio = {
   monthPnl: 2678.90,
   monthPnlPercent: 45,
   holdings: [
-    { name: "Apple Inc.", ticker: "AAPL", quantity: 10, avgPrice: 150.00, price: 195.89 },
-    { name: "Tesla, Inc.", ticker: "TSLA", quantity: 5, avgPrice: 200.00, price: 183.01 },
-    { name: "NVIDIA Corp", ticker: "NVDA", quantity: 20, avgPrice: 100.00, price: 121.79 },
-    { name: "Bitcoin", ticker: "BTC", quantity: 0.1, avgPrice: 60000, price: 67123.45 },
-    { name: "Ethereum", ticker: "ETH", quantity: 2, avgPrice: 3000, price: 3456.78 },
+    { name: "Apple Inc.", ticker: "AAPL", quantity: 10, avgPrice: 150.00, price: 195.89, value: 1958.90 },
+    { name: "Tesla, Inc.", ticker: "TSLA", quantity: 5, avgPrice: 200.00, price: 183.01, value: 915.05 },
+    { name: "NVIDIA Corp", ticker: "NVDA", quantity: 20, avgPrice: 100.00, price: 121.79, value: 2435.80 },
+    { name: "Bitcoin", ticker: "BTC", quantity: 0.1, avgPrice: 60000, price: 67123.45, value: 6712.34 },
+    { name: "Ethereum", ticker: "ETH", quantity: 2, avgPrice: 3000, price: 3456.78, value: 6913.56 },
   ],
 };
 
 const chartData = portfolio.holdings.map((h) => ({ 
     name: h.ticker, 
-    value: h.quantity * h.price 
+    value: h.value
 }));
 
 export default function PortfolioPage() {
@@ -50,7 +50,9 @@ export default function PortfolioPage() {
         
         <div className="bg-gray-50 p-6 rounded-xl shadow-sm">
             <h3 className="text-lg font-semibold text-gray-700 mb-4">Allocation</h3>
-            <AppPieChart data={chartData} className="h-[200px] w-full" />
+            <div className="h-[200px] w-full">
+              <AppPieChart data={chartData} />
+            </div>
         </div>
         
         <div className="bg-gray-50 p-6 rounded-xl shadow-sm">
@@ -61,21 +63,21 @@ export default function PortfolioPage() {
                         <span className="text-gray-600">Today's P&L</span>
                         <span className="font-medium positive">+${portfolio.todayPnl.toLocaleString()}</span>
                     </div>
-                    <Progress value={portfolio.todayPnlPercent} className="h-2 mt-1" />
+                    <Progress value={portfolio.todayPnlPercent} />
                 </div>
                 <div>
                     <div className="flex justify-between">
                         <span className="text-gray-600">Week's P&L</span>
                         <span className="font-medium positive">+${portfolio.weekPnl.toLocaleString()}</span>
                     </div>
-                    <Progress value={portfolio.weekPnlPercent} className="h-2 mt-1" />
+                    <Progress value={portfolio.weekPnlPercent} />
                 </div>
                 <div>
                     <div className="flex justify-between">
                         <span className="text-gray-600">Month's P&L</span>
                         <span className="font-medium positive">+${portfolio.monthPnl.toLocaleString()}</span>
                     </div>
-                    <Progress value={portfolio.monthPnlPercent} className="h-2 mt-1" />
+                    <Progress value={portfolio.monthPnlPercent} />
                 </div>
             </div>
         </div>

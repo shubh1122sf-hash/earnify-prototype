@@ -75,7 +75,8 @@ export default function StatsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
-            <CardContent className="p-6 h-[400px]">
+            <CardContent className="p-6">
+              <div className="h-[400px] w-full">
                 <AppLineChart
                     title="Trading Volume"
                     description="Monthly trading volume across the platform."
@@ -84,18 +85,21 @@ export default function StatsPage() {
                     xAxisKey="date"
                     footerText="Volume is increasing"
                 />
+              </div>
             </CardContent>
         </Card>
         <Card>
-            <CardContent className="p-6 h-[400px]">
-                 <AppLineChart
-                    title="User Growth"
-                    description="Active users on the platform over time."
-                    data={userData}
-                    dataKey="Users"
-                    xAxisKey="date"
-                    footerText="Steady user acquisition"
-                />
+            <CardContent className="p-6">
+                <div className="h-[400px] w-full">
+                  <AppLineChart
+                      title="User Growth"
+                      description="Active users on the platform over time."
+                      data={userData}
+                      dataKey="Users"
+                      xAxisKey="date"
+                      footerText="Steady user acquisition"
+                  />
+                </div>
             </CardContent>
         </Card>
       </div>
