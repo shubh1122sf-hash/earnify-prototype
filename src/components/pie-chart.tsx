@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Pie, PieChart, ResponsiveContainer, Tooltip, Legend, Cell } from "recharts";
+import { Pie, PieChart, ResponsiveContainer, Tooltip, Cell } from "recharts";
 
 import {
   ChartContainer,
@@ -31,7 +31,7 @@ export function AppPieChart({ data, className }: AppPieChartProps) {
 
 
   return (
-    <ChartContainer config={chartConfig} className={cn("h-[150px] w-[150px]", className)}>
+    <ChartContainer config={chartConfig} className={cn("h-full w-full", className)}>
         <ResponsiveContainer width="100%" height="100%">
             <PieChart>
             <Tooltip
@@ -40,7 +40,7 @@ export function AppPieChart({ data, className }: AppPieChartProps) {
                     hideLabel 
                     formatter={(value, name, props) => {
                         const total = data.reduce((acc, curr) => acc + curr.value, 0);
-                        const percentage = ((value / total) * 100).toFixed(2);
+                        const percentage = ((Number(value) / total) * 100).toFixed(2);
                         return (
                             <div className="flex flex-col">
                                <span className="font-bold">{name}: ${Number(value).toLocaleString()}</span>
@@ -56,8 +56,8 @@ export function AppPieChart({ data, className }: AppPieChartProps) {
                 nameKey="name"
                 cx="50%"
                 cy="50%"
-                outerRadius={60}
-                innerRadius={40}
+                outerRadius={'80%'}
+                innerRadius={'60%'}
                 paddingAngle={2}
                 labelLine={false}
             >
@@ -70,3 +70,5 @@ export function AppPieChart({ data, className }: AppPieChartProps) {
     </ChartContainer>
   );
 }
+
+    
