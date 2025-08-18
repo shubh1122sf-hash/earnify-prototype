@@ -39,7 +39,7 @@ const assetDetails: { [key: string]: any } = {
 type TimeRange = '1H' | '1D' | '1W' | '1Y';
 
 export default function TradePage({ params }: { params: { assetId: string } }) {
-  const { assetId } = params;
+  const assetId = params.assetId;
   
   const [asset, setAsset] = useState<any>(null);
   const [price, setPrice] = useState(0);
