@@ -49,32 +49,39 @@ const links = [
     label: "Learn",
     icon: BookOpen,
   },
-  {
-    href: "/account",
-    label: "Account",
-    icon: User,
-  },
+
 ];
 
 export function Nav() {
   const pathname = usePathname();
 
+  const isTradePage = pathname.startsWith('/trade');
+
   return (
     <SidebarMenu>
-      {links.map((link) => (
-        <SidebarMenuItem key={link.href}>
-          <Link href={link.href} className="w-full">
-            <SidebarMenuButton
-              isActive={pathname.startsWith(link.href) && (link.href !== '/' || pathname === '/')}
-              tooltip={link.label}
-              className="w-full justify-start"
-            >
-              <link.icon className="h-5 w-5" />
-              <span>{link.label}</span>
-            </SidebarMenuButton>
-          </Link>
-        </SidebarMenuItem>
-      ))}
+      {links.map((link) => {
+        let isActive = pathname === link.href;
+        if (link.href.startsWith('/trade') && isTradePage) {
+            isActive = true;
+        } else if (link.href === '/') {
+            isActive = pathname === '/';
+        }
+
+        return (
+          <SidebarMenuItem key={link.href}>
+            <Link href={link.href} className="w-full">
+              <SidebarMenuButton
+                isActive={isActive}
+                tooltip={link.label}
+                className="w-full justify-start"
+              >
+                <link.icon className="h-5 w-5" />
+                <span>{link.label}</span>
+              </SidebarMenuButton>
+            </Link>
+          </SidebarMenuItem>
+        );
+      })}
     </SidebarMenu>
   );
 }

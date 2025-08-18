@@ -21,20 +21,21 @@ import {
 } from "@/components/ui/tabs";
 import { Briefcase, Bitcoin, Waves, TrendingUp, TrendingDown } from "lucide-react";
 import { AppLineChart } from "@/components/line-chart";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const assetDetails: { [key: string]: any } = {
-  BTC: { name: 'Bitcoin', icon: <Bitcoin className="h-8 w-8 text-orange-400" />, basePrice: 67123.45 },
-  ETH: { name: 'Ethereum', icon: <Waves className="h-8 w-8 text-gray-400" />, basePrice: 3456.78 },
-  SOL: { name: 'Solana', icon: <Waves className="h-8 w-8 text-purple-500" />, basePrice: 150.25 },
-  AAPL: { name: 'Apple Inc.', icon: <Briefcase className="h-8 w-8 text-gray-500" />, basePrice: 195.89 },
-  TSLA: { name: 'Tesla, Inc.', icon: <Briefcase className="h-8 w-8 text-red-600" />, basePrice: 183.01 },
-  NVDA: { name: 'NVIDIA Corp', icon: <Briefcase className="h-8 w-8 text-green-500" />, basePrice: 121.79 },
-  GOOGL: { name: 'Alphabet Inc.', icon: <Briefcase className="h-8 w-8 text-blue-500" />, basePrice: 175.61 },
-  AMZN: { name: 'Amazon.com, Inc.', icon: <Briefcase className="h-8 w-8 text-yellow-500" />, basePrice: 185.57 },
-  MSFT: { name: 'Microsoft Corp', icon: <Briefcase className="h-8 w-8 text-sky-500" />, basePrice: 442.57 },
-  RELIANCE: { name: 'Reliance Industries', icon: <Briefcase className="h-8 w-8 text-blue-800" />, basePrice: 2885.50 },
-  TCS: { name: 'TCS', icon: <Briefcase className="h-8 w-8 text-indigo-600" />, basePrice: 3825.10 },
-  HDFCBANK: { name: 'HDFC Bank', icon: <Briefcase className="h-8 w-8 text-red-700" />, basePrice: 1665.80 },
+  BTC: { name: 'Bitcoin', icon: 'https://placehold.co/40x40.png?text=B', basePrice: 67123.45 },
+  ETH: { name: 'Ethereum', icon: 'https://placehold.co/40x40.png?text=E', basePrice: 3456.78 },
+  SOL: { name: 'Solana', icon: 'https://placehold.co/40x40.png?text=S', basePrice: 150.25 },
+  AAPL: { name: 'Apple Inc.', icon: 'https://placehold.co/40x40.png?text=A', basePrice: 195.89 },
+  TSLA: { name: 'Tesla, Inc.', icon: 'https://placehold.co/40x40.png?text=T', basePrice: 183.01 },
+  NVDA: { name: 'NVIDIA Corp', icon: 'https://placehold.co/40x40.png?text=N', basePrice: 121.79 },
+  GOOGL: { name: 'Alphabet Inc.', icon: 'https://placehold.co/40x40.png?text=G', basePrice: 175.61 },
+  AMZN: { name: 'Amazon.com, Inc.', icon: 'https://placehold.co/40x40.png?text=A', basePrice: 185.57 },
+  MSFT: { name: 'Microsoft Corp', icon: 'https://placehold.co/40x40.png?text=M', basePrice: 442.57 },
+  RELIANCE: { name: 'Reliance Industries', icon: 'https://placehold.co/40x40.png?text=R', basePrice: 2885.50 },
+  TCS: { name: 'TCS', icon: 'https://placehold.co/40x40.png?text=T', basePrice: 3825.10 },
+  HDFCBANK: { name: 'HDFC Bank', icon: 'https://placehold.co/40x40.png?text=H', basePrice: 1665.80 },
 };
 
 type TimeRange = '1H' | '1D' | '1W' | '1Y';
@@ -72,7 +73,6 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
         history.unshift({ time: now - i * interval, price: currentPrice });
     }
     
-    // Set the last point to be the current base price for consistency
     if (history.length > 0) {
         history[history.length-1].price = basePrice;
     }
@@ -93,7 +93,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
     const interval = setInterval(() => {
       setPriceHistory(prevHistory => {
         const lastPrice = prevHistory.length > 0 ? prevHistory[prevHistory.length - 1].price : asset.basePrice;
-        const randomFactor = (Math.random() - 0.5) * 1; // Fluctuation for live view
+        const randomFactor = (Math.random() - 0.5) * 1; 
         const newPriceValue = Math.max(0, lastPrice * (1 + randomFactor / 100));
         
         setPrice(newPriceValue);
@@ -102,7 +102,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
         
         return [...prevHistory.slice(-59), { time: Date.now(), price: newPriceValue }];
       });
-    }, 2000); // Update every 2 seconds for 1H view
+    }, 2000); 
 
     return () => clearInterval(interval);
   }, [timeRange, asset]);
@@ -131,27 +131,43 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
   const timeRanges: TimeRange[] = ['1H', '1D', '1W', '1Y'];
 
   return (
-    <div className="flex flex-col gap-6 max-w-4xl mx-auto">
+    <div className="flex flex-col gap-6 max-w-6xl mx-auto">
       <div className="flex items-center gap-4">
-        {asset.icon}
+        <Avatar className="h-10 w-10">
+            <AvatarImage src={asset.icon} alt={asset.name} />
+            <AvatarFallback>{assetId.charAt(0)}</AvatarFallback>
+        </Avatar>
         <h1 className="text-3xl font-bold">{asset.name} ({assetId.toUpperCase()})</h1>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 flex flex-col gap-2">
-           <AppLineChart
-                title="Price Chart"
-                description={`Price movement for the last ${timeRange}`}
-                data={chartData}
-                dataKey="value"
-                xAxisKey="time"
-                footerText="Live and historical data simulation"
-            />
+        <div className="lg:col-span-2 flex flex-col gap-4">
+           <Card className="flex-1">
+             <CardHeader>
+                <div className="flex items-baseline gap-4">
+                    <p className="text-4xl font-bold">${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                    {timeRange === '1H' && (
+                        <div className={`flex items-center gap-1 ${change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                            {change >= 0 ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
+                            <span className="font-medium">{change.toFixed(2)}%</span>
+                        </div>
+                    )}
+                </div>
+             </CardHeader>
+             <CardContent>
+                <AppLineChart
+                    data={chartData}
+                    dataKey="value"
+                    xAxisKey="time"
+                    className="h-[300px]"
+                />
+             </CardContent>
+           </Card>
             <div className="flex gap-2">
                 {timeRanges.map(range => (
                     <Button 
                         key={range}
-                        variant={timeRange === range ? 'default' : 'outline'}
+                        variant={timeRange === range ? 'secondary' : 'ghost'}
                         size="sm"
                         onClick={() => setTimeRange(range)}
                     >
@@ -162,22 +178,6 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
         </div>
 
         <div className="flex flex-col gap-6">
-            <Card>
-                <CardHeader>
-                <CardTitle>Current Market Price</CardTitle>
-                </CardHeader>
-                <CardContent className="flex items-baseline gap-4">
-                    <p className="text-4xl font-bold">${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                    {timeRange === '1H' && (
-                        <div className={`flex items-center gap-1 ${change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                            {change >= 0 ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
-                            <span className="font-medium">{change.toFixed(2)}%</span>
-                            <span className="text-sm text-muted-foreground">/2s</span>
-                        </div>
-                    )}
-                </CardContent>
-            </Card>
-
             <Card>
                 <CardContent className="p-0">
                 <Tabs defaultValue={initialAction} className="w-full">
@@ -236,17 +236,17 @@ function TradeForm({ action, assetTicker, price }: { action: 'Buy' | 'Sell', ass
         <CardContent className="p-4 space-y-2">
            <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Available Balance</span>
-            <span className="font-medium">${balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+            <span className="font-mono font-medium">${balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Estimated Total</span>
-            <span className="font-medium">${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+            <span className="font-mono font-medium">${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </div>
         </CardContent>
       </Card>
 
       <Button 
-        className={`w-full ${action === 'Buy' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}
+        className={`w-full text-lg h-12 font-bold ${action === 'Buy' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}
         onClick={handleTransaction}
         disabled={!amount || parseFloat(amount) <= 0 || (action === 'Buy' && total > balance)}
       >
