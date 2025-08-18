@@ -15,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Progress } from "@/components/progress";
+import { Progress } from "@/components/ui/progress";
 import { AppPieChart } from "@/components/pie-chart";
 import { Button } from "@/components/ui/button";
 
@@ -24,11 +24,11 @@ const portfolio = {
   totalPnl: 2345.67,
   totalPnlPercent: 4.69,
   todayPnl: 1234.56,
-  todayPnlPercent: 2.4,
+  todayPnlPercent: 75, // Assuming this is a percentage for the progress bar
   weekPnl: 3456.78,
-  weekPnlPercent: 6.9,
+  weekPnlPercent: 60, // Assuming this is a percentage for the progress bar
   monthPnl: 5678.90,
-  monthPnlPercent: 11.1,
+  monthPnlPercent: 45, // Assuming this is a percentage for the progress bar
   holdings: [
     {
       name: "Tata Steel",
@@ -51,6 +51,20 @@ const portfolio = {
       avgPrice: 3400.00,
       price: 3450.20,
     },
+     {
+      name: "Bajaj Finance",
+      ticker: "BAJFINANCE",
+      quantity: 10,
+      avgPrice: 7000.00,
+      price: 7150.90,
+    },
+    {
+      name: "Reliance Industries",
+      ticker: "RELIANCE",
+      quantity: 8,
+      avgPrice: 2400.00,
+      price: 2450.75,
+    }
   ],
 };
 
@@ -75,8 +89,8 @@ export default function PortfolioPage() {
                     <div className="text-sm text-gray-600">Total value</div>
                 </div>
                 <div className="text-right">
-                    <div className="text-lg font-semibold text-green-500">+${portfolio.totalPnl.toLocaleString()}</div>
-                    <div className="text-sm text-green-500">+{portfolio.totalPnlPercent.toFixed(2)}%</div>
+                    <div className="text-lg font-semibold positive">+${portfolio.totalPnl.toLocaleString()}</div>
+                    <div className="text-sm positive">+{portfolio.totalPnlPercent.toFixed(2)}%</div>
                 </div>
             </div>
         </div>
@@ -94,23 +108,23 @@ export default function PortfolioPage() {
                 <div>
                     <div className="flex justify-between">
                         <span className="text-gray-600">Today's P&L</span>
-                        <span className="font-medium text-green-500">+${portfolio.todayPnl.toLocaleString()}</span>
+                        <span className="font-medium positive">+${portfolio.todayPnl.toLocaleString()}</span>
                     </div>
-                    <Progress value={portfolio.todayPnlPercent} className="h-2 mt-1 bg-gray-200 [&>*]:bg-green-500" />
+                    <Progress value={portfolio.todayPnlPercent} className="h-2 mt-1" />
                 </div>
                 <div>
                     <div className="flex justify-between">
                         <span className="text-gray-600">Week's P&L</span>
-                        <span className="font-medium text-green-500">+${portfolio.weekPnl.toLocaleString()}</span>
+                        <span className="font-medium positive">+${portfolio.weekPnl.toLocaleString()}</span>
                     </div>
-                    <Progress value={portfolio.weekPnlPercent} className="h-2 mt-1 bg-gray-200 [&>*]:bg-green-500" />
+                    <Progress value={portfolio.weekPnlPercent} className="h-2 mt-1" />
                 </div>
                 <div>
                     <div className="flex justify-between">
                         <span className="text-gray-600">Month's P&L</span>
-                        <span className="font-medium text-green-500">+${portfolio.monthPnl.toLocaleString()}</span>
+                        <span className="font-medium positive">+${portfolio.monthPnl.toLocaleString()}</span>
                     </div>
-                    <Progress value={portfolio.monthPnlPercent} className="h-2 mt-1 bg-gray-200 [&>*]:bg-green-500" />
+                    <Progress value={portfolio.monthPnlPercent} className="h-2 mt-1" />
                 </div>
             </div>
         </div>
@@ -140,7 +154,7 @@ export default function PortfolioPage() {
                     const investment = asset.quantity * asset.avgPrice;
                     const pnl = currentValue - investment;
                     const pnlPercent = investment !== 0 ? (pnl / investment) * 100 : 0;
-                    const pnlClass = pnl >= 0 ? "text-green-600" : "text-red-600";
+                    const pnlClass = pnl >= 0 ? "positive" : "negative";
                     const pnlSign = pnl >= 0 ? "+" : "";
 
                     return (

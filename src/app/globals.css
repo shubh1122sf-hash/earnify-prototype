@@ -18,7 +18,7 @@ body {
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
  
-    --primary: 240 5.9% 10%;
+    --primary: 262 82% 57%;
     --primary-foreground: 0 0% 98%;
  
     --secondary: 240 4.8% 95.9%;
@@ -35,9 +35,9 @@ body {
 
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --ring: 240 5.9% 10%;
+    --ring: 262 82% 57%;
  
-    --radius: 0.5rem;
+    --radius: 0.8rem;
 
     --chart-1: 9 90% 58%;
     --chart-2: 210 90% 58%;
@@ -47,12 +47,12 @@ body {
 
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 222 84% 4.9%;
-    --sidebar-primary: 210 100% 56%;
+    --sidebar-primary: 262 82% 57%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 40% 96.1%;
+    --sidebar-accent: 240 5% 96%;
     --sidebar-accent-foreground: 222.2 47.4% 11.2%;
-    --sidebar-border: 214.3 31.8% 91.4%;
-    --sidebar-ring: 210 100% 56%;
+    --sidebar-border: 240 5.9% 90%;
+    --sidebar-ring: 262 82% 57%;
   }
 
   .dark {
@@ -62,7 +62,7 @@ body {
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 210 100% 56%;
+    --primary: 262 82% 57%;
     --primary-foreground: 222.2 47.4% 11.2%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
@@ -101,4 +101,10 @@ body {
   }
 }
 
+.positive {
+    color: #10b981;
+}
+.negative {
+    color: #ef4444;
+}
     
