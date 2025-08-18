@@ -3,15 +3,6 @@
 
 import { AppPieChart } from "@/components/pie-chart";
 import { Progress } from "@/components/ui/progress";
-import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 
 const portfolio = {
   totalBalance: 52345.67,
@@ -24,41 +15,11 @@ const portfolio = {
   monthPnl: 2678.90,
   monthPnlPercent: 45,
   holdings: [
-    {
-      name: "Tata Steel",
-      ticker: "TATASTEEL",
-      quantity: 25,
-      avgPrice: 142.30,
-      price: 145.60,
-    },
-    {
-      name: "ITC Ltd",
-      ticker: "ITC",
-      quantity: 15,
-      avgPrice: 420.50,
-      price: 425.75,
-    },
-    {
-      name: "Asian Paints",
-      ticker: "ASIANPAINT",
-      quantity: 5,
-      avgPrice: 3400.00,
-      price: 3450.20,
-    },
-     {
-      name: "Bajaj Finance",
-      ticker: "BAJFINANCE",
-      quantity: 10,
-      avgPrice: 7000.00,
-      price: 7150.90,
-    },
-    {
-      name: "Reliance Industries",
-      ticker: "RELIANCE",
-      quantity: 8,
-      avgPrice: 2400.00,
-      price: 2450.75,
-    }
+    { name: "Apple Inc.", ticker: "AAPL", quantity: 10, avgPrice: 150.00, price: 195.89 },
+    { name: "Tesla, Inc.", ticker: "TSLA", quantity: 5, avgPrice: 200.00, price: 183.01 },
+    { name: "NVIDIA Corp", ticker: "NVDA", quantity: 20, avgPrice: 100.00, price: 121.79 },
+    { name: "Bitcoin", ticker: "BTC", quantity: 0.1, avgPrice: 60000, price: 67123.45 },
+    { name: "Ethereum", ticker: "ETH", quantity: 2, avgPrice: 3000, price: 3456.78 },
   ],
 };
 
@@ -67,9 +28,7 @@ const chartData = portfolio.holdings.map((h) => ({
     value: h.quantity * h.price 
 }));
 
-
 export default function PortfolioPage() {
-
   return (
     <div>
       <h2 className="text-xl font-bold text-gray-800 mb-6">Your Portfolio</h2>
@@ -91,9 +50,7 @@ export default function PortfolioPage() {
         
         <div className="bg-gray-50 p-6 rounded-xl shadow-sm">
             <h3 className="text-lg font-semibold text-gray-700 mb-4">Allocation</h3>
-            <div className="h-[200px] w-[200px] mx-auto">
-                <AppPieChart data={chartData} />
-            </div>
+            <AppPieChart data={chartData} className="h-[200px] w-full" />
         </div>
         
         <div className="bg-gray-50 p-6 rounded-xl shadow-sm">
@@ -127,56 +84,53 @@ export default function PortfolioPage() {
       <div>
         <h3 className="text-lg font-semibold text-gray-700 mb-4">Your Holdings</h3>
         <div className="overflow-x-auto">
-            <Table>
-                <TableHeader className="bg-gray-50">
-                    <TableRow>
-                        <TableHead>Asset</TableHead>
-                        <TableHead>Quantity</TableHead>
-                        <TableHead>Avg. Price</TableHead>
-                        <TableHead>Current Price</TableHead>
-                        <TableHead>P&L</TableHead>
-                        <TableHead>Value</TableHead>
-                        <TableHead className="text-right">Action</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody className="bg-white divide-y divide-gray-200">
-                {portfolio.holdings.map((asset) => {
-                    const currentValue = asset.quantity * asset.price;
-                    const investment = asset.quantity * asset.avgPrice;
-                    const pnl = currentValue - investment;
-                    const pnlPercent = investment !== 0 ? (pnl / investment) * 100 : 0;
-                    const pnlClass = pnl >= 0 ? "positive" : "negative";
-                    const pnlSign = pnl >= 0 ? "+" : "";
+            <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg">
+                <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                        <tr>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Asset</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avg. Price</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Price</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">P&L</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Value</th>
+                        </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                    {portfolio.holdings.map((asset) => {
+                        const currentValue = asset.quantity * asset.price;
+                        const investment = asset.quantity * asset.avgPrice;
+                        const pnl = currentValue - investment;
+                        const pnlPercent = investment !== 0 ? (pnl / investment) * 100 : 0;
+                        const pnlClass = pnl >= 0 ? "positive" : "negative";
+                        const pnlSign = pnl >= 0 ? "+" : "";
 
-                    return (
-                        <TableRow key={asset.ticker} className="hover:bg-gray-50">
-                        <TableCell>
-                            <div className="flex items-center">
-                                <div className="flex-shrink-0 h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center">
-                                    <span className="text-primary font-medium">{asset.name.charAt(0)}</span>
+                        return (
+                            <tr key={asset.ticker} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="flex items-center">
+                                    <div className="flex-shrink-0 h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center">
+                                        <span className="text-primary font-medium">{asset.name.charAt(0)}</span>
+                                    </div>
+                                    <div className="ml-4">
+                                        <div className="text-sm font-medium text-gray-900">{asset.name}</div>
+                                        <div className="text-sm text-gray-500">{asset.ticker}</div>
+                                    </div>
                                 </div>
-                                <div className="ml-4">
-                                    <div className="text-sm font-medium text-gray-900">{asset.name}</div>
-                                    <div className="text-sm text-gray-500">{asset.ticker}</div>
-                                </div>
-                            </div>
-                        </TableCell>
-                        <TableCell className="text-sm text-gray-900">{asset.quantity}</TableCell>
-                        <TableCell className="text-sm text-gray-900">${asset.avgPrice.toFixed(2)}</TableCell>
-                        <TableCell className="text-sm text-gray-900">${asset.price.toFixed(2)}</TableCell>
-                        <TableCell className={`text-sm ${pnlClass}`}>
-                            {pnlSign}${Math.abs(pnl).toFixed(2)} ({pnlSign}{Math.abs(pnlPercent).toFixed(2)}%)
-                        </TableCell>
-                        <TableCell className="text-sm text-gray-900 font-medium">${currentValue.toFixed(2)}</TableCell>
-                        <TableCell className="text-right">
-                            <Button variant="link" className="text-primary hover:text-primary/80 p-0 mr-3">Buy</Button>
-                            <Button variant="link" className="text-red-600 hover:text-red-800 p-0">Sell</Button>
-                        </TableCell>
-                        </TableRow>
-                    );
-                })}
-                </TableBody>
-            </Table>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{asset.quantity}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${asset.avgPrice.toFixed(2)}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${asset.price.toFixed(2)}</td>
+                            <td className={`px-6 py-4 whitespace-nowrap text-sm ${pnlClass}`}>
+                                {pnlSign}${Math.abs(pnl).toFixed(2)} ({pnlSign}{Math.abs(pnlPercent).toFixed(2)}%)
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">${currentValue.toFixed(2)}</td>
+                            </tr>
+                        );
+                    })}
+                    </tbody>
+                </table>
+            </div>
         </div>
         </div>
     </div>

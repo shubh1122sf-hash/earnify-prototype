@@ -48,7 +48,7 @@ export function AppLineChart({
   const lastDataPoint = data[data.length - 1];
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 h-full">
       {title && (
         <div>
           <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
@@ -57,7 +57,7 @@ export function AppLineChart({
           )}
         </div>
       )}
-      <div className={cn("h-[250px] w-full", className)}>
+      <div className={cn("h-full w-full", className)}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={data}
@@ -88,9 +88,9 @@ export function AppLineChart({
             <Tooltip
               cursor={{ strokeDasharray: '3 3' }}
               contentStyle={{
-                background: 'white',
-                border: '1px solid #e5e7eb',
-                borderRadius: '0.5rem',
+                background: 'hsl(var(--background))',
+                border: '1px solid hsl(var(--border))',
+                borderRadius: 'var(--radius)',
               }}
               formatter={(value: number) => [`$${value.toFixed(2)}`, "Price"]}
             />

@@ -154,12 +154,11 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
                     )}
                 </div>
              </CardHeader>
-             <CardContent>
+             <CardContent className="h-[350px] p-0">
                 <AppLineChart
                     data={chartData}
                     dataKey="value"
                     xAxisKey="time"
-                    className="h-[300px]"
                 />
              </CardContent>
            </Card>

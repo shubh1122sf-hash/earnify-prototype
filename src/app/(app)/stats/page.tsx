@@ -75,7 +75,7 @@ export default function StatsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-6 h-[400px]">
                 <AppLineChart
                     title="Trading Volume"
                     description="Monthly trading volume across the platform."
@@ -87,7 +87,7 @@ export default function StatsPage() {
             </CardContent>
         </Card>
         <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-6 h-[400px]">
                  <AppLineChart
                     title="User Growth"
                     description="Active users on the platform over time."
