@@ -1,10 +1,11 @@
 
 'use client';
 
+import { useState, useEffect } from 'react';
 import { AppPieChart } from "@/components/pie-chart";
 import { Progress } from "@/components/ui/progress";
 
-const portfolio = {
+const initialPortfolio = {
   totalBalance: 52345.67,
   totalPnl: 2345.67,
   totalPnlPercent: 4.69,
@@ -23,12 +24,26 @@ const portfolio = {
   ],
 };
 
-const chartData = portfolio.holdings.map((h) => ({ 
+export default function PortfolioPage() {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  const chartData = initialPortfolio.holdings.map((h) => ({ 
     name: h.ticker, 
     value: h.value
-}));
+  }));
 
-export default function PortfolioPage() {
+  if (!isClient) {
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <p>Loading Portfolio...</p>
+      </div>
+    );
+  }
+
   return (
     <div>
       <h2 className="text-xl font-bold text-gray-800 mb-6">Your Portfolio</h2>
@@ -38,19 +53,19 @@ export default function PortfolioPage() {
             <h3 className="text-lg font-semibold text-gray-700 mb-4">Portfolio Value</h3>
             <div className="flex justify-between items-end">
                 <div>
-                    <div className="text-3xl font-bold text-gray-800">${portfolio.totalBalance.toLocaleString()}</div>
+                    <div className="text-3xl font-bold text-gray-800">${initialPortfolio.totalBalance.toLocaleString()}</div>
                     <div className="text-sm text-gray-600">Total value</div>
                 </div>
                 <div className="text-right">
-                    <div className="text-lg font-semibold positive">+${portfolio.totalPnl.toLocaleString()}</div>
-                    <div className="text-sm positive">+{portfolio.totalPnlPercent.toFixed(2)}%</div>
+                    <div className="text-lg font-semibold positive">+${initialPortfolio.totalPnl.toLocaleString()}</div>
+                    <div className="text-sm positive">+{initialPortfolio.totalPnlPercent.toFixed(2)}%</div>
                 </div>
             </div>
         </div>
         
         <div className="bg-gray-50 p-6 rounded-xl shadow-sm">
             <h3 className="text-lg font-semibold text-gray-700 mb-4">Allocation</h3>
-            <div className="h-[200px] w-full">
+            <div className="h-[150px] w-full">
               <AppPieChart data={chartData} />
             </div>
         </div>
@@ -61,23 +76,23 @@ export default function PortfolioPage() {
                 <div>
                     <div className="flex justify-between">
                         <span className="text-gray-600">Today's P&L</span>
-                        <span className="font-medium positive">+${portfolio.todayPnl.toLocaleString()}</span>
+                        <span className="font-medium positive">+${initialPortfolio.todayPnl.toLocaleString()}</span>
                     </div>
-                    <Progress value={portfolio.todayPnlPercent} />
+                    <Progress value={initialPortfolio.todayPnlPercent} />
                 </div>
                 <div>
                     <div className="flex justify-between">
                         <span className="text-gray-600">Week's P&L</span>
-                        <span className="font-medium positive">+${portfolio.weekPnl.toLocaleString()}</span>
+                        <span className="font-medium positive">+${initialPortfolio.weekPnl.toLocaleString()}</span>
                     </div>
-                    <Progress value={portfolio.weekPnlPercent} />
+                    <Progress value={initialPortfolio.weekPnlPercent} />
                 </div>
                 <div>
                     <div className="flex justify-between">
                         <span className="text-gray-600">Month's P&L</span>
-                        <span className="font-medium positive">+${portfolio.monthPnl.toLocaleString()}</span>
+                        <span className="font-medium positive">+${initialPortfolio.monthPnl.toLocaleString()}</span>
                     </div>
-                    <Progress value={portfolio.monthPnlPercent} />
+                    <Progress value={initialPortfolio.monthPnlPercent} />
                 </div>
             </div>
         </div>
@@ -99,7 +114,7 @@ export default function PortfolioPage() {
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                    {portfolio.holdings.map((asset) => {
+                    {initialPortfolio.holdings.map((asset) => {
                         const currentValue = asset.quantity * asset.price;
                         const investment = asset.quantity * asset.avgPrice;
                         const pnl = currentValue - investment;
