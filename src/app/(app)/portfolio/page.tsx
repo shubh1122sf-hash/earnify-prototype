@@ -23,11 +23,11 @@ const portfolio = {
   totalBalance: 52345.67,
   totalPnl: 2345.67,
   totalPnlPercent: 4.69,
-  todayPnl: 1234.56,
+  todayPnl: 123.56,
   todayPnlPercent: 75,
-  weekPnl: 3456.78,
+  weekPnl: 1456.78,
   weekPnlPercent: 60,
-  monthPnl: 5678.90,
+  monthPnl: 2678.90,
   monthPnlPercent: 45,
   holdings: [
     {

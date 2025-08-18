@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -40,16 +41,10 @@ const links = [
     icon: Trophy,
   },
   {
-    href: "/stats",
-    label: "Stats",
-    icon: BarChart,
+    href: "/account",
+    label: "Account",
+    icon: User,
   },
-  {
-    href: "/learn",
-    label: "Learn",
-    icon: BookOpen,
-  },
-
 ];
 
 export function Nav() {

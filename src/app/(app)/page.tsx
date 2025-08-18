@@ -16,131 +16,113 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Bitcoin, Waves, Briefcase, TrendingUp, TrendingDown, ArrowRight } from "lucide-react";
+import { TrendingUp, TrendingDown, ArrowRight, Search, AlertTriangle, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
 
 const initialAssets = [
-    { name: 'Apple Inc.', ticker: 'AAPL', price: 195.89, change: 1.8, icon: 'https://placehold.co/40x40.png?text=A', type: 'Stock' },
-    { name: 'Tesla, Inc.', ticker: 'TSLA', price: 183.01, change: -0.5, icon: 'https://placehold.co/40x40.png?text=T', type: 'Stock' },
-    { name: 'NVIDIA Corp', ticker: 'NVDA', price: 121.79, change: 3.5, icon: 'https://placehold.co/40x40.png?text=N', type: 'Stock' },
-    { name: 'Alphabet Inc.', ticker: 'GOOGL', price: 175.61, change: 0.8, icon: 'https://placehold.co/40x40.png?text=G', type: 'Stock' },
-    { name: 'Amazon.com, Inc.', ticker: 'AMZN', price: 185.57, change: -1.1, icon: 'https://placehold.co/40x40.png?text=A', type: 'Stock' },
-    { name: 'Microsoft Corp', ticker: 'MSFT', price: 442.57, change: 1.2, icon: 'https://placehold.co/40x40.png?text=M', type: 'Stock' },
-    { name: 'Reliance Industries', ticker: 'RELIANCE', price: 2885.50, change: 2.1, icon: 'https://placehold.co/40x40.png?text=R', type: 'Stock' },
-    { name: 'Tata Consultancy', ticker: 'TCS', price: 3825.10, change: -0.8, icon: 'https://placehold.co/40x40.png?text=T', type: 'Stock' },
-    { name: 'HDFC Bank', ticker: 'HDFCBANK', price: 1665.80, change: 1.5, icon: 'https://placehold.co/40x40.png?text=H', type: 'Stock' },
-    { name: 'Bitcoin', ticker: 'BTC', price: 67123.45, change: 2.5, icon: 'https://placehold.co/40x40.png?text=B', type: 'Crypto' },
-    { name: 'Ethereum', ticker: 'ETH', price: 3456.78, change: -1.2, icon: 'https://placehold.co/40x40.png?text=E', type: 'Crypto' },
-    { name: 'Solana', ticker: 'SOL', price: 150.25, change: 12.5, icon: 'https://placehold.co/40x40.png?text=S', type: 'Crypto' },
+    { name: 'Apple Inc.', ticker: 'AAPL', price: 195.89, change: 1.8, icon: 'https://placehold.co/40x40.png?text=A', type: 'Stock', sector: 'Technology' , volume: '2.1M'},
+    { name: 'Tesla, Inc.', ticker: 'TSLA', price: 183.01, change: -0.5, icon: 'https://placehold.co/40x40.png?text=T', type: 'Stock', sector: 'Automotive' , volume: '3.5M'},
+    { name: 'NVIDIA Corp', ticker: 'NVDA', price: 121.79, change: 3.5, icon: 'https://placehold.co/40x40.png?text=N', type: 'Stock', sector: 'Technology' , volume: '5.2M'},
+    { name: 'Alphabet Inc.', ticker: 'GOOGL', price: 175.61, change: 0.8, icon: 'https://placehold.co/40x40.png?text=G', type: 'Stock', sector: 'Technology' , volume: '1.8M'},
+    { name: 'Amazon.com, Inc.', ticker: 'AMZN', price: 185.57, change: -1.1, icon: 'https://placehold.co/40x40.png?text=A', type: 'Stock', sector: 'E-commerce' , volume: '2.5M'},
+    { name: 'Microsoft Corp', ticker: 'MSFT', price: 442.57, change: 1.2, icon: 'https://placehold.co/40x40.png?text=M', type: 'Stock', sector: 'Technology' , volume: '1.9M'},
+    { name: 'Reliance Industries', ticker: 'RELIANCE', price: 2885.50, change: 2.1, icon: 'https://placehold.co/40x40.png?text=R', type: 'Stock', sector: 'Conglomerate' , volume: '4.1M'},
+    { name: 'Tata Consultancy', ticker: 'TCS', price: 3825.10, change: -0.8, icon: 'https://placehold.co/40x40.png?text=T', type: 'Stock', sector: 'IT Services' , volume: '1.5M'},
+    { name: 'HDFC Bank', ticker: 'HDFCBANK', price: 1665.80, change: 1.5, icon: 'https://placehold.co/40x40.png?text=H', type: 'Stock', sector: 'Banking' , volume: '3.8M'},
+    { name: 'Bitcoin', ticker: 'BTC', price: 67123.45, change: 2.5, icon: 'https://placehold.co/40x40.png?text=B', type: 'Crypto', sector: 'Digital Asset', volume: '15.2B' },
+    { name: 'Ethereum', ticker: 'ETH', price: 3456.78, change: -1.2, icon: 'https://placehold.co/40x40.png?text=E', type: 'Crypto', sector: 'Digital Asset', volume: '8.1B' },
+    { name: 'Solana', ticker: 'SOL', price: 150.25, change: 12.5, icon: 'https://placehold.co/40x40.png?text=S', type: 'Crypto', sector: 'Digital Asset', volume: '2.5B' },
 ];
 
 export default function MarketPage() {
   const [assets, setAssets] = useState(initialAssets);
-  const [assetType, setAssetType] = useState<'Stock' | 'Crypto'>('Stock');
+  const [marketEvent, setMarketEvent] = useState<string | null>(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
+      let isMarketEvent = false;
+      // 5% chance of a market event
+      if (Math.random() < 0.05) {
+        isMarketEvent = true;
+        setMarketEvent("Market Alert: Volatility spike detected!");
+        setTimeout(() => setMarketEvent(null), 5000);
+      }
+
       setAssets(prevAssets => 
         prevAssets.map(asset => {
-          const isRareEvent = Math.random() < 0.01; // 1% chance of a big jump/drop
-          let randomFactor;
-
-          if (isRareEvent) {
-            randomFactor = (Math.random() - 0.5) * 20; // -10% to +10%
-          } else {
-            randomFactor = (Math.random() - 0.5) * 4; // -2% to +2%
-          }
-
+          // During market events, make bigger changes
+          const volatility = isMarketEvent ? 15 : 2;
+          const randomFactor = (Math.random() - 0.5) * volatility; 
           const newPrice = Math.max(0, asset.price * (1 + randomFactor / 100));
           const newChange = ((newPrice - asset.price) / asset.price) * 100;
           
           return { ...asset, price: newPrice, change: newChange };
         })
       );
-    }, 4000); // Update every 4 seconds
+    }, 3000); // Update every 3 seconds
 
     return () => clearInterval(interval);
   }, []);
 
-  const filteredAssets = assets.filter(asset => asset.type === assetType);
-
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">Market Overview</h1>
-        <p className="text-muted-foreground">
-          Explore and trade assets. Prices are updated in real-time.
-        </p>
-      </div>
-      
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Assets</CardTitle>
-           <div className="flex gap-2">
-            <Button 
-                variant={assetType === 'Stock' ? 'default' : 'outline'} 
-                onClick={() => setAssetType('Stock')}
-            >
-                Stocks
-            </Button>
-            <Button 
-                variant={assetType === 'Crypto' ? 'default' : 'outline'}
-                onClick={() => setAssetType('Crypto')}
-            >
-                Crypto
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Asset</TableHead>
-                <TableHead className="text-right">Price</TableHead>
-                <TableHead className="text-right">24h Change</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredAssets.map((asset) => (
-                <TableRow key={asset.ticker} className="group">
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Avatar>
-                        <AvatarImage src={asset.icon} alt={asset.name} />
-                        <AvatarFallback>{asset.ticker.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <span className="font-medium">{asset.name}</span>
-                        <span className="ml-2 text-muted-foreground">{asset.ticker}</span>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right font-mono font-medium">
-                    ${asset.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className={`flex items-center justify-end gap-1 font-medium ${asset.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+
+        <div className="flex justify-between items-center">
+            <h2 className="text-xl font-bold text-gray-800">Stock Market</h2>
+            <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Input type="text" placeholder="Search stocks..." className="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            </div>
+        </div>
+        
+        {marketEvent && (
+            <div className="mb-4 p-3 bg-red-50 rounded-lg border border-red-200 flex items-center animate-pulse">
+                <AlertTriangle className="h-5 w-5 text-red-500 mr-3" />
+                <div className="flex-1">
+                    <span className="text-sm font-medium text-red-800">{marketEvent}</span>
+                </div>
+            </div>
+        )}
+
+        {!marketEvent && (
+            <div className="mb-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200 flex items-center">
+                <Info className="h-5 w-5 text-yellow-500 mr-3" />
+                <div className="flex-1">
+                    <span className="text-sm text-yellow-800">Market is volatile today - great opportunities for traders!</span>
+                </div>
+            </div>
+        )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {assets.map((asset) => (
+          <Link href={`/trade/${asset.ticker}`} key={asset.ticker}>
+            <Card className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition cursor-pointer">
+              <CardContent className="p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <h3 className="font-bold text-gray-800">{asset.ticker}</h3>
+                    <p className="text-sm text-gray-600">{asset.name}</p>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-semibold text-gray-800">${asset.price.toFixed(2)}</div>
+                    <div className={`text-sm flex items-center justify-end gap-1 ${asset.change >= 0 ? 'positive' : 'negative'}`}>
                       {asset.change >= 0 ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
-                      <span>{asset.change.toFixed(2)}%</span>
+                      {Math.abs(asset.change).toFixed(2)}%
                     </div>
-                  </TableCell>
-                  <TableCell className="text-right space-x-2">
-                    <Link href={`/trade/${asset.ticker}`}>
-                      <Button size="sm" variant="ghost">
-                        Trade
-                        <ArrowRight className="h-4 w-4 ml-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </Button>
-                    </Link>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+                  </div>
+                </div>
+                <div className="flex justify-between text-xs text-gray-500">
+                  <span>{asset.sector}</span>
+                  <span>Vol: {asset.volume}</span>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }

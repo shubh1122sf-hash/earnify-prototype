@@ -44,15 +44,6 @@ body {
     --chart-3: 140 90% 58%;
     --chart-4: 280 90% 58%;
     --chart-5: 340 90% 58%;
-
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 222 84% 4.9%;
-    --sidebar-primary: 262 82% 57%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 5% 96%;
-    --sidebar-accent-foreground: 222.2 47.4% 11.2%;
-    --sidebar-border: 240 5.9% 90%;
-    --sidebar-ring: 262 82% 57%;
   }
 
   .dark {
@@ -80,15 +71,6 @@ body {
     --chart-3: 140 80% 55%;
     --chart-4: 280 80% 55%;
     --chart-5: 340 80% 55%;
-    
-    --sidebar-background: 222.2 84% 4.9%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 210 100% 56%;
-    --sidebar-primary-foreground: 222.2 47.4% 11.2%;
-    --sidebar-accent: 217.2 32.6% 17.5%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 217.2 32.6% 17.5%;
-    --sidebar-ring: 217.2 32.6% 17.5%;
   }
 }
 
@@ -97,7 +79,7 @@ body {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-gray-100 text-foreground;
   }
 }
 
@@ -107,4 +89,3 @@ body {
 .negative {
     color: #ef4444;
 }
-    
