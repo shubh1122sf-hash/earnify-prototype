@@ -5,14 +5,6 @@ import { TrendingUp } from "lucide-react";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip, ReferenceDot } from "recharts";
 
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   ChartContainer,
   ChartTooltipContent,
 } from "@/components/ui/chart";
@@ -23,20 +15,24 @@ interface AppLineChartProps {
   dataKey: string;
   xAxisKey: string;
   className?: string;
+  chartConfig?: any; // Making chartConfig optional
 }
 
-export function AppLineChart({ data, dataKey, xAxisKey, className }: AppLineChartProps) {
-  const chartConfig = {
+export function AppLineChart({ data, dataKey, xAxisKey, className, chartConfig: propChartConfig }: AppLineChartProps) {
+  const defaultChartConfig = {
     [dataKey]: {
       label: "Value",
-      color: "hsl(var(--chart-1))",
+      color: "hsl(var(--primary))",
     },
   };
 
+  const chartConfig = propChartConfig || defaultChartConfig;
+  
+  // Calculate domain with a buffer
   const yAxisDomain = data.length > 0 ? [
-      Math.min(...data.map(item => item[dataKey])) * 0.99,
-      Math.max(...data.map(item => item[dataKey])) * 1.01,
-    ] : ['dataMin', 'dataMax'];
+      Math.min(...data.map(item => item[dataKey])) * 0.98,
+      Math.max(...data.map(item => item[dataKey])) * 1.02,
+    ] : [0, 100]; // Default domain if no data
   
   const lastDataPoint = data.length > 0 ? data[data.length - 1] : null;
 
@@ -59,7 +55,7 @@ export function AppLineChart({ data, dataKey, xAxisKey, className }: AppLineChar
                 axisLine={false}
                 tickMargin={8}
                 tick={{ dy: 10, fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
-                
+                interval="preserveStartEnd"
             />
             <YAxis
                 tickLine={false}
@@ -77,24 +73,24 @@ export function AppLineChart({ data, dataKey, xAxisKey, className }: AppLineChar
             <Line
                 dataKey={dataKey}
                 type="linear"
-                stroke="hsl(var(--chart-1))"
-                strokeWidth={2.5}
+                stroke="hsl(var(--primary))"
+                strokeWidth={2}
                 dot={false}
-                isAnimationActive={false}
+                isAnimationActive={false} // Disable animation for live effect
             />
             {lastDataPoint && (
               <ReferenceDot
                 x={lastDataPoint[xAxisKey]}
                 y={lastDataPoint[dataKey]}
                 r={5}
-                fill="hsl(var(--chart-1))"
+                fill="hsl(var(--primary))"
                 stroke="hsl(var(--background))"
                 strokeWidth={2}
               >
                   <foreignObject x={15} y={-10} width={100} height={20}>
                     <div 
                       style={{
-                        background: 'hsl(var(--chart-1))',
+                        background: 'hsl(var(--primary))',
                         color: 'hsl(var(--primary-foreground))',
                         padding: '2px 8px',
                         borderRadius: 'var(--radius)',

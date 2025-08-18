@@ -9,13 +9,21 @@ import {
 } from "@/components/ui/chart";
 import { cn } from "@/lib/utils";
 
-
 interface AppPieChartProps {
   data: any[];
   className?: string;
 }
 
-const COLORS = ['#6366F1', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
+const COLORS = [
+    'hsl(var(--chart-1))',
+    'hsl(var(--chart-2))',
+    'hsl(var(--chart-3))',
+    'hsl(var(--chart-4))',
+    'hsl(var(--chart-5))',
+    '#EC4899',
+    '#14B8A6',
+    '#F97316'
+];
 
 export function AppPieChart({ data, className }: AppPieChartProps) {
   const chartConfig = {
@@ -60,7 +68,7 @@ export function AppPieChart({ data, className }: AppPieChartProps) {
                 cy="50%"
                 outerRadius={'100%'}
                 innerRadius={'70%'}
-                paddingAngle={0}
+                paddingAngle={2}
                 labelLine={false}
                 label={false}
             >

@@ -3,23 +3,11 @@
 
 import { useState, useEffect } from "react";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
-import { TrendingUp, TrendingDown, ArrowRight, Search, AlertTriangle, Info } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { TrendingUp, TrendingDown, Search, AlertTriangle, Info } from "lucide-react";
 import Link from "next/link";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 
 const initialAssets = [
@@ -37,61 +25,82 @@ const initialAssets = [
     { name: 'Solana', ticker: 'SOL', price: 150.25, change: 12.5, icon: 'https://placehold.co/40x40.png?text=S', type: 'Crypto', sector: 'Digital Asset', volume: '2.5B' },
 ];
 
+const mentorTips = [
+    "Josh says: 'The tech sector is showing strong momentum - consider adding growth stocks to your portfolio.'",
+    "Marshall advises: 'Don't put all your eggs in one basket. Diversify across at least 5 sectors.'",
+    "Purav notes: 'Check the company's debt-to-equity ratio before investing. Less than 1 is ideal.'",
+    "Ken suggests: 'Market is fearful today - great buying opportunities for long-term investors.'",
+];
+
+
 export default function MarketPage() {
   const [assets, setAssets] = useState(initialAssets);
   const [marketEvent, setMarketEvent] = useState<string | null>(null);
+  const [rollingTip, setRollingTip] = useState(mentorTips[0]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    // Price update interval
+    const priceInterval = setInterval(() => {
       let isMarketEvent = false;
-      // 5% chance of a market event
+      
+      // 5% chance of a market event on each tick
       if (Math.random() < 0.05) {
         isMarketEvent = true;
-        setMarketEvent("Market Alert: Volatility spike detected!");
-        setTimeout(() => setMarketEvent(null), 5000);
+        const eventMessages = [
+            "Market Alert: Volatility spike detected!",
+            "Breaking News: Sector-wide movement happening now!",
+            "Quick! Market event in progress - trade opportunities available!",
+        ];
+        setMarketEvent(eventMessages[Math.floor(Math.random() * eventMessages.length)]);
+        setTimeout(() => setMarketEvent(null), 5000); // Event lasts 5 seconds
       }
 
       setAssets(prevAssets => 
         prevAssets.map(asset => {
           // During market events, make bigger changes
-          const volatility = isMarketEvent ? 15 : 2;
+          const volatility = isMarketEvent ? 5 : 0.5; // 5% volatility during event, 0.5% otherwise
           const randomFactor = (Math.random() - 0.5) * volatility; 
           const newPrice = Math.max(0, asset.price * (1 + randomFactor / 100));
           const newChange = ((newPrice - asset.price) / asset.price) * 100;
           
-          return { ...asset, price: newPrice, change: newChange };
+          return { ...asset, price: newPrice, change: asset.change + newChange };
         })
       );
     }, 3000); // Update every 3 seconds
 
-    return () => clearInterval(interval);
+    // Rolling tip interval
+    const tipInterval = setInterval(() => {
+        setRollingTip(mentorTips[Math.floor(Math.random() * mentorTips.length)])
+    }, 6000);
+
+    return () => {
+        clearInterval(priceInterval);
+        clearInterval(tipInterval);
+    }
   }, []);
 
   return (
-    <div className="flex flex-col gap-6">
-
-        <div className="flex justify-between items-center">
+    <div>
+        <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold text-gray-800">Stock Market</h2>
             <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <Input type="text" placeholder="Search stocks..." className="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                <Input type="text" placeholder="Search stocks..." className="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" />
             </div>
         </div>
         
-        {marketEvent && (
-            <div className="mb-4 p-3 bg-red-50 rounded-lg border border-red-200 flex items-center animate-pulse">
+        {marketEvent ? (
+            <div className="mb-4 p-3 bg-red-50 rounded-lg border border-red-200 flex items-center market-event">
                 <AlertTriangle className="h-5 w-5 text-red-500 mr-3" />
                 <div className="flex-1">
                     <span className="text-sm font-medium text-red-800">{marketEvent}</span>
                 </div>
             </div>
-        )}
-
-        {!marketEvent && (
-            <div className="mb-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200 flex items-center">
+        ) : (
+             <div className="mb-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200 flex items-center">
                 <Info className="h-5 w-5 text-yellow-500 mr-3" />
                 <div className="flex-1">
-                    <span className="text-sm text-yellow-800">Market is volatile today - great opportunities for traders!</span>
+                    <span className="text-sm text-yellow-800 transition-opacity duration-300">{rollingTip}</span>
                 </div>
             </div>
         )}
@@ -110,7 +119,7 @@ export default function MarketPage() {
                     <div className="font-semibold text-gray-800">${asset.price.toFixed(2)}</div>
                     <div className={`text-sm flex items-center justify-end gap-1 ${asset.change >= 0 ? 'positive' : 'negative'}`}>
                       {asset.change >= 0 ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
-                      {Math.abs(asset.change).toFixed(2)}%
+                      {asset.change.toFixed(2)}%
                     </div>
                   </div>
                 </div>

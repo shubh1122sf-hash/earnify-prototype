@@ -1,3 +1,4 @@
+
 import {
   Table,
   TableBody,
@@ -6,71 +7,78 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Trophy } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 
 const leaderboardData = [
-  { rank: 1, user: "Alex Crypto", portfolioValue: 250123.45, weeklyGain: 15.2, avatar: "https://placehold.co/40x40.png?text=A" },
-  { rank: 2, user: "Sarah Stocks", portfolioValue: 245678.90, weeklyGain: 12.8, avatar: "https://placehold.co/40x40.png?text=S" },
-  { rank: 3, user: "Bitcoin Barry", portfolioValue: 230500.00, weeklyGain: 22.5, avatar: "https://placehold.co/40x40.png?text=B" },
-  { rank: 4, user: "Diamond Hands", portfolioValue: 215000.75, weeklyGain: -2.1, avatar: "https://placehold.co/40x40.png?text=D" },
-  { rank: 5, user: "ETF Emily", portfolioValue: 210100.25, weeklyGain: 8.9, avatar: "https://placehold.co/40x40.png?text=E" },
-  { rank: 6, user: "Moonshot Mike", portfolioValue: 198000.00, weeklyGain: 35.0, avatar: "https://placehold.co/40x40.png?text=M" },
+  { rank: 1, user: "TraderPro", profit: 12500, trades: 87, winRate: 72, avatar: "https://placehold.co/40x40.png?text=T" },
+  { rank: 2, user: "MarketWizard", profit: 11800, trades: 65, winRate: 78, avatar: "https://placehold.co/40x40.png?text=M" },
+  { rank: 3, user: "BullRider", profit: 11200, trades: 92, winRate: 68, avatar: "https://placehold.co/40x40.png?text=B" },
+  { rank: 4, user: "AlphaHunter", profit: 10500, trades: 78, winRate: 75, avatar: "https://placehold.co/40x40.png?text=A" },
+  { rank: 5, user: "RiskMaster", profit: 9800, trades: 56, winRate: 82, avatar: "https://placehold.co/40x40.png?text=R" },
+  { rank: 6, user: "TrendSetter", profit: 9200, trades: 72, winRate: 70, avatar: "https://placehold.co/40x40.png?text=T" },
 ];
 
 export default function LeaderboardPage() {
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-3xl font-bold">Leaderboard</h1>
+       <h2 className="text-xl font-bold text-gray-800 mb-6">Leaderboard</h2>
       
-      <Card>
-        <CardHeader>
-          <CardTitle>Top Traders</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 mb-6">
+          <div className="flex items-center">
+              <div className="bg-primary/10 p-3 rounded-lg mr-4">
+                  <Trophy className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                  <h3 className="font-medium text-gray-800">Your Rank</h3>
+                  <p className="text-gray-600">You are currently ranked <span className="font-semibold text-primary">#97</span> with a profit of <span className="font-semibold positive">$2,345.67</span></p>
+              </div>
+          </div>
+      </div>
+      
+      <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg">
           <Table>
-            <TableHeader>
+            <TableHeader className="bg-gray-50">
               <TableRow>
-                <TableHead className="w-[80px]">Rank</TableHead>
-                <TableHead>User</TableHead>
-                <TableHead className="text-right">Portfolio Value</TableHead>
-                <TableHead className="text-right">Weekly Gain</TableHead>
+                <TableHead className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">Rank</TableHead>
+                <TableHead className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Trader</TableHead>
+                <TableHead className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Profit</TableHead>
+                <TableHead className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Trades</TableHead>
+                <TableHead className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Win Rate</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody>
+            <TableBody className="divide-y divide-gray-200 bg-white">
               {leaderboardData.map((entry) => (
                 <TableRow key={entry.rank}>
-                  <TableCell>
-                    <div className="flex items-center justify-center font-bold text-lg">
-                      {entry.rank === 1 && <Trophy className="h-6 w-6 text-yellow-500 mr-2" />}
-                      {entry.rank}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Avatar>
+                  <TableCell className="py-4 pl-4 pr-3 whitespace-nowrap text-sm font-medium text-gray-900">{entry.rank}</TableCell>
+                  <TableCell className="px-3 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                       <Avatar className="h-10 w-10">
                         <AvatarImage src={entry.avatar} />
                         <AvatarFallback>{entry.user.charAt(0)}</AvatarFallback>
                       </Avatar>
-                      <span className="font-medium">{entry.user}</span>
+                      <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900">{entry.user}</div>
+                      </div>
                     </div>
                   </TableCell>
-                  <TableCell className="text-right font-mono font-medium">
-                    ${entry.portfolioValue.toLocaleString()}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Badge variant={entry.weeklyGain >= 0 ? "default" : "destructive"} className={entry.weeklyGain > 0 ? 'bg-green-500/20 text-green-700' : 'bg-red-500/20 text-red-700'}>
-                      {entry.weeklyGain >= 0 ? "+" : ""}{entry.weeklyGain.toFixed(1)}%
-                    </Badge>
-                  </TableCell>
+                   <TableCell className="px-3 py-4 whitespace-nowrap">
+                        <div className="text-sm positive">+${entry.profit.toLocaleString()}</div>
+                    </TableCell>
+                  <TableCell className="px-3 py-4 whitespace-nowrap text-sm text-gray-500">{entry.trades}</TableCell>
+                   <TableCell className="px-3 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                            <Progress value={entry.winRate} className="w-24 h-1.5 mr-2" />
+                            <span className="text-sm text-gray-600">{entry.winRate}%</span>
+                        </div>
+                    </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
-        </CardContent>
-      </Card>
+      </div>
     </div>
   );
 }

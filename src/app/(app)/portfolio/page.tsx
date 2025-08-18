@@ -2,12 +2,6 @@
 'use client';
 
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   Table,
   TableBody,
   TableCell,
@@ -77,7 +71,7 @@ const chartData = portfolio.holdings.map((h) => ({
 export default function PortfolioPage() {
 
   return (
-    <div className="flex flex-col gap-6">
+    <div>
       <h2 className="text-xl font-bold text-gray-800 mb-6">Your Portfolio</h2>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
@@ -130,23 +124,20 @@ export default function PortfolioPage() {
         </div>
     </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg font-semibold text-gray-700">Your Holdings</CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
+      <div>
+        <h3 className="text-lg font-semibold text-gray-700 mb-4">Your Holdings</h3>
+        <div className="overflow-x-auto">
             <Table>
-                <TableHeader>
-                <TableRow className="bg-gray-50 hover:bg-gray-50">
-                    <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Asset</TableHead>
-                    <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</TableHead>
-                    <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avg. Price</TableHead>
-                    <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Price</TableHead>
-                    <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">P&L</TableHead>
-                    <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Value</TableHead>
-                    <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</TableHead>
-                </TableRow>
+                <TableHeader className="bg-gray-50">
+                    <TableRow>
+                        <TableHead>Asset</TableHead>
+                        <TableHead>Quantity</TableHead>
+                        <TableHead>Avg. Price</TableHead>
+                        <TableHead>Current Price</TableHead>
+                        <TableHead>P&L</TableHead>
+                        <TableHead>Value</TableHead>
+                        <TableHead className="text-right">Action</TableHead>
+                    </TableRow>
                 </TableHeader>
                 <TableBody className="bg-white divide-y divide-gray-200">
                 {portfolio.holdings.map((asset) => {
@@ -159,10 +150,10 @@ export default function PortfolioPage() {
 
                     return (
                         <TableRow key={asset.ticker} className="hover:bg-gray-50">
-                        <TableCell className="px-6 py-4 whitespace-nowrap">
+                        <TableCell>
                             <div className="flex items-center">
-                                <div className="flex-shrink-0 h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center">
-                                    <span className="text-indigo-600 font-medium">{asset.name.charAt(0)}</span>
+                                <div className="flex-shrink-0 h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center">
+                                    <span className="text-primary font-medium">{asset.name.charAt(0)}</span>
                                 </div>
                                 <div className="ml-4">
                                     <div className="text-sm font-medium text-gray-900">{asset.name}</div>
@@ -170,25 +161,24 @@ export default function PortfolioPage() {
                                 </div>
                             </div>
                         </TableCell>
-                        <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{asset.quantity}</TableCell>
-                        <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${asset.avgPrice.toFixed(2)}</TableCell>
-                        <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${asset.price.toFixed(2)}</TableCell>
-                        <TableCell className={`px-6 py-4 whitespace-nowrap text-sm ${pnlClass}`}>
+                        <TableCell className="text-sm text-gray-900">{asset.quantity}</TableCell>
+                        <TableCell className="text-sm text-gray-900">${asset.avgPrice.toFixed(2)}</TableCell>
+                        <TableCell className="text-sm text-gray-900">${asset.price.toFixed(2)}</TableCell>
+                        <TableCell className={`text-sm ${pnlClass}`}>
                             {pnlSign}${Math.abs(pnl).toFixed(2)} ({pnlSign}{Math.abs(pnlPercent).toFixed(2)}%)
                         </TableCell>
-                        <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${currentValue.toFixed(2)}</TableCell>
-                        <TableCell className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <Button variant="link" className="text-indigo-600 hover:text-indigo-900 p-0 mr-3">Buy</Button>
-                            <Button variant="link" className="text-red-600 hover:text-red-900 p-0">Sell</Button>
+                        <TableCell className="text-sm text-gray-900 font-medium">${currentValue.toFixed(2)}</TableCell>
+                        <TableCell className="text-right">
+                            <Button variant="link" className="text-primary hover:text-primary/80 p-0 mr-3">Buy</Button>
+                            <Button variant="link" className="text-red-600 hover:text-red-800 p-0">Sell</Button>
                         </TableCell>
                         </TableRow>
                     );
                 })}
                 </TableBody>
             </Table>
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+        </div>
     </div>
   );
 }
