@@ -11,13 +11,13 @@ import {
 import { UserNav } from "@/components/user-nav";
 import { Nav } from "@/components/nav";
 import { Button } from "@/components/ui/button";
-import { Bell, LogOut, Settings } from "lucide-react";
+import { Bell, LogOut, Settings, Wallet } from "lucide-react";
 import Link from "next/link";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
-      <Sidebar>
+      <Sidebar collapsible="icon">
         <SidebarHeader>
           <Link href="/" className="flex items-center gap-2">
             <svg
@@ -49,13 +49,23 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <header className="flex h-16 items-center justify-between border-b bg-background/50 backdrop-blur-sm px-4 lg:px-6 sticky top-0 z-10">
-          <SidebarTrigger className="md:hidden" />
-          <div className="ml-auto flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <Bell className="h-5 w-5" />
-              <span className="sr-only">Toggle notifications</span>
-            </Button>
+        <header className="flex h-20 items-center justify-between border-b bg-card px-4 lg:px-6 sticky top-0 z-10">
+            <div className="flex items-center gap-4">
+                <SidebarTrigger className="md:hidden" />
+                 <div>
+                    <h1 className="text-xl font-bold text-gray-800">Earnify Simulator</h1>
+                    <p className="text-gray-600 text-sm">Virtual trading with real market dynamics</p>
+                </div>
+            </div>
+
+          <div className="ml-auto flex items-center gap-6">
+            <div className="text-right">
+                <div className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                    <Wallet className="h-5 w-5 text-primary" />
+                    <span>$50,000.00</span>
+                </div>
+                <div className="text-sm text-gray-600">Available Balance</div>
+            </div>
             <UserNav />
           </div>
         </header>

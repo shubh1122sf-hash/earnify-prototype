@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Bitcoin, Waves } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
+import { AppPieChart } from "@/components/pie-chart";
 
 const portfolio = {
   totalBalance: 125345.89,
@@ -44,50 +44,43 @@ const portfolio = {
   ],
 };
 
+const chartData = portfolio.holdings.map(h => ({ name: h.ticker, value: h.value, fill: h.ticker === 'BTC' ? 'hsl(var(--chart-1))' : 'hsl(var(--chart-2))'  }));
+
 export default function PortfolioPage() {
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-3xl font-bold">My Portfolio</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold">Your Portfolio</h1>
+      </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Total Balance</CardTitle>
-            <CardDescription>The current value of all your assets.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">${portfolio.totalBalance.toLocaleString()}</p>
-          </CardContent>
+
+      <div className="grid gap-6 md:grid-cols-3">
+        <Card className="md:col-span-2">
+            <CardHeader>
+                <CardTitle>Performance</CardTitle>
+            </CardHeader>
+             <CardContent className="grid gap-4 md:grid-cols-2">
+                <div>
+                    <p className="text-sm text-muted-foreground mb-1">Total Balance</p>
+                    <p className="text-3xl font-bold">${portfolio.totalBalance.toLocaleString()}</p>
+                </div>
+                <div>
+                    <p className="text-sm text-muted-foreground mb-1">Total Profit & Loss</p>
+                    <p className={`text-3xl font-bold ${portfolio.totalPnl >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                    {portfolio.totalPnl >= 0 ? '+' : '-'}${Math.abs(portfolio.totalPnl).toLocaleString()}
+                    </p>
+                </div>
+            </CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Total Profit & Loss</CardTitle>
-            <CardDescription>Your overall portfolio performance.</CardDescription>
+            <CardTitle>Asset Allocation</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className={`text-3xl font-bold ${portfolio.totalPnl >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-              {portfolio.totalPnl >= 0 ? '+' : '-'}${Math.abs(portfolio.totalPnl).toLocaleString()}
-            </p>
+            <AppPieChart data={chartData} />
           </CardContent>
         </Card>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Asset Allocation</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-            {portfolio.holdings.map(asset => (
-                <div key={asset.ticker} className="space-y-1">
-                    <div className="flex justify-between font-medium">
-                        <span>{asset.name}</span>
-                        <span>{asset.allocation}%</span>
-                    </div>
-                    <Progress value={asset.allocation} className="h-2" />
-                </div>
-            ))}
-        </CardContent>
-      </Card>
 
 
       <Card>
