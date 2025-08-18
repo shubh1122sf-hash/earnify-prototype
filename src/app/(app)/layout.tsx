@@ -2,7 +2,7 @@
 import React from "react";
 import { UserNav } from "@/components/user-nav";
 import { Nav } from "@/components/nav";
-import { Wallet, ChartLine } from "lucide-react";
+import { ChartLine } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 

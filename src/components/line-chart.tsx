@@ -1,7 +1,6 @@
 
 "use client";
 
-import { cn } from "@/lib/utils";
 import {
   CartesianGrid,
   Line,
@@ -10,7 +9,7 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-  ReferenceDot
+  ReferenceDot,
 } from "recharts";
 
 interface AppLineChartProps {
@@ -32,7 +31,7 @@ export function AppLineChart({
 }: AppLineChartProps) {
   if (!data || data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full w-full text-sm text-muted-foreground">
+      <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
         No data available
       </div>
     );
@@ -46,7 +45,7 @@ export function AppLineChart({
   const lastDataPoint = data[data.length - 1];
 
   return (
-    <div className="flex flex-col gap-4 h-full w-full">
+    <div className="flex h-full w-full flex-col gap-4">
       {title && (
         <div>
           <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
@@ -114,7 +113,7 @@ export function AppLineChart({
         </ResponsiveContainer>
       </div>
        {footerText && (
-          <div className="text-sm text-center text-muted-foreground">{footerText}</div>
+          <div className="text-center text-sm text-muted-foreground">{footerText}</div>
         )}
     </div>
   );

@@ -36,9 +36,12 @@ const mentorTips = [
 export default function MarketPage() {
   const [assets, setAssets] = useState(initialAssets);
   const [marketEvent, setMarketEvent] = useState<string | null>(null);
-  const [rollingTip, setRollingTip] = useState(mentorTips[0]);
+  const [rollingTip, setRollingTip] = useState("");
 
   useEffect(() => {
+    // Set initial tip
+    setRollingTip(mentorTips[Math.floor(Math.random() * mentorTips.length)]);
+
     // Price update interval
     const priceInterval = setInterval(() => {
       let isMarketEvent = false;

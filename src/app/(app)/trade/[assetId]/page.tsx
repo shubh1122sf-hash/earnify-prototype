@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { useSearchParams } from 'next/navigation';
 import {
   Card,
   CardContent,
@@ -40,15 +39,19 @@ type TimeRange = '1H' | '1D' | '1W' | '1Y';
 
 export default function TradePage({ params }: { params: { assetId: string } }) {
   const { assetId } = params;
-  const searchParams = useSearchParams();
-  const initialAction = searchParams.get('action') || 'buy';
   
   const asset = assetDetails[assetId.toUpperCase()];
   
-  const [price, setPrice] = useState(asset?.basePrice || 0);
+  const [price, setPrice] = useState(0);
   const [change, setChange] = useState(0);
   const [timeRange, setTimeRange] = useState<TimeRange>('1H');
   const [priceHistory, setPriceHistory] = useState<{time: number; price: number}[]>([]);
+  const [initialAction, setInitialAction] = useState('buy');
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    setInitialAction(searchParams.get('action') || 'buy');
+  }, []);
   
   const generateHistoricalData = useCallback((range: TimeRange, basePrice: number) => {
     const now = Date.now();
@@ -125,7 +128,11 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
   }, [priceHistory, timeRange]);
 
   if (!asset) {
-    return <div>Asset not found</div>;
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <p>Asset not found. Please select an asset from the market page.</p>
+      </div>
+    );
   }
 
   const timeRanges: TimeRange[] = ['1H', '1D', '1W', '1Y'];

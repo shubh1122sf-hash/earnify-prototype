@@ -8,17 +8,17 @@ interface AppPieChartProps {
 }
 
 const COLORS = [
-  'hsl(var(--chart-1))',
-  'hsl(var(--chart-2))',
-  'hsl(var(--chart-3))',
-  'hsl(var(--chart-4))',
-  'hsl(var(--chart-5))',
+  'var(--chart-1)',
+  'var(--chart-2)',
+  'var(--chart-3)',
+  'var(--chart-4)',
+  'var(--chart-5)',
 ];
 
 export function AppPieChart({ data }: AppPieChartProps) {
   if (!data || data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full w-full text-sm text-muted-foreground">
+      <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
         No data available
       </div>
     );
@@ -52,7 +52,7 @@ export function AppPieChart({ data }: AppPieChartProps) {
           label={false}
         >
           {data.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke={""} />
+            <Cell key={`cell-${index}`} fill={`hsl(${COLORS[index % COLORS.length]})`} stroke={""} />
           ))}
         </Pie>
       </PieChart>
