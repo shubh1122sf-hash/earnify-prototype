@@ -2,6 +2,7 @@
 "use client";
 
 import { Pie, PieChart, ResponsiveContainer, Tooltip, Cell } from "recharts";
+import { Skeleton } from "./ui/skeleton";
 
 interface AppPieChartProps {
   data: { name: string; value: number }[];
@@ -16,11 +17,11 @@ const COLORS = [
 ];
 
 export function AppPieChart({ data }: AppPieChartProps) {
-  if (!data || data.length === 0) {
+    if (!data || data.length === 0) {
     return (
-      <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
-        No data available
-      </div>
+        <div className="flex items-center justify-center h-full">
+            <Skeleton className="h-[150px] w-[150px] rounded-full" />
+        </div>
     );
   }
   return (
@@ -29,9 +30,10 @@ export function AppPieChart({ data }: AppPieChartProps) {
         <Tooltip
           cursor={{ strokeDasharray: '3 3' }}
           contentStyle={{
-            background: 'hsl(var(--background))',
+            background: 'hsl(var(--card))',
             border: '1px solid hsl(var(--border))',
             borderRadius: 'var(--radius)',
+            color: 'hsl(var(--card-foreground))'
           }}
           formatter={(value: number, name: string) => {
             const total = data.reduce((acc, curr) => acc + curr.value, 0);
@@ -52,7 +54,7 @@ export function AppPieChart({ data }: AppPieChartProps) {
           label={false}
         >
           {data.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={`hsl(${COLORS[index % COLORS.length]})`} stroke={""} />
+            <Cell key={`cell-${index}`} fill={`hsl(${COLORS[index % COLORS.length]})`} stroke={"hsl(var(--card))"} />
           ))}
         </Pie>
       </PieChart>

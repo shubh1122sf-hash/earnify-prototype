@@ -9,39 +9,39 @@ body {
 
 @layer base {
   :root {
-    --background: 240 5% 96%; /* gray-100 */
-    --foreground: 240 10% 3.9%;
+    --background: 220 40% 98%; /* #EBF0F7 */
+    --foreground: 220 10% 20%;
 
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card-foreground: 220 10% 20%;
  
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
+    --popover-foreground: 220 10% 20%;
  
-    --primary: 243 80% 58%; /* Indigo 600 */
-    --primary-foreground: 0 0% 98%;
+    --primary: 212 100% 70%; /* #66B2FF */
+    --primary-foreground: 220 10% 20%;
  
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
+    --secondary: 220 20% 94%;
+    --secondary-foreground: 220 10% 20%;
  
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
+    --muted: 220 20% 94%;
+    --muted-foreground: 220 5% 45%;
  
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
+    --accent: 25 100% 65%; /* #FFA64D */
+    --accent-foreground: 0 0% 100%;
  
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 243 80% 58%;
+    --border: 220 10% 90%;
+    --input: 220 10% 90%;
+    --ring: 212 100% 70%;
  
     --radius: 0.8rem;
 
-    --chart-1: hsl(243, 80%, 58%);
-    --chart-2: hsl(142, 71%, 45%);
-    --chart-3: hsl(36, 95%, 55%);
+    --chart-1: hsl(212, 100%, 70%);
+    --chart-2: hsl(25, 100%, 65%);
+    --chart-3: hsl(142, 71%, 45%);
     --chart-4: hsl(0, 72%, 51%);
     --chart-5: hsl(271, 91%, 65%);
   }
@@ -53,13 +53,13 @@ body {
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 243 80% 58%;
+    --primary: 212 100% 70%;
     --primary-foreground: 222.2 47.4% 11.2%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
+    --accent: 25 100% 65%;
     --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
@@ -84,10 +84,10 @@ body {
 }
 
 .positive {
-    color: #10b981; /* green-500 */
+    color: hsl(142, 71%, 45%); /* Custom green */
 }
 .negative {
-    color: #ef4444; /* red-500 */
+    color: hsl(0, 72%, 51%); /* Custom red */
 }
 
 .market-event {

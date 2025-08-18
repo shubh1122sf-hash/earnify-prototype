@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Home, Briefcase, Trophy, User } from "lucide-react";
+import { Home, Briefcase, Trophy, User, GraduationCap, BarChart3 } from "lucide-react";
 
 const links = [
   {
@@ -22,7 +22,17 @@ const links = [
     label: "Leaderboard",
     icon: Trophy
   },
-   {
+  {
+    href: "/stats",
+    label: "Stats",
+    icon: BarChart3
+  },
+  {
+    href: "/learn",
+    label: "Learn",
+    icon: GraduationCap
+  },
+  {
     href: "/account",
     label: "Account",
     icon: User
@@ -40,8 +50,8 @@ export function Nav() {
           <Link href={link.href} key={link.label}>
             <button
               className={cn(
-                "py-4 px-6 font-medium text-gray-600 border-b-2 border-transparent hover:text-primary hover:border-indigo-300 transition flex items-center gap-2",
-                isActive && "border-primary text-primary"
+                "py-4 px-6 font-medium text-muted-foreground hover:text-primary hover:border-primary transition flex items-center gap-2 border-b-2",
+                isActive ? "border-primary text-primary" : "border-transparent"
               )}
             >
               <link.icon className="h-4 w-4" />

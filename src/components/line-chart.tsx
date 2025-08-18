@@ -11,6 +11,7 @@ import {
   YAxis,
   ReferenceDot,
 } from "recharts";
+import { Skeleton } from "./ui/skeleton";
 
 interface AppLineChartProps {
   data: { [key: string]: any }[];
@@ -31,9 +32,7 @@ export function AppLineChart({
 }: AppLineChartProps) {
   if (!data || data.length === 0) {
     return (
-      <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
-        No data available
-      </div>
+       <Skeleton className="h-full w-full" />
     );
   }
 
@@ -48,7 +47,7 @@ export function AppLineChart({
     <div className="flex h-full w-full flex-col gap-4">
       {title && (
         <div>
-          <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
+          <h3 className="text-lg font-semibold">{title}</h3>
           {description && (
             <p className="text-sm text-muted-foreground">{description}</p>
           )}
@@ -85,9 +84,10 @@ export function AppLineChart({
             <Tooltip
               cursor={{ strokeDasharray: '3 3' }}
               contentStyle={{
-                background: 'hsl(var(--background))',
+                background: 'hsl(var(--card))',
                 border: '1px solid hsl(var(--border))',
                 borderRadius: 'var(--radius)',
+                color: 'hsl(var(--card-foreground))'
               }}
               formatter={(value: number) => [`$${value.toFixed(2)}`, "Price"]}
             />

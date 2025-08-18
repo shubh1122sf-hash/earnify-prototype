@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -9,7 +10,6 @@ import {
 } from "@/components/ui/card";
 import { Users, DollarSign, BarChart2, TrendingUp } from "lucide-react";
 import { AppLineChart } from "@/components/line-chart";
-import { Skeleton } from '@/components/ui/skeleton';
 
 const statsCards = [
     {
@@ -86,7 +86,7 @@ export default function StatsPage() {
         <Card>
             <CardContent className="p-6">
               <div className="h-[400px] w-full">
-                {isClient ? (
+                {isClient && (
                   <AppLineChart
                       title="Trading Volume"
                       description="Monthly trading volume across the platform."
@@ -95,8 +95,6 @@ export default function StatsPage() {
                       xAxisKey="date"
                       footerText="Volume is increasing"
                   />
-                ) : (
-                  <Skeleton className="h-full w-full" />
                 )}
               </div>
             </CardContent>
@@ -104,7 +102,7 @@ export default function StatsPage() {
         <Card>
             <CardContent className="p-6">
                 <div className="h-[400px] w-full">
-                  {isClient ? (
+                  {isClient && (
                     <AppLineChart
                         title="User Growth"
                         description="Active users on the platform over time."
@@ -113,8 +111,6 @@ export default function StatsPage() {
                         xAxisKey="date"
                         footerText="Steady user acquisition"
                     />
-                  ) : (
-                    <Skeleton className="h-full w-full" />
                   )}
                 </div>
             </CardContent>

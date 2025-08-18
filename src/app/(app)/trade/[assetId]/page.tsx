@@ -19,7 +19,6 @@ import {
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { AppLineChart } from "@/components/line-chart";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Skeleton } from '@/components/ui/skeleton';
 
 const assetDetails: { [key: string]: any } = {
   BTC: { name: 'Bitcoin', icon: 'https://placehold.co/40x40.png?text=B', basePrice: 67123.45 },
@@ -165,7 +164,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
                 <div className="flex items-baseline gap-4">
                     <p className="text-4xl font-bold">${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                     {timeRange === '1H' && (
-                        <div className={`flex items-center gap-1 ${change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                        <div className={`flex items-center gap-1 ${change >= 0 ? 'positive' : 'negative'}`}>
                             {change >= 0 ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
                             <span className="font-medium">{change.toFixed(2)}%</span>
                         </div>
@@ -174,14 +173,12 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
              </CardHeader>
              <CardContent className="p-0">
                 <div className="h-[350px] w-full">
-                  {isClient ? (
+                  {isClient && (
                     <AppLineChart
                         data={chartData}
                         dataKey="value"
                         xAxisKey="time"
                     />
-                  ) : (
-                    <Skeleton className="h-full w-full" />
                   )}
                 </div>
              </CardContent>
@@ -269,7 +266,8 @@ function TradeForm({ action, assetTicker, price }: { action: 'Buy' | 'Sell', ass
       </Card>
 
       <Button 
-        className={`w-full text-lg h-12 font-bold ${action === 'Buy' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}
+        className={`w-full text-lg h-12 font-bold`}
+        variant={action === 'Buy' ? 'default' : 'destructive'}
         onClick={handleTransaction}
         disabled={!amount || parseFloat(amount) <= 0 || (action === 'Buy' && total > balance)}
       >
