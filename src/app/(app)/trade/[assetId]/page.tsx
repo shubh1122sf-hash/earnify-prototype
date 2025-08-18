@@ -90,7 +90,8 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
 
     const interval = setInterval(() => {
       setPriceHistory(prevHistory => {
-        const lastPrice = prevHistory.length > 0 ? prevHistory[prevHistory.length - 1].price : asset.basePrice;
+        if (prevHistory.length === 0) return [];
+        const lastPrice = prevHistory[prevHistory.length - 1].price;
         const randomFactor = (Math.random() - 0.5) * 1; 
         const newPriceValue = Math.max(0, lastPrice * (1 + randomFactor / 100));
         
@@ -203,7 +204,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
 function TradeForm({ action, assetTicker, price }: { action: 'Buy' | 'Sell', assetTicker: string, price: number }) {
   const [amount, setAmount] = useState('');
   const [total, setTotal] = useState(0);
-  const balance = 10000; // Hardcoded balance
+  const balance = 50000; // Hardcoded balance
 
   useEffect(() => {
     const numericAmount = parseFloat(amount);

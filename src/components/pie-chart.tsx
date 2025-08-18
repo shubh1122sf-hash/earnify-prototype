@@ -45,8 +45,8 @@ export function AppPieChart({ data }: AppPieChartProps) {
           nameKey="name"
           cx="50%"
           cy="50%"
-          outerRadius="100%"
-          innerRadius="70%"
+          outerRadius="80%"
+          innerRadius="60%"
           paddingAngle={2}
           labelLine={false}
           label={false}

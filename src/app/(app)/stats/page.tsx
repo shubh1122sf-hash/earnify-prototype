@@ -36,21 +36,21 @@ const statsCards = [
 ]
 
 const volumeData = [
-    { date: "2024-01", Volume: 200000000 },
-    { date: "2024-02", Volume: 350000000 },
-    { date: "2024-03", Volume: 500000000 },
-    { date: "2024-04", Volume: 450000000 },
-    { date: "2024-05", Volume: 700000000 },
-    { date: "2024-06", Volume: 1200000000 },
+    { date: "2024-01", value: 200000000 },
+    { date: "2024-02", value: 350000000 },
+    { date: "2024-03", value: 500000000 },
+    { date: "2024-04", value: 450000000 },
+    { date: "2024-05", value: 700000000 },
+    { date: "2024-06", value: 1200000000 },
 ]
 
 const userData = [
-    { date: "2024-01", Users: 8000 },
-    { date: "2024-02", Users: 9500 },
-    { date: "2024-03", Users: 10000 },
-    { date: "2024-04", Users: 10500 },
-    { date: "2024-05", Users: 11500 },
-    { date: "2024-06", Users: 12345 },
+    { date: "2024-01", value: 8000 },
+    { date: "2024-02", value: 9500 },
+    { date: "2024-03", value: 10000 },
+    { date: "2024-04", value: 10500 },
+    { date: "2024-05", value: 11500 },
+    { date: "2024-06", value: 12345 },
 ]
 
 export default function StatsPage() {
@@ -81,7 +81,7 @@ export default function StatsPage() {
                     title="Trading Volume"
                     description="Monthly trading volume across the platform."
                     data={volumeData}
-                    dataKey="Volume"
+                    dataKey="value"
                     xAxisKey="date"
                     footerText="Volume is increasing"
                 />
@@ -95,7 +95,7 @@ export default function StatsPage() {
                       title="User Growth"
                       description="Active users on the platform over time."
                       data={userData}
-                      dataKey="Users"
+                      dataKey="value"
                       xAxisKey="date"
                       footerText="Steady user acquisition"
                   />

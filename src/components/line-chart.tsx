@@ -39,8 +39,8 @@ export function AppLineChart({
   }
 
   const yAxisDomain = [
-    Math.min(...data.map((item) => item[dataKey])) * 0.95,
-    Math.max(...data.map((item) => item[dataKey])) * 1.05,
+    Math.min(...data.map((item) => item[dataKey])) * 0.98,
+    Math.max(...data.map((item) => item[dataKey])) * 1.02,
   ];
 
   const lastDataPoint = data[data.length - 1];
@@ -78,7 +78,7 @@ export function AppLineChart({
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              orientation="right"
+              orientation="left"
               domain={yAxisDomain}
               tickFormatter={(value) => `$${Number(value).toFixed(2)}`}
               tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
@@ -106,7 +106,7 @@ export function AppLineChart({
                 y={lastDataPoint[dataKey]}
                 r={5}
                 fill="hsl(var(--primary))"
-                stroke="hsl(var(--background))"
+                stroke="hsl(var(--card))"
                 strokeWidth={2}
               />
             )}

@@ -43,8 +43,8 @@ export default function MarketPage() {
     const priceInterval = setInterval(() => {
       let isMarketEvent = false;
       
-      // 5% chance of a market event on each tick
-      if (Math.random() < 0.05) {
+      // 20% chance of a market event on each tick to make it more frequent
+      if (Math.random() < 0.2) {
         isMarketEvent = true;
         const eventMessages = [
             "Market Alert: Volatility spike detected!",
@@ -89,21 +89,21 @@ export default function MarketPage() {
             </div>
         </div>
         
-        {marketEvent ? (
+        {marketEvent && (
             <div className="mb-4 p-3 bg-red-50 rounded-lg border border-red-200 flex items-center market-event">
                 <AlertTriangle className="h-5 w-5 text-red-500 mr-3" />
                 <div className="flex-1">
                     <span className="text-sm font-medium text-red-800">{marketEvent}</span>
                 </div>
             </div>
-        ) : (
-             <div className="mb-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200 flex items-center">
-                <Info className="h-5 w-5 text-yellow-500 mr-3" />
-                <div className="flex-1">
-                    <span className="text-sm text-yellow-800 transition-opacity duration-300">{rollingTip}</span>
-                </div>
-            </div>
         )}
+
+        <div className="mb-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200 flex items-center">
+            <Info className="h-5 w-5 text-yellow-500 mr-3" />
+            <div className="flex-1">
+                <span className="text-sm text-yellow-800 transition-opacity duration-300">{rollingTip}</span>
+            </div>
+        </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {assets.map((asset) => (
