@@ -24,8 +24,11 @@ const portfolio = {
   totalPnl: 2345.67,
   totalPnlPercent: 4.69,
   todayPnl: 1234.56,
+  todayPnlPercent: 2.4,
   weekPnl: 3456.78,
+  weekPnlPercent: 6.9,
   monthPnl: 5678.90,
+  monthPnlPercent: 11.1,
   holdings: [
     {
       name: "Tata Steel",
@@ -51,17 +54,17 @@ const portfolio = {
   ],
 };
 
-const chartData = portfolio.holdings.map((h, index) => {
-    const colors = ['#6366F1', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
-    return { name: h.ticker, value: h.quantity * h.price, fill: colors[index % colors.length]  }
-});
+const chartData = portfolio.holdings.map((h) => ({ 
+    name: h.ticker, 
+    value: h.quantity * h.price 
+}));
 
 
 export default function PortfolioPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-xl font-bold text-gray-800">Your Portfolio</h1>
+      <h2 className="text-xl font-bold text-gray-800 mb-6">Your Portfolio</h2>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <div className="bg-gray-50 p-6 rounded-xl shadow-sm">
@@ -93,21 +96,21 @@ export default function PortfolioPage() {
                         <span className="text-gray-600">Today's P&L</span>
                         <span className="font-medium text-green-500">+${portfolio.todayPnl.toLocaleString()}</span>
                     </div>
-                    <Progress value={(portfolio.todayPnl / portfolio.totalBalance) * 100} className="h-2 mt-1 bg-gray-200 [&>*]:bg-green-500" />
+                    <Progress value={portfolio.todayPnlPercent} className="h-2 mt-1 bg-gray-200 [&>*]:bg-green-500" />
                 </div>
                 <div>
                     <div className="flex justify-between">
                         <span className="text-gray-600">Week's P&L</span>
                         <span className="font-medium text-green-500">+${portfolio.weekPnl.toLocaleString()}</span>
                     </div>
-                    <Progress value={(portfolio.weekPnl / portfolio.totalBalance) * 100} className="h-2 mt-1 bg-gray-200 [&>*]:bg-green-500" />
+                    <Progress value={portfolio.weekPnlPercent} className="h-2 mt-1 bg-gray-200 [&>*]:bg-green-500" />
                 </div>
                 <div>
                     <div className="flex justify-between">
                         <span className="text-gray-600">Month's P&L</span>
                         <span className="font-medium text-green-500">+${portfolio.monthPnl.toLocaleString()}</span>
                     </div>
-                    <Progress value={(portfolio.monthPnl / portfolio.totalBalance) * 100} className="h-2 mt-1 bg-gray-200 [&>*]:bg-green-500" />
+                    <Progress value={portfolio.monthPnlPercent} className="h-2 mt-1 bg-gray-200 [&>*]:bg-green-500" />
                 </div>
             </div>
         </div>
@@ -117,54 +120,61 @@ export default function PortfolioPage() {
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-gray-700">Your Holdings</CardTitle>
         </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-xs font-medium text-gray-500 uppercase tracking-wider">Asset</TableHead>
-                <TableHead className="text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</TableHead>
-                <TableHead className="text-xs font-medium text-gray-500 uppercase tracking-wider">Avg. Price</TableHead>
-                <TableHead className="text-xs font-medium text-gray-500 uppercase tracking-wider">Current Price</TableHead>
-                <TableHead className="text-xs font-medium text-gray-500 uppercase tracking-wider">P&L</TableHead>
-                <TableHead className="text-xs font-medium text-gray-500 uppercase tracking-wider">Value</TableHead>
-                <TableHead className="text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {portfolio.holdings.map((asset) => {
-                const currentValue = asset.quantity * asset.price;
-                const investment = asset.quantity * asset.avgPrice;
-                const pnl = currentValue - investment;
-                const pnlPercent = (pnl / investment) * 100;
-                const pnlClass = pnl >= 0 ? "text-green-500" : "text-red-500";
-                const pnlSign = pnl >= 0 ? "+" : "";
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <Table>
+                <TableHeader>
+                <TableRow className="bg-gray-50 hover:bg-gray-50">
+                    <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Asset</TableHead>
+                    <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</TableHead>
+                    <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avg. Price</TableHead>
+                    <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Price</TableHead>
+                    <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">P&L</TableHead>
+                    <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Value</TableHead>
+                    <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</TableHead>
+                </TableRow>
+                </TableHeader>
+                <TableBody className="bg-white divide-y divide-gray-200">
+                {portfolio.holdings.map((asset) => {
+                    const currentValue = asset.quantity * asset.price;
+                    const investment = asset.quantity * asset.avgPrice;
+                    const pnl = currentValue - investment;
+                    const pnlPercent = investment !== 0 ? (pnl / investment) * 100 : 0;
+                    const pnlClass = pnl >= 0 ? "text-green-600" : "text-red-600";
+                    const pnlSign = pnl >= 0 ? "+" : "";
 
-                return (
-                    <TableRow key={asset.ticker}>
-                    <TableCell>
-                        <div className="font-medium">{asset.name}</div>
-                        <div className="text-sm text-gray-500">{asset.ticker}</div>
-                    </TableCell>
-                    <TableCell>{asset.quantity}</TableCell>
-                    <TableCell>${asset.avgPrice.toFixed(2)}</TableCell>
-                    <TableCell>${asset.price.toFixed(2)}</TableCell>
-                    <TableCell className={pnlClass}>
-                        {pnlSign}${Math.abs(pnl).toFixed(2)} ({pnlSign}{Math.abs(pnlPercent).toFixed(2)}%)
-                    </TableCell>
-                    <TableCell>${currentValue.toFixed(2)}</TableCell>
-                    <TableCell className="text-right space-x-2">
-                        <Button variant="ghost" size="sm" className="text-indigo-600 hover:text-indigo-900">Buy</Button>
-                        <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-900">Sell</Button>
-                    </TableCell>
-                    </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
+                    return (
+                        <TableRow key={asset.ticker} className="hover:bg-gray-50">
+                        <TableCell className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center">
+                                <div className="flex-shrink-0 h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center">
+                                    <span className="text-indigo-600 font-medium">{asset.name.charAt(0)}</span>
+                                </div>
+                                <div className="ml-4">
+                                    <div className="text-sm font-medium text-gray-900">{asset.name}</div>
+                                    <div className="text-sm text-gray-500">{asset.ticker}</div>
+                                </div>
+                            </div>
+                        </TableCell>
+                        <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{asset.quantity}</TableCell>
+                        <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${asset.avgPrice.toFixed(2)}</TableCell>
+                        <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${asset.price.toFixed(2)}</TableCell>
+                        <TableCell className={`px-6 py-4 whitespace-nowrap text-sm ${pnlClass}`}>
+                            {pnlSign}${Math.abs(pnl).toFixed(2)} ({pnlSign}{Math.abs(pnlPercent).toFixed(2)}%)
+                        </TableCell>
+                        <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${currentValue.toFixed(2)}</TableCell>
+                        <TableCell className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <Button variant="link" className="text-indigo-600 hover:text-indigo-900 p-0 mr-3">Buy</Button>
+                            <Button variant="link" className="text-red-600 hover:text-red-900 p-0">Sell</Button>
+                        </TableCell>
+                        </TableRow>
+                    );
+                })}
+                </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>
   );
 }
-
-    

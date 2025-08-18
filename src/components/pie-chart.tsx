@@ -15,6 +15,8 @@ interface AppPieChartProps {
   className?: string;
 }
 
+const COLORS = ['#6366F1', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
+
 export function AppPieChart({ data, className }: AppPieChartProps) {
   const chartConfig = {
     value: {
@@ -38,9 +40,9 @@ export function AppPieChart({ data, className }: AppPieChartProps) {
                 cursor={false}
                 content={<ChartTooltipContent 
                     hideLabel 
-                    formatter={(value, name, props) => {
+                    formatter={(value, name) => {
                         const total = data.reduce((acc, curr) => acc + curr.value, 0);
-                        const percentage = ((Number(value) / total) * 100).toFixed(2);
+                        const percentage = total > 0 ? ((Number(value) / total) * 100).toFixed(2) : 0;
                         return (
                             <div className="flex flex-col">
                                <span className="font-bold">{name}: ${Number(value).toLocaleString()}</span>
@@ -56,13 +58,14 @@ export function AppPieChart({ data, className }: AppPieChartProps) {
                 nameKey="name"
                 cx="50%"
                 cy="50%"
-                outerRadius={'80%'}
-                innerRadius={'60%'}
-                paddingAngle={2}
+                outerRadius={'100%'}
+                innerRadius={'70%'}
+                paddingAngle={0}
                 labelLine={false}
+                label={false}
             >
                 {data.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} stroke={entry.fill} />
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke={""} />
                 ))}
             </Pie>
             </PieChart>
@@ -70,5 +73,3 @@ export function AppPieChart({ data, className }: AppPieChartProps) {
     </ChartContainer>
   );
 }
-
-    
