@@ -1,6 +1,6 @@
-
 "use client";
 
+import { useState, useEffect } from 'react';
 import {
   Card,
   CardContent,
@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Users, DollarSign, BarChart2, TrendingUp } from "lucide-react";
 import { AppLineChart } from "@/components/line-chart";
+import { Skeleton } from '@/components/ui/skeleton';
 
 const statsCards = [
     {
@@ -56,6 +57,12 @@ const userData = [
 ]
 
 export default function StatsPage() {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-3xl font-bold">Platform Statistics</h1>
@@ -79,28 +86,36 @@ export default function StatsPage() {
         <Card>
             <CardContent className="p-6">
               <div className="h-[400px] w-full">
-                <AppLineChart
-                    title="Trading Volume"
-                    description="Monthly trading volume across the platform."
-                    data={volumeData}
-                    dataKey="value"
-                    xAxisKey="date"
-                    footerText="Volume is increasing"
-                />
+                {isClient ? (
+                  <AppLineChart
+                      title="Trading Volume"
+                      description="Monthly trading volume across the platform."
+                      data={volumeData}
+                      dataKey="value"
+                      xAxisKey="date"
+                      footerText="Volume is increasing"
+                  />
+                ) : (
+                  <Skeleton className="h-full w-full" />
+                )}
               </div>
             </CardContent>
         </Card>
         <Card>
             <CardContent className="p-6">
                 <div className="h-[400px] w-full">
-                  <AppLineChart
-                      title="User Growth"
-                      description="Active users on the platform over time."
-                      data={userData}
-                      dataKey="value"
-                      xAxisKey="date"
-                      footerText="Steady user acquisition"
-                  />
+                  {isClient ? (
+                    <AppLineChart
+                        title="User Growth"
+                        description="Active users on the platform over time."
+                        data={userData}
+                        dataKey="value"
+                        xAxisKey="date"
+                        footerText="Steady user acquisition"
+                    />
+                  ) : (
+                    <Skeleton className="h-full w-full" />
+                  )}
                 </div>
             </CardContent>
         </Card>

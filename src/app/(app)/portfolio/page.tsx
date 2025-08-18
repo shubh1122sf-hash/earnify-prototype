@@ -1,9 +1,9 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
 import { AppPieChart } from "@/components/pie-chart";
 import { Progress } from "@/components/ui/progress";
+import { Skeleton } from '@/components/ui/skeleton';
 
 const initialPortfolio = {
   totalBalance: 52345.67,
@@ -36,14 +36,6 @@ export default function PortfolioPage() {
     value: h.value
   }));
 
-  if (!isClient) {
-    return (
-      <div className="flex h-full w-full items-center justify-center">
-        <p>Loading Portfolio...</p>
-      </div>
-    );
-  }
-
   return (
     <div>
       <h2 className="text-xl font-bold text-gray-800 mb-6">Your Portfolio</h2>
@@ -66,7 +58,13 @@ export default function PortfolioPage() {
         <div className="bg-gray-50 p-6 rounded-xl shadow-sm">
             <h3 className="text-lg font-semibold text-gray-700 mb-4">Allocation</h3>
             <div className="h-[150px] w-full">
-              <AppPieChart data={chartData} />
+              {isClient ? (
+                  <AppPieChart data={chartData} />
+              ) : (
+                <div className="flex items-center justify-center h-full">
+                   <Skeleton className="h-[150px] w-[150px] rounded-full" />
+                </div>
+              )}
             </div>
         </div>
         

@@ -19,6 +19,7 @@ import {
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { AppLineChart } from "@/components/line-chart";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const assetDetails: { [key: string]: any } = {
   BTC: { name: 'Bitcoin', icon: 'https://placehold.co/40x40.png?text=B', basePrice: 67123.45 },
@@ -50,18 +51,18 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
 
   useEffect(() => {
     setIsClient(true);
-  }, []);
+    const upperCaseAssetId = assetId.toUpperCase();
+    if (assetDetails[upperCaseAssetId]) {
+      setAsset(assetDetails[upperCaseAssetId]);
+    }
+  }, [assetId]);
 
   useEffect(() => {
     if (isClient) {
       const searchParams = new URLSearchParams(window.location.search);
       setInitialAction(searchParams.get('action') || 'buy');
-      const upperCaseAssetId = assetId.toUpperCase();
-      if (assetDetails[upperCaseAssetId]) {
-        setAsset(assetDetails[upperCaseAssetId]);
-      }
     }
-  }, [assetId, isClient]);
+  }, [isClient]);
   
   const generateHistoricalData = useCallback((range: TimeRange, basePrice: number) => {
     const now = Date.now();
@@ -137,7 +138,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
     }));
   }, [priceHistory, timeRange]);
 
-  if (!isClient || !asset) {
+  if (!asset) {
     return (
       <div className="flex h-full w-full items-center justify-center">
         <p>Loading Asset...</p>
@@ -173,11 +174,15 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
              </CardHeader>
              <CardContent className="p-0">
                 <div className="h-[350px] w-full">
-                  <AppLineChart
-                      data={chartData}
-                      dataKey="value"
-                      xAxisKey="time"
-                  />
+                  {isClient ? (
+                    <AppLineChart
+                        data={chartData}
+                        dataKey="value"
+                        xAxisKey="time"
+                    />
+                  ) : (
+                    <Skeleton className="h-full w-full" />
+                  )}
                 </div>
              </CardContent>
            </Card>
