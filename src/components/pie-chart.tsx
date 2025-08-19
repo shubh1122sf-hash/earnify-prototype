@@ -16,6 +16,14 @@ const COLORS = [
 ];
 
 export function AppPieChart({ data }: AppPieChartProps) {
+  if (!data || data.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-full w-full">
+        <p>No data available.</p>
+      </div>
+    );
+  }
+
   return (
     <ResponsiveContainer width="100%" height="100%">
       <PieChart>

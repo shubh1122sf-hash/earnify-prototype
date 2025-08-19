@@ -29,6 +29,13 @@ export function AppLineChart({
   description,
   footerText,
 }: AppLineChartProps) {
+  if (!data || data.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-full w-full">
+        <p>No data available.</p>
+      </div>
+    );
+  }
 
   const yAxisDomain = [
     Math.min(...data.map((item) => item[dataKey])) * 0.98,
@@ -72,8 +79,9 @@ export function AppLineChart({
               tickMargin={8}
               orientation="left"
               domain={yAxisDomain}
-              tickFormatter={(value) => `$${Number(value).toFixed(2)}`}
+              tickFormatter={(value) => `$${Number(value).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`}
               tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
+              width={80}
             />
             <Tooltip
               cursor={{ strokeDasharray: '3 3' }}
@@ -91,7 +99,7 @@ export function AppLineChart({
               stroke="hsl(var(--primary))"
               strokeWidth={2}
               dot={false}
-              isAnimationActive={false}
+              isAnimationActive={true}
             />
              {lastDataPoint && (
               <ReferenceDot
