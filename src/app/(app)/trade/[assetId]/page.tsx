@@ -82,13 +82,15 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
     const history: {time: number; price: number}[] = [];
     let currentPrice = basePrice;
     
-    for (let i = dataPoints; i > 0; i--) {
+    // Generate historical data backwards from the base price
+    for (let i = 0; i < dataPoints; i++) {
         const randomFactor = (Math.random() - 0.5) * volatility;
-        currentPrice /= (1 + randomFactor / 100);
-        history.unshift({ time: now - i * interval, price: currentPrice });
+        const simulatedPrice = currentPrice / (1 + randomFactor / 100);
+        history.unshift({ time: now - (i + 1) * interval, price: simulatedPrice });
+        currentPrice = simulatedPrice;
     }
     
-    // Ensure the last point is the current base price
+    // Add the current price point
     history.push({ time: now, price: basePrice });
     
     setPriceHistory(history);
@@ -178,13 +180,15 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
                 </div>
              </CardHeader>
              <CardContent className="p-0 flex items-center justify-center">
-                  {isClient ? (
-                      <AppLineChart
-                          data={chartData}
-                          dataKey="value"
-                          xAxisKey="time"
-                      />
-                  ) : <Skeleton className="h-[300px] w-[500px]" />}
+                  <div className="h-[400px] w-full">
+                    {isClient ? (
+                        <AppLineChart
+                            data={chartData}
+                            dataKey="value"
+                            xAxisKey="time"
+                        />
+                    ) : <Skeleton className="h-full w-full" />}
+                  </div>
              </CardContent>
            </Card>
             <div className="flex gap-2">
@@ -204,7 +208,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
         <div className="flex flex-col gap-6">
             <Card>
                 <CardContent className="p-0">
-                <Tabs defaultValue={initialAction} value={initialAction} className="w-full">
+                <Tabs defaultValue={initialAction} value={initialAction} onValueChange={(value) => setInitialAction(value)} className="w-full">
                     <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="buy">Buy</TabsTrigger>
                     <TabsTrigger value="sell">Sell</TabsTrigger>
