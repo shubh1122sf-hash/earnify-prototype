@@ -79,18 +79,13 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
         case '1Y': dataPoints = 52; interval = 7 * 24 * 60 * 60 * 1000; volatility = 5; break;
     }
 
-    const history: {time: number; price: number}[] = [];
     let currentPrice = basePrice;
-    
-    // Generate historical data backwards from the base price
-    for (let i = 0; i < dataPoints; i++) {
+    const history = Array.from({ length: dataPoints }, (_, i) => {
         const randomFactor = (Math.random() - 0.5) * volatility;
-        const simulatedPrice = currentPrice / (1 + randomFactor / 100);
-        history.unshift({ time: now - (i + 1) * interval, price: simulatedPrice });
-        currentPrice = simulatedPrice;
-    }
-    
-    // Add the current price point
+        currentPrice = currentPrice / (1 + randomFactor / 100);
+        return { time: now - (dataPoints - i) * interval, price: currentPrice };
+    });
+
     history.push({ time: now, price: basePrice });
     
     setPriceHistory(history);
@@ -127,7 +122,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
     }, 2000); 
 
     return () => clearInterval(interval);
-  }, [timeRange, asset, priceHistory.length]);
+  }, [timeRange, asset, priceHistory]);
 
   const chartData = useMemo(() => {
     const formatTime = (time: number) => {
@@ -179,16 +174,14 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
                     </div>
                 </div>
              </CardHeader>
-             <CardContent className="p-0 flex items-center justify-center">
-                  <div className="h-[400px] w-full">
-                    {isClient ? (
-                        <AppLineChart
-                            data={chartData}
-                            dataKey="value"
-                            xAxisKey="time"
-                        />
-                    ) : <Skeleton className="h-full w-full" />}
-                  </div>
+             <CardContent className="p-0">
+                {isClient ? (
+                    <AppLineChart
+                        data={chartData}
+                        dataKey="value"
+                        xAxisKey="time"
+                    />
+                ) : <div className="h-[400px] w-full flex items-center justify-center"><Skeleton className="h-full w-full" /></div>}
              </CardContent>
            </Card>
             <div className="flex gap-2">

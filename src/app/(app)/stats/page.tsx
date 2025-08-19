@@ -85,7 +85,7 @@ export default function StatsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
-            <CardContent className="p-6 flex items-center justify-center">
+            <CardContent className="p-6">
               {isClient ? (
                   <AppLineChart
                       title="Trading Volume"
@@ -95,11 +95,11 @@ export default function StatsPage() {
                       xAxisKey="date"
                       footerText="Volume is increasing"
                   />
-              ) : <Skeleton className="h-[300px] w-[500px]" />}
+              ) : <div className="h-[400px] w-full flex items-center justify-center"><Skeleton className="h-full w-full" /></div>}
             </CardContent>
         </Card>
         <Card>
-            <CardContent className="p-6 flex items-center justify-center">
+            <CardContent className="p-6">
                 {isClient ? (
                   <AppLineChart
                       title="User Growth"
@@ -109,7 +109,7 @@ export default function StatsPage() {
                       xAxisKey="date"
                       footerText="Steady user acquisition"
                   />
-                 ) : <Skeleton className="h-[300px] w-[500px]" />}
+                 ) : <div className="h-[400px] w-full flex items-center justify-center"><Skeleton className="h-full w-full" /></div>}
             </CardContent>
         </Card>
       </div>
