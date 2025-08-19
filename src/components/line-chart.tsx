@@ -30,7 +30,7 @@ export function AppLineChart({
 }: AppLineChartProps) {
   if (!data || data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full w-full">
+      <div className="flex items-center justify-center h-[400px] w-full">
         <p>No data available.</p>
       </div>
     );
@@ -44,7 +44,7 @@ export function AppLineChart({
   const lastDataPoint = data[data.length - 1];
 
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center gap-4">
+    <div className="flex h-auto w-full flex-col items-center justify-center gap-4">
       {title && (
         <div className="w-full">
           <h3 className="text-lg font-semibold">{title}</h3>

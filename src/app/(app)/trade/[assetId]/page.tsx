@@ -79,11 +79,12 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
         case '1Y': dataPoints = 52; interval = 7 * 24 * 60 * 60 * 1000; volatility = 5; break;
     }
 
-    let currentPrice = basePrice;
-    const history = Array.from({ length: dataPoints }, (_, i) => {
+    let lastPrice = basePrice;
+    const history = Array.from({ length: dataPoints -1 }, (_, i) => {
         const randomFactor = (Math.random() - 0.5) * volatility;
-        currentPrice = currentPrice / (1 + randomFactor / 100);
-        return { time: now - (dataPoints - i) * interval, price: currentPrice };
+        const newPrice = lastPrice * (1 + randomFactor / 100);
+        lastPrice = newPrice;
+        return { time: now - (dataPoints - i - 1) * interval, price: newPrice };
     });
 
     history.push({ time: now, price: basePrice });
@@ -102,13 +103,13 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
   }, [timeRange, asset, generateHistoricalData]);
   
   useEffect(() => {
-    if (timeRange !== '1H' || !asset || priceHistory.length === 0) return;
+    if (timeRange !== '1H' || !asset || !isClient) return;
 
     const interval = setInterval(() => {
       setPriceHistory(prevHistory => {
         if (prevHistory.length === 0) return [];
         const lastPrice = prevHistory[prevHistory.length - 1].price;
-        const randomFactor = (Math.random() - 0.5) * 0.2; 
+        const randomFactor = (Math.random() - 0.5) * 0.2; // Smaller volatility for ticks
         const newPriceValue = Math.max(0, lastPrice * (1 + randomFactor / 100));
         
         setPrice(newPriceValue);
@@ -122,7 +123,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
     }, 2000); 
 
     return () => clearInterval(interval);
-  }, [timeRange, asset, priceHistory]);
+  }, [timeRange, asset, isClient]);
 
   const chartData = useMemo(() => {
     const formatTime = (time: number) => {
