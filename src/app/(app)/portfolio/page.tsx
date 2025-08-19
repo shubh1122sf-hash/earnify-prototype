@@ -56,11 +56,9 @@ export default function PortfolioPage() {
             </div>
         </div>
 
-        <div className="bg-card p-6 rounded-xl shadow-sm border">
+        <div className="bg-card p-6 rounded-xl shadow-sm border flex flex-col items-center justify-center">
             <h3 className="text-lg font-semibold text-card-foreground mb-4">Allocation</h3>
-            <div className="h-[150px] w-full">
-              {isClient ? <AppPieChart data={chartData} /> : <Skeleton className="h-full w-full rounded-full" />}
-            </div>
+              {isClient ? <AppPieChart data={chartData} /> : <Skeleton className="h-[150px] w-[250px] rounded-full" />}
         </div>
 
         <div className="bg-card p-6 rounded-xl shadow-sm border">

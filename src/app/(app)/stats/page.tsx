@@ -85,35 +85,31 @@ export default function StatsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
-            <CardContent className="p-6">
-              <div className="h-[400px] w-full">
-                {isClient ? (
-                    <AppLineChart
-                        title="Trading Volume"
-                        description="Monthly trading volume across the platform."
-                        data={volumeData}
-                        dataKey="value"
-                        xAxisKey="date"
-                        footerText="Volume is increasing"
-                    />
-                ) : <Skeleton className="h-full w-full" />}
-              </div>
+            <CardContent className="p-6 flex items-center justify-center">
+              {isClient ? (
+                  <AppLineChart
+                      title="Trading Volume"
+                      description="Monthly trading volume across the platform."
+                      data={volumeData}
+                      dataKey="value"
+                      xAxisKey="date"
+                      footerText="Volume is increasing"
+                  />
+              ) : <Skeleton className="h-[400px] w-[500px]" />}
             </CardContent>
         </Card>
         <Card>
-            <CardContent className="p-6">
-                <div className="h-[400px] w-full">
-                  {isClient ? (
-                    <AppLineChart
-                        title="User Growth"
-                        description="Active users on the platform over time."
-                        data={userData}
-                        dataKey="value"
-                        xAxisKey="date"
-                        footerText="Steady user acquisition"
-                    />
-                   ) : <Skeleton className="h-full w-full" />}
-                </div>
+            <CardContent className="p-6 flex items-center justify-center">
+                {isClient ? (
+                  <AppLineChart
+                      title="User Growth"
+                      description="Active users on the platform over time."
+                      data={userData}
+                      dataKey="value"
+                      xAxisKey="date"
+                      footerText="Steady user acquisition"
+                  />
+                 ) : <Skeleton className="h-[400px] w-[500px]" />}
             </CardContent>
         </Card>
       </div>

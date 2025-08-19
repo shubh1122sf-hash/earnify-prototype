@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Pie, PieChart, ResponsiveContainer, Tooltip, Cell } from "recharts";
+import { Pie, PieChart, Tooltip, Cell } from "recharts";
 
 interface AppPieChartProps {
   data: { name: string; value: number }[];
@@ -25,8 +25,7 @@ export function AppPieChart({ data }: AppPieChartProps) {
   }
 
   return (
-    <ResponsiveContainer width="100%" height="100%">
-      <PieChart>
+      <PieChart width={250} height={150}>
         <Tooltip
           cursor={{ strokeDasharray: '3 3' }}
           contentStyle={{
@@ -58,6 +57,5 @@ export function AppPieChart({ data }: AppPieChartProps) {
           ))}
         </Pie>
       </PieChart>
-    </ResponsiveContainer>
   );
 }

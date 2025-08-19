@@ -158,7 +158,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 flex flex-col gap-4">
-           <Card className="flex-1">
+           <Card>
              <CardHeader>
                 <div className="flex items-baseline gap-4">
                     <p className="text-4xl font-bold">${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
@@ -170,16 +170,14 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
                     )}
                 </div>
              </CardHeader>
-             <CardContent className="p-0">
-                <div className="h-[350px] w-full">
+             <CardContent className="p-0 flex items-center justify-center">
                   {isClient ? (
                       <AppLineChart
                           data={chartData}
                           dataKey="value"
                           xAxisKey="time"
                       />
-                  ) : <Skeleton className="h-full w-full" />}
-                </div>
+                  ) : <Skeleton className="h-[300px] w-[500px]" />}
              </CardContent>
            </Card>
             <div className="flex gap-2">
