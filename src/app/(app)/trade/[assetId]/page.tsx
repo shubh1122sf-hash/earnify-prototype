@@ -59,7 +59,10 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
 
     if (typeof window !== 'undefined') {
       const searchParams = new URLSearchParams(window.location.search);
-      setInitialAction(searchParams.get('action') || 'buy');
+      const action = searchParams.get('action');
+      if (action === 'buy' || action === 'sell') {
+        setInitialAction(action);
+      }
     }
   }, [assetId]);
   
@@ -67,19 +70,20 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
     const now = Date.now();
     let dataPoints = 0;
     let interval = 0;
+    let volatility = 0.1;
 
     switch(range) {
-        case '1H': dataPoints = 60; interval = 60 * 1000; break;
-        case '1D': dataPoints = 96; interval = 15 * 60 * 1000; break;
-        case '1W': dataPoints = 84; interval = 2 * 60 * 60 * 1000; break;
-        case '1Y': dataPoints = 52; interval = 7 * 24 * 60 * 60 * 1000; break;
+        case '1H': dataPoints = 60; interval = 60 * 1000; volatility = 0.1; break;
+        case '1D': dataPoints = 96; interval = 15 * 60 * 1000; volatility = 0.5; break;
+        case '1W': dataPoints = 84; interval = 2 * 60 * 60 * 1000; volatility = 1.5; break;
+        case '1Y': dataPoints = 52; interval = 7 * 24 * 60 * 60 * 1000; volatility = 5; break;
     }
 
     const history: {time: number; price: number}[] = [];
     let currentPrice = basePrice;
     
     for (let i = dataPoints; i > 0; i--) {
-        const randomFactor = (Math.random() - 0.5) * 2;
+        const randomFactor = (Math.random() - 0.5) * volatility;
         currentPrice /= (1 + randomFactor / 100);
         history.unshift({ time: now - i * interval, price: currentPrice });
     }
@@ -89,6 +93,9 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
     
     setPriceHistory(history);
     setPrice(basePrice);
+    const initialPrice = history[0]?.price || 0;
+    const newChange = initialPrice > 0 ? ((basePrice - initialPrice) / initialPrice) * 100 : 0;
+    setChange(newChange);
   }, []);
 
   useEffect(() => {
@@ -98,7 +105,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
   }, [timeRange, asset, generateHistoricalData]);
   
   useEffect(() => {
-    if (timeRange !== '1H' || !asset) return;
+    if (timeRange !== '1H' || !asset || priceHistory.length === 0) return;
 
     const interval = setInterval(() => {
       setPriceHistory(prevHistory => {
@@ -118,7 +125,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
     }, 2000); 
 
     return () => clearInterval(interval);
-  }, [timeRange, asset]);
+  }, [timeRange, asset, priceHistory.length]);
 
   const chartData = useMemo(() => {
     const formatTime = (time: number) => {
@@ -164,12 +171,10 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
              <CardHeader>
                 <div className="flex items-baseline gap-4">
                     <p className="text-4xl font-bold">${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                    {timeRange === '1H' && (
-                        <div className={`flex items-center gap-1 ${change >= 0 ? 'positive' : 'negative'}`}>
-                            {change >= 0 ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
-                            <span className="font-medium">{change.toFixed(2)}%</span>
-                        </div>
-                    )}
+                    <div className={`flex items-center gap-1 ${change >= 0 ? 'positive' : 'negative'}`}>
+                        {change >= 0 ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
+                        <span className="font-medium">{change.toFixed(2)}%</span>
+                    </div>
                 </div>
              </CardHeader>
              <CardContent className="p-0 flex items-center justify-center">
@@ -199,7 +204,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
         <div className="flex flex-col gap-6">
             <Card>
                 <CardContent className="p-0">
-                <Tabs defaultValue={initialAction} className="w-full">
+                <Tabs defaultValue={initialAction} value={initialAction} className="w-full">
                     <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="buy">Buy</TabsTrigger>
                     <TabsTrigger value="sell">Sell</TabsTrigger>

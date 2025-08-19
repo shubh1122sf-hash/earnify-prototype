@@ -30,7 +30,7 @@ export function AppLineChart({
 }: AppLineChartProps) {
   if (!data || data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full w-full">
+      <div className="flex items-center justify-center h-[300px] w-[500px]">
         <p>No data available.</p>
       </div>
     );

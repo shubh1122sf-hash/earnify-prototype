@@ -95,7 +95,7 @@ export default function StatsPage() {
                       xAxisKey="date"
                       footerText="Volume is increasing"
                   />
-              ) : <Skeleton className="h-[400px] w-[500px]" />}
+              ) : <Skeleton className="h-[300px] w-[500px]" />}
             </CardContent>
         </Card>
         <Card>
@@ -109,7 +109,7 @@ export default function StatsPage() {
                       xAxisKey="date"
                       footerText="Steady user acquisition"
                   />
-                 ) : <Skeleton className="h-[400px] w-[500px]" />}
+                 ) : <Skeleton className="h-[300px] w-[500px]" />}
             </CardContent>
         </Card>
       </div>
