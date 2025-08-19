@@ -136,7 +136,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
     }));
   }, [priceHistory, timeRange]);
 
-  if (!asset || !isClient) {
+  if (!asset) {
     return (
       <div className="flex h-full w-full items-center justify-center">
         <p>Loading Asset...</p>
