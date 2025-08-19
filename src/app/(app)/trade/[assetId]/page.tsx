@@ -39,7 +39,7 @@ const assetDetails: { [key: string]: any } = {
 type TimeRange = '1H' | '1D' | '1W' | '1Y';
 
 export default function TradePage({ params }: { params: { assetId: string } }) {
-  const assetId = params.assetId;
+  const assetId = params.assetId.toUpperCase();
   
   const [asset, setAsset] = useState<any>(null);
   const [price, setPrice] = useState(0);
@@ -51,9 +51,10 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
 
   useEffect(() => {
     setIsClient(true);
-    const upperCaseAssetId = assetId.toUpperCase();
-    if (assetDetails[upperCaseAssetId]) {
-      setAsset(assetDetails[upperCaseAssetId]);
+    if (assetDetails[assetId]) {
+      const details = assetDetails[assetId];
+      setAsset(details);
+      setPrice(details.basePrice);
     }
 
     if (typeof window !== 'undefined') {
@@ -77,15 +78,14 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
     const history: {time: number; price: number}[] = [];
     let currentPrice = basePrice;
     
-    for (let i = dataPoints - 1; i >= 0; i--) {
+    for (let i = dataPoints; i > 0; i--) {
         const randomFactor = (Math.random() - 0.5) * 2;
-        currentPrice = Math.max(0, currentPrice * (1 - randomFactor / 100));
+        currentPrice /= (1 + randomFactor / 100);
         history.unshift({ time: now - i * interval, price: currentPrice });
     }
     
-    if (history.length > 0) {
-        history[history.length-1].price = basePrice;
-    }
+    // Ensure the last point is the current base price
+    history.push({ time: now, price: basePrice });
     
     setPriceHistory(history);
     setPrice(basePrice);
@@ -104,14 +104,15 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
       setPriceHistory(prevHistory => {
         if (prevHistory.length === 0) return [];
         const lastPrice = prevHistory[prevHistory.length - 1].price;
-        const randomFactor = (Math.random() - 0.5) * 1; 
+        const randomFactor = (Math.random() - 0.5) * 0.2; 
         const newPriceValue = Math.max(0, lastPrice * (1 + randomFactor / 100));
         
         setPrice(newPriceValue);
-        const newChange = ((newPriceValue - lastPrice) / lastPrice) * 100;
+        const initialPrice = prevHistory[0].price;
+        const newChange = ((newPriceValue - initialPrice) / initialPrice) * 100;
         setChange(newChange);
         
-        const newHistory = [...prevHistory.slice(-59), { time: Date.now(), price: newPriceValue }];
+        const newHistory = [...prevHistory.slice(1), { time: Date.now(), price: newPriceValue }];
         return newHistory;
       });
     }, 2000); 
@@ -121,12 +122,13 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
 
   const chartData = useMemo(() => {
     const formatTime = (time: number) => {
+        const date = new Date(time);
         switch(timeRange) {
-            case '1H': return new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            case '1D': return new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            case '1W': return new Date(time).toLocaleDateString([], { month: 'short', day: 'numeric' });
-            case '1Y': return new Date(time).toLocaleDateString([], { month: 'short', year: 'numeric' });
-            default: return new Date(time).toLocaleTimeString();
+            case '1H': return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            case '1D': return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            case '1W': return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+            case '1Y': return date.toLocaleDateString([], { month: 'short', year: 'numeric' });
+            default: return date.toLocaleTimeString();
         }
     };
     
