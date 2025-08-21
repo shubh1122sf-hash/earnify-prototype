@@ -1,12 +1,16 @@
 
+'use client';
+
 import React from "react";
 import { UserNav } from "@/components/user-nav";
 import { Nav } from "@/components/nav";
 import { ChartLine } from "lucide-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { useSimulation } from "@/hooks/use-simulation";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
+  const { simulation } = useSimulation();
+
   return (
     <div className="container mx-auto max-w-7xl p-4 font-sans flex flex-col min-h-screen">
       <header className="bg-card rounded-xl shadow-sm p-4 mb-6 border">
@@ -23,7 +27,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <div className="flex items-center gap-6">
                 <div className="text-right">
                     <div className="text-xl font-semibold text-foreground flex items-center gap-2">
-                        <span>$10,000.00</span>
+                        <span>${simulation.balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                     </div>
                     <div className="text-sm text-muted-foreground">Available Balance</div>
                 </div>

@@ -21,27 +21,18 @@ import { ClientLineChart } from "@/components/client-line-chart";
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
-
-const assetDetails: { [key: string]: any } = {
-  BTC: { name: 'Bitcoin', icon: 'https://placehold.co/40x40.png?text=B', basePrice: 67123.45 },
-  ETH: { name: 'Ethereum', icon: 'https://placehold.co/40x40.png?text=E', basePrice: 3456.78 },
-  SOL: { name: 'Solana', icon: 'https://placehold.co/40x40.png?text=S', basePrice: 150.25 },
-  AAPL: { name: 'Apple Inc.', icon: 'https://placehold.co/40x40.png?text=A', basePrice: 195.89 },
-  TSLA: { name: 'Tesla, Inc.', icon: 'https://placehold.co/40x40.png?text=T', basePrice: 183.01 },
-  NVDA: { name: 'NVIDIA Corp', icon: 'https://placehold.co/40x40.png?text=N', basePrice: 121.79 },
-  GOOGL: { name: 'Alphabet Inc.', icon: 'https://placehold.co/40x40.png?text=G', basePrice: 175.61 },
-  AMZN: { name: 'Amazon.com, Inc.', icon: 'https://placehold.co/40x40.png?text=A', basePrice: 185.57 },
-  MSFT: { name: 'Microsoft Corp', icon: 'https://placehold.co/40x40.png?text=M', basePrice: 442.57 },
-  RELIANCE: { name: 'Reliance Industries', icon: 'https://placehold.co/40x40.png?text=R', basePrice: 2885.50 },
-  TCS: { name: 'TCS', icon: 'https://placehold.co/40x40.png?text=T', basePrice: 3825.10 },
-  HDFCBANK: { name: 'HDFC Bank', icon: 'https://placehold.co/40x40.png?text=H', basePrice: 1665.80 },
-};
+import { useSimulation } from '@/hooks/use-simulation';
+import { initialAssets as assetDetailsList } from '@/lib/assets';
 
 type TimeRange = '1H' | '1D' | '1W' | '1Y';
 
 export default function TradePage({ params }: { params: { assetId: string } }) {
   const assetId = params.assetId.toUpperCase();
-  
+  const assetDetails: { [key: string]: any } = {};
+  assetDetailsList.forEach(asset => {
+      assetDetails[asset.ticker] = { name: asset.name, icon: asset.icon, basePrice: asset.price };
+  });
+
   const [asset, setAsset] = useState<any>(null);
   const [price, setPrice] = useState(0);
   const [change, setChange] = useState(0);
@@ -49,6 +40,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
   const [priceHistory, setPriceHistory] = useState<{time: string; value: number}[]>([]);
   const [initialAction, setInitialAction] = useState('buy');
   const [isClient, setIsClient] = useState(false);
+  const { simulation } = useSimulation();
 
   useEffect(() => {
     setIsClient(true);
@@ -82,9 +74,9 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
 
     let lastPrice = basePrice;
     const history = Array.from({ length: dataPoints }, (_, i) => {
-        const randomFactor = (Math.random() - 0.5) * volatility;
+        const randomFactor = (Math.random() - 0.5) * 2 * volatility;
         const newPrice = lastPrice * (1 + randomFactor / 100);
-        lastPrice = newPrice;
+        lastPrice = newPrice > 0 ? newPrice : lastPrice;
         const time = new Date(now.getTime() - (dataPoints - i - 1) * interval);
 
         const formatTime = (date: Date) => {
@@ -97,7 +89,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
             }
         };
 
-        return { time: formatTime(time), value: newPrice };
+        return { time: formatTime(time), value: lastPrice };
     });
     
     setPriceHistory(history);
@@ -125,7 +117,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
       setPriceHistory(prevHistory => {
         if (prevHistory.length === 0) return [];
         const lastPrice = prevHistory[prevHistory.length - 1].value;
-        const randomFactor = (Math.random() - 0.5) * 0.1; // Smaller volatility for ticks
+        const randomFactor = (Math.random() - 0.5) * 0.2;
         const newPriceValue = Math.max(0, lastPrice * (1 + randomFactor / 100));
         
         const now = new Date();
@@ -146,13 +138,15 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
     return () => clearInterval(interval);
   }, [timeRange, asset, isClient]);
 
-  if (!asset) {
+  if (!asset || !isClient) {
     return (
       <div className="flex h-full w-full items-center justify-center">
         <p>Loading Asset...</p>
       </div>
     );
   }
+  
+  const ownedAsset = simulation.holdings.find(h => h.ticker === assetId);
 
   const timeRanges: TimeRange[] = ['1H', '1D', '1W', '1Y'];
 
@@ -180,7 +174,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
              </CardHeader>
              <CardContent className="p-0">
                 <div className="h-[400px] w-full">
-                    {isClient && priceHistory.length > 0 ? (
+                    {priceHistory.length > 0 ? (
                         <ClientLineChart
                             data={priceHistory}
                             dataKey="value"
@@ -213,10 +207,10 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
                     <TabsTrigger value="sell">Sell</TabsTrigger>
                     </TabsList>
                     <TabsContent value="buy" className="p-6">
-                    <TradeForm action="Buy" assetTicker={assetId.toUpperCase()} price={price} />
+                    <TradeForm key="buy" action="Buy" assetTicker={assetId.toUpperCase()} price={price} />
                     </TabsContent>
                     <TabsContent value="sell" className="p-6">
-                    <TradeForm action="Sell" assetTicker={assetId.toUpperCase()} price={price} />
+                    <TradeForm key="sell" action="Sell" assetTicker={assetId.toUpperCase()} price={price} ownedQuantity={ownedAsset?.quantity ?? 0} />
                     </TabsContent>
                 </Tabs>
                 </CardContent>
@@ -227,11 +221,12 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
   );
 }
 
-function TradeForm({ action, assetTicker, price }: { action: 'Buy' | 'Sell', assetTicker: string, price: number }) {
+function TradeForm({ action, assetTicker, price, ownedQuantity = 0 }: { action: 'Buy' | 'Sell', assetTicker: string, price: number, ownedQuantity?: number }) {
   const [amount, setAmount] = useState('');
   const [total, setTotal] = useState(0);
   const { toast } = useToast();
-  const balance = 10000;
+  const { simulation, buyAsset, sellAsset } = useSimulation();
+  const { balance } = simulation;
 
   useEffect(() => {
     const numericAmount = parseFloat(amount);
@@ -246,6 +241,12 @@ function TradeForm({ action, assetTicker, price }: { action: 'Buy' | 'Sell', ass
     const numericAmount = parseFloat(amount);
     if (!amount || numericAmount <= 0) return;
 
+    if (action === 'Buy') {
+        buyAsset(assetTicker, numericAmount, price);
+    } else {
+        sellAsset(assetTicker, numericAmount, price);
+    }
+
     toast({
       title: `Order Successful`,
       description: `${action === 'Buy' ? 'Bought' : 'Sold'} ${numericAmount.toLocaleString()} ${assetTicker} for $${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
@@ -253,6 +254,8 @@ function TradeForm({ action, assetTicker, price }: { action: 'Buy' | 'Sell', ass
     });
     setAmount('');
   }
+
+  const isSellDisabled = action === 'Sell' && (parseFloat(amount) > ownedQuantity);
 
   return (
     <div className="space-y-4">
@@ -273,6 +276,12 @@ function TradeForm({ action, assetTicker, price }: { action: 'Buy' | 'Sell', ass
             <span className="text-muted-foreground">Available Balance</span>
             <span className="font-mono font-medium">${balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </div>
+          { action === 'Sell' && (
+             <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Owned Quantity</span>
+              <span className="font-mono font-medium">{ownedQuantity.toLocaleString()}</span>
+            </div>
+          )}
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Estimated Total</span>
             <span className="font-mono font-medium">${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
@@ -284,12 +293,10 @@ function TradeForm({ action, assetTicker, price }: { action: 'Buy' | 'Sell', ass
         className={`w-full text-lg h-12 font-bold`}
         variant={action === 'Buy' ? 'default' : 'destructive'}
         onClick={handleTransaction}
-        disabled={!amount || parseFloat(amount) <= 0 || (action === 'Buy' && total > balance)}
+        disabled={!amount || parseFloat(amount) <= 0 || (action === 'Buy' && total > balance) || isSellDisabled}
       >
-        {action} {assetTicker}
+        {isSellDisabled ? 'Not enough holdings' : (action === 'Buy' && total > balance) ? 'Insufficient funds' : `${action} ${assetTicker}`}
       </Button>
     </div>
   )
 }
-
-    
