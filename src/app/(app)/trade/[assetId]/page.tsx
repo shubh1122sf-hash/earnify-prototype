@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Card,
   CardContent,
@@ -20,6 +20,7 @@ import { TrendingUp, TrendingDown } from "lucide-react";
 import { ClientLineChart } from "@/components/client-line-chart";
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useToast } from '@/hooks/use-toast';
 
 const assetDetails: { [key: string]: any } = {
   BTC: { name: 'Bitcoin', icon: 'https://placehold.co/40x40.png?text=B', basePrice: 67123.45 },
@@ -122,7 +123,8 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
 
     const interval = setInterval(() => {
       setPriceHistory(prevHistory => {
-        const lastPrice = prevHistory.length > 0 ? prevHistory[prevHistory.length - 1].value : asset.basePrice;
+        if (prevHistory.length === 0) return [];
+        const lastPrice = prevHistory[prevHistory.length - 1].value;
         const randomFactor = (Math.random() - 0.5) * 0.1; // Smaller volatility for ticks
         const newPriceValue = Math.max(0, lastPrice * (1 + randomFactor / 100));
         
@@ -228,6 +230,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
 function TradeForm({ action, assetTicker, price }: { action: 'Buy' | 'Sell', assetTicker: string, price: number }) {
   const [amount, setAmount] = useState('');
   const [total, setTotal] = useState(0);
+  const { toast } = useToast();
   const balance = 10000;
 
   useEffect(() => {
@@ -240,7 +243,14 @@ function TradeForm({ action, assetTicker, price }: { action: 'Buy' | 'Sell', ass
   }, [amount, price]);
 
   const handleTransaction = () => {
-    alert(`${action}ing ${amount} ${assetTicker} for $${total.toFixed(2)}`);
+    const numericAmount = parseFloat(amount);
+    if (!amount || numericAmount <= 0) return;
+
+    toast({
+      title: `Order Successful`,
+      description: `${action === 'Buy' ? 'Bought' : 'Sold'} ${numericAmount.toLocaleString()} ${assetTicker} for $${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      variant: action === 'Buy' ? 'default' : 'destructive',
+    });
     setAmount('');
   }
 
@@ -281,3 +291,5 @@ function TradeForm({ action, assetTicker, price }: { action: 'Buy' | 'Sell', ass
     </div>
   )
 }
+
+    
