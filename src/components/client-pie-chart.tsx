@@ -1,9 +1,9 @@
 
-"use client";
+'use client';
 
-import { Pie, PieChart, Tooltip, Cell, ResponsiveContainer } from "recharts";
+import { ResponsiveContainer, Pie, PieChart, Tooltip, Cell } from 'recharts';
 
-interface AppPieChartProps {
+interface ClientPieChartProps {
   data: { name: string; value: number }[];
 }
 
@@ -15,7 +15,7 @@ const COLORS = [
   'var(--chart-5)',
 ];
 
-export function AppPieChart({ data }: AppPieChartProps) {
+export function ClientPieChart({ data }: ClientPieChartProps) {
   if (!data || data.length === 0) {
     return (
       <div className="flex items-center justify-center h-full w-full">

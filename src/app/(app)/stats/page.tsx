@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Users, DollarSign, BarChart2, TrendingUp } from "lucide-react";
-import { AppLineChart } from "@/components/line-chart";
+import { ClientLineChart } from "@/components/client-line-chart";
 import { Skeleton } from '@/components/ui/skeleton';
 
 const statsCards = [
@@ -86,30 +86,34 @@ export default function StatsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
             <CardContent className="p-6">
-              {isClient ? (
-                  <AppLineChart
-                      title="Trading Volume"
-                      description="Monthly trading volume across the platform."
-                      data={volumeData}
-                      dataKey="value"
-                      xAxisKey="date"
-                      footerText="Volume is increasing"
-                  />
-              ) : <div className="h-[400px] w-full flex items-center justify-center"><Skeleton className="h-full w-full" /></div>}
+              <div className="h-[400px] w-full">
+                {isClient ? (
+                    <ClientLineChart
+                        title="Trading Volume"
+                        description="Monthly trading volume across the platform."
+                        data={volumeData}
+                        dataKey="value"
+                        xAxisKey="date"
+                        footerText="Volume is increasing"
+                    />
+                ) : <Skeleton className="h-full w-full" />}
+              </div>
             </CardContent>
         </Card>
         <Card>
             <CardContent className="p-6">
-                {isClient ? (
-                  <AppLineChart
-                      title="User Growth"
-                      description="Active users on the platform over time."
-                      data={userData}
-                      dataKey="value"
-                      xAxisKey="date"
-                      footerText="Steady user acquisition"
-                  />
-                 ) : <div className="h-[400px] w-full flex items-center justify-center"><Skeleton className="h-full w-full" /></div>}
+              <div className="h-[400px] w-full">
+                  {isClient ? (
+                    <ClientLineChart
+                        title="User Growth"
+                        description="Active users on the platform over time."
+                        data={userData}
+                        dataKey="value"
+                        xAxisKey="date"
+                        footerText="Steady user acquisition"
+                    />
+                  ) : <Skeleton className="h-full w-full" />}
+                </div>
             </CardContent>
         </Card>
       </div>

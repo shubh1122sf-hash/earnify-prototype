@@ -23,7 +23,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <div className="flex items-center gap-6">
                 <div className="text-right">
                     <div className="text-xl font-semibold text-foreground flex items-center gap-2">
-                        <span>$50,000.00</span>
+                        <span>$10,000.00</span>
                     </div>
                     <div className="text-sm text-muted-foreground">Available Balance</div>
                 </div>

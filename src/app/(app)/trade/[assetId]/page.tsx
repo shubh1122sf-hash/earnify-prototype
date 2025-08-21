@@ -17,7 +17,7 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { TrendingUp, TrendingDown } from "lucide-react";
-import { AppLineChart } from "@/components/line-chart";
+import { ClientLineChart } from "@/components/client-line-chart";
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
@@ -176,13 +176,15 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
                 </div>
              </CardHeader>
              <CardContent className="p-0">
-                {isClient ? (
-                    <AppLineChart
-                        data={chartData}
-                        dataKey="value"
-                        xAxisKey="time"
-                    />
-                ) : <div className="h-[400px] w-full flex items-center justify-center"><Skeleton className="h-full w-full" /></div>}
+                <div className="h-[400px] w-full">
+                    {isClient ? (
+                        <ClientLineChart
+                            data={chartData}
+                            dataKey="value"
+                            xAxisKey="time"
+                        />
+                    ) : <Skeleton className="h-full w-full" />}
+                </div>
              </CardContent>
            </Card>
             <div className="flex gap-2">
@@ -225,7 +227,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
 function TradeForm({ action, assetTicker, price }: { action: 'Buy' | 'Sell', assetTicker: string, price: number }) {
   const [amount, setAmount] = useState('');
   const [total, setTotal] = useState(0);
-  const balance = 50000; // Hardcoded balance
+  const balance = 10000; // Hardcoded balance
 
   useEffect(() => {
     const numericAmount = parseFloat(amount);

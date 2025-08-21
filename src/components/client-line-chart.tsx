@@ -1,7 +1,8 @@
 
-"use client";
+'use client';
 
 import {
+  ResponsiveContainer,
   CartesianGrid,
   Line,
   LineChart,
@@ -9,10 +10,9 @@ import {
   XAxis,
   YAxis,
   ReferenceDot,
-  ResponsiveContainer,
-} from "recharts";
+} from 'recharts';
 
-interface AppLineChartProps {
+interface ClientLineChartProps {
   data: { [key: string]: any }[];
   dataKey: string;
   xAxisKey: string;
@@ -21,17 +21,17 @@ interface AppLineChartProps {
   footerText?: string;
 }
 
-export function AppLineChart({
+export function ClientLineChart({
   data,
   dataKey,
   xAxisKey,
   title,
   description,
   footerText,
-}: AppLineChartProps) {
+}: ClientLineChartProps) {
   if (!data || data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-[400px] w-full">
+      <div className="flex items-center justify-center h-full w-full">
         <p>No data available.</p>
       </div>
     );
@@ -45,7 +45,7 @@ export function AppLineChart({
   const lastDataPoint = data[data.length - 1];
 
   return (
-    <div className="flex h-auto w-full flex-col items-center justify-center gap-4">
+    <div className="flex h-full w-full flex-col items-center justify-center gap-4">
       {title && (
         <div className="w-full">
           <h3 className="text-lg font-semibold">{title}</h3>
@@ -54,7 +54,7 @@ export function AppLineChart({
           )}
         </div>
       )}
-      <ResponsiveContainer width="100%" height={400}>
+      <ResponsiveContainer width="100%" height="100%">
         <LineChart
           data={data}
           margin={{
@@ -70,7 +70,7 @@ export function AppLineChart({
             tickLine={false}
             axisLine={false}
             tickMargin={8}
-            tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
+            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
           />
           <YAxis
             tickLine={false}
@@ -79,7 +79,7 @@ export function AppLineChart({
             orientation="left"
             domain={yAxisDomain}
             tickFormatter={(value) => `$${Number(value).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`}
-            tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
+            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
             width={80}
           />
           <Tooltip

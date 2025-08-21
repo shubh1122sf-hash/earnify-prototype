@@ -2,12 +2,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { AppPieChart } from "@/components/pie-chart";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from '@/components/ui/skeleton';
+import { ClientPieChart } from '@/components/client-pie-chart';
 
 const initialPortfolio = {
-  totalBalance: 52345.67,
+  totalBalance: 12345.67,
   totalPnl: 2345.67,
   totalPnlPercent: 4.69,
   todayPnl: 123.56,
@@ -58,7 +58,7 @@ export default function PortfolioPage() {
 
         <div className="bg-card p-6 rounded-xl shadow-sm border flex flex-col items-center justify-center">
             <h3 className="text-lg font-semibold text-card-foreground mb-4">Allocation</h3>
-              {isClient ? <AppPieChart data={chartData} /> : <Skeleton className="h-[150px] w-[250px] rounded-full" />}
+              {isClient ? <ClientPieChart data={chartData} /> : <Skeleton className="h-[150px] w-[250px] rounded-full" />}
         </div>
 
         <div className="bg-card p-6 rounded-xl shadow-sm border">
