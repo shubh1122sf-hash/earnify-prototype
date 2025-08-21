@@ -37,7 +37,7 @@ const getInitialState = (): SimulationState => {
 };
 
 export function useSimulation() {
-  const [simulation, setSimulation] = useState<SimulationState>(getInitialState);
+  const [simulation, setSimulation] = useState<SimulationState>({ balance: 10000, holdings: [] });
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
