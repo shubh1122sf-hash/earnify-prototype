@@ -108,7 +108,8 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
     const interval = setInterval(() => {
       setPriceHistory(prevHistory => {
         if (prevHistory.length === 0) return [];
-        const lastPrice = prevHistory[prevHistory.length - 1].price;
+        const lastEntry = prevHistory[prevHistory.length - 1];
+        const lastPrice = lastEntry.price;
         const randomFactor = (Math.random() - 0.5) * 0.2; // Smaller volatility for ticks
         const newPriceValue = Math.max(0, lastPrice * (1 + randomFactor / 100));
         
@@ -280,3 +281,5 @@ function TradeForm({ action, assetTicker, price }: { action: 'Buy' | 'Sell', ass
     </div>
   )
 }
+
+    
