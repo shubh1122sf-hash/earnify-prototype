@@ -45,7 +45,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
   const [price, setPrice] = useState(0);
   const [change, setChange] = useState(0);
   const [timeRange, setTimeRange] = useState<TimeRange>('1H');
-  const [priceHistory, setPriceHistory] = useState<{time: number; price: number}[]>([]);
+  const [priceHistory, setPriceHistory] = useState<{time: number; value: number}[]>([]);
   const [initialAction, setInitialAction] = useState('buy');
   const [isClient, setIsClient] = useState(false);
 
@@ -70,7 +70,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
     const now = Date.now();
     let dataPoints = 0;
     let interval = 0;
-    let volatility = 0.1;
+    let volatility = 0.0;
 
     switch(range) {
         case '1H': dataPoints = 60; interval = 60 * 1000; volatility = 0.1; break;
@@ -80,21 +80,22 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
     }
 
     let lastPrice = basePrice;
-    const history = Array.from({ length: dataPoints -1 }, (_, i) => {
+    const history = Array.from({ length: dataPoints }, (_, i) => {
         const randomFactor = (Math.random() - 0.5) * volatility;
         const newPrice = lastPrice * (1 + randomFactor / 100);
         lastPrice = newPrice;
-        return { time: now - (dataPoints - i - 1) * interval, price: newPrice };
+        return { time: now - (dataPoints - i - 1) * interval, value: newPrice };
     });
-
-    history.push({ time: now, price: basePrice });
     
     setPriceHistory(history);
-    setPrice(basePrice);
-    const initialPrice = history[0]?.price || 0;
-    const newChange = initialPrice > 0 ? ((basePrice - initialPrice) / initialPrice) * 100 : 0;
+    setPrice(history[history.length - 1].value);
+
+    const startPrice = history[0]?.value || 0;
+    const endPrice = history[history.length - 1]?.value || 0;
+    const newChange = startPrice > 0 ? ((endPrice - startPrice) / startPrice) * 100 : 0;
     setChange(newChange);
   }, []);
+
 
   useEffect(() => {
     if (asset) {
@@ -103,28 +104,28 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
   }, [timeRange, asset, generateHistoricalData]);
   
   useEffect(() => {
-    if (timeRange !== '1H' || !asset || !isClient) return;
+    if (timeRange !== '1H' || !asset || !isClient || priceHistory.length === 0) return;
 
     const interval = setInterval(() => {
-      setPriceHistory(prevHistory => {
-        if (prevHistory.length === 0) return [];
-        const lastEntry = prevHistory[prevHistory.length - 1];
-        const lastPrice = lastEntry.price;
-        const randomFactor = (Math.random() - 0.5) * 0.2; // Smaller volatility for ticks
-        const newPriceValue = Math.max(0, lastPrice * (1 + randomFactor / 100));
-        
-        setPrice(newPriceValue);
-        const initialPrice = prevHistory[0].price;
-        const newChange = ((newPriceValue - initialPrice) / initialPrice) * 100;
-        setChange(newChange);
-        
-        const newHistory = [...prevHistory.slice(1), { time: Date.now(), price: newPriceValue }];
-        return newHistory;
+      setPrice(prevPrice => {
+        const randomFactor = (Math.random() - 0.5) * 0.1; // Smaller volatility for ticks
+        const newPriceValue = Math.max(0, prevPrice * (1 + randomFactor / 100));
+
+        setPriceHistory(prevHistory => {
+          const newHistory = [...prevHistory.slice(1), { time: Date.now(), value: newPriceValue }];
+          const startPrice = newHistory[0]?.value || 0;
+          const endPrice = newHistory[newHistory.length - 1]?.value || 0;
+          const newChange = startPrice > 0 ? ((endPrice - startPrice) / startPrice) * 100 : 0;
+          setChange(newChange);
+          return newHistory;
+        });
+
+        return newPriceValue;
       });
     }, 2000); 
 
     return () => clearInterval(interval);
-  }, [timeRange, asset, isClient]);
+  }, [timeRange, asset, isClient, priceHistory.length]);
 
   const chartData = useMemo(() => {
     const formatTime = (time: number) => {
@@ -140,7 +141,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
     
     return priceHistory.map(p => ({
         time: formatTime(p.time),
-        value: p.price
+        value: p.value
     }));
   }, [priceHistory, timeRange]);
 
@@ -178,7 +179,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
              </CardHeader>
              <CardContent className="p-0">
                 <div className="h-[400px] w-full">
-                    {isClient ? (
+                    {isClient && chartData.length > 0 ? (
                         <ClientLineChart
                             data={chartData}
                             dataKey="value"
