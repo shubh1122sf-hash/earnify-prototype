@@ -9,6 +9,7 @@ import {
 import { TrendingUp, TrendingDown, Search, AlertTriangle, Info } from "lucide-react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 const initialAssets = [
     { name: 'Apple Inc.', ticker: 'AAPL', price: 195.89, change: 1.8, icon: 'https://placehold.co/40x40.png?text=A', type: 'Stock', sector: 'Technology' , volume: '2.1M', momentum: 0, volatility: 0.8},
@@ -26,22 +27,28 @@ const initialAssets = [
 ];
 
 const mentorTips = [
-    "Josh says: 'The tech sector is showing strong momentum - consider adding growth stocks to your portfolio.'",
-    "Marshall advises: 'Don't put all your eggs in one basket. Diversify across at least 5 sectors.'",
-    "Purav notes: 'Check the company's debt-to-equity ratio before investing. Less than 1 is ideal.'",
-    "Ken suggests: 'Market is fearful today - great buying opportunities for long-term investors.'",
+    "Josh says: 'The tech sector is showing strong momentum. Time to hunt for growth stocks!'",
+    "Marshall advises: 'Diversification is key. Spread your investments across at least 5 different sectors to minimize risk.'",
+    "Purav notes: 'Look for companies with a low debt-to-equity ratio. A healthy balance sheet is a good sign.'",
+    "Ken suggests: 'When the market is fearful, be greedy. Look for long-term buying opportunities in solid companies.'",
+    "Josh says: 'Keep an eye on trading volume. A sudden spike can indicate a potential price move.'",
+    "Marshall advises: 'Don't invest in what you don't understand. Do your research before buying any asset.'",
+    "Purav notes: 'Check the news! Macroeconomic events can have a huge impact on the entire market.'",
+    "Ken suggests: 'Set stop-loss orders to protect your capital from significant downturns.'",
 ];
 
+type Tip = {
+    id: number;
+    text: string;
+    position: { top: number; left: number; };
+};
 
 export default function MarketPage() {
   const [assets, setAssets] = useState(initialAssets);
   const [marketEvent, setMarketEvent] = useState<string | null>(null);
-  const [rollingTip, setRollingTip] = useState("");
+  const [activeTip, setActiveTip] = useState<Tip | null>(null);
 
   useEffect(() => {
-    // Set initial tip
-    setRollingTip(mentorTips[Math.floor(Math.random() * mentorTips.length)]);
-
     // Price update interval
     const priceInterval = setInterval(() => {
       let isMarketEvent = false;
@@ -99,10 +106,22 @@ export default function MarketPage() {
       );
     }, 2000); // Update every 2 seconds
 
-    // Rolling tip interval
+    // Tip interval
     const tipInterval = setInterval(() => {
-        setRollingTip(mentorTips[Math.floor(Math.random() * mentorTips.length)])
-    }, 6000);
+        const newTipText = mentorTips[Math.floor(Math.random() * mentorTips.length)];
+        const newTip: Tip = {
+            id: Date.now(),
+            text: newTipText,
+            position: {
+                top: Math.random() * 60 + 15, // Position between 15% and 75% from top
+                left: Math.random() * 70 + 15, // Position between 15% and 85% from left
+            }
+        };
+        setActiveTip(newTip);
+        setTimeout(() => {
+            setActiveTip(prev => prev?.id === newTip.id ? null : prev);
+        }, 5000); // Tip disappears after 5 seconds
+    }, 10000); // New tip every 10 seconds
 
     return () => {
         clearInterval(priceInterval);
@@ -111,7 +130,7 @@ export default function MarketPage() {
   }, []);
 
   return (
-    <div>
+    <div className="relative">
         <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold text-gray-800">Stock Market</h2>
             <div className="relative">
@@ -129,12 +148,25 @@ export default function MarketPage() {
             </div>
         )}
 
-        <div className="mb-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200 flex items-center">
-            <Info className="h-5 w-5 text-yellow-500 mr-3" />
-            <div className="flex-1">
-                <span className="text-sm text-yellow-800 transition-opacity duration-300">{rollingTip}</span>
+        {activeTip && (
+             <div
+                key={activeTip.id}
+                className={cn(
+                    "absolute z-20 p-4 max-w-xs w-full bg-card border-2 border-primary rounded-xl shadow-2xl transition-all duration-500",
+                    "animate-in fade-in-0 zoom-in-95"
+                )}
+                style={{
+                    top: `${activeTip.position.top}%`,
+                    left: `${activeTip.position.left}%`,
+                    transform: 'translate(-50%, -50%)',
+                }}
+            >
+                <div className="flex items-start gap-3">
+                    <Info className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                    <p className="text-sm text-foreground font-medium">{activeTip.text}</p>
+                </div>
             </div>
-        </div>
+        )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {assets.map((asset) => (
