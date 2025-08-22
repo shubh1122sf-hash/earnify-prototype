@@ -40,13 +40,13 @@ export default function MarketPage() {
       let isMarketEvent = false;
       const sectorTrends: {[key: string]: number} = {};
       
-      // 30% chance of a market event on each tick to make it more frequent
-      if (Math.random() < 0.3) {
+      // 20% chance of a market event on each tick
+      if (Math.random() < 0.2) {
         isMarketEvent = true;
         const eventMessages = [
             "Market Alert: High volatility spike detected!",
             "Breaking News: Major sector-wide movement happening now!",
-            "Urgent: Market event in progress - significant trade opportunities available!",
+            "Urgent: Market event in progress - trade opportunities available!",
             "Flash Crash: Certain assets are experiencing rapid price drops!",
             "Bull Run: Broad market rally is pushing prices up!"
         ];
@@ -57,7 +57,7 @@ export default function MarketPage() {
         const sectors = [...new Set(assets.map(a => a.sector))];
         sectors.forEach(sector => {
             if(Math.random() < 0.4) { // 40% chance for a sector to have a trend
-                sectorTrends[sector] = (Math.random() - 0.5) * 5; // Sector trend strength increased
+                sectorTrends[sector] = (Math.random() - 0.5) * 2; // Sector trend strength
             }
         });
       }
@@ -65,7 +65,7 @@ export default function MarketPage() {
       setAssets(prevAssets => 
         prevAssets.map(asset => {
           const baseVolatility = asset.volatility;
-          const eventVolatility = isMarketEvent ? 3.5 : 1; // Increased event volatility multiplier
+          const eventVolatility = isMarketEvent ? 2.0 : 1; // Reduced event volatility multiplier
 
           // Momentum: tends to continue in the same direction
           let momentum = asset.momentum * 0.9 + (Math.random() - 0.5) * 0.2; // Carry over 90% of momentum, add some randomness
@@ -81,11 +81,11 @@ export default function MarketPage() {
           const randomFactor = (Math.random() - 0.5) * baseVolatility * eventVolatility;
           const priceChangePercent = momentum + meanReversionForce + randomFactor + sectorTrend;
 
-          const newPrice = Math.max(0, asset.price * (1 + priceChangePercent / 100));
+          const newPrice = Math.max(0.01, asset.price * (1 + priceChangePercent / 100));
           const newChange = ((newPrice - asset.price) / asset.price) * 100;
           
-          // Update momentum for next tick
-          const updatedMomentum = Math.max(-1.5, Math.min(1.5, momentum + newChange / 10)); // Clamp momentum with a higher range
+          // Update momentum for next tick, clamping it to prevent runaway values
+          const updatedMomentum = Math.max(-0.5, Math.min(0.5, momentum + newChange / 10));
 
           return { ...asset, price: newPrice, change: asset.change + newChange, momentum: updatedMomentum };
         })
@@ -107,7 +107,7 @@ export default function MarketPage() {
         setTimeout(() => {
             setActiveTip(prev => prev?.id === newTip.id ? null : prev);
         }, 5000); // Tip disappears after 5 seconds
-    }, 10000); // New tip every 10 seconds
+    }, 12000); // New tip every 12 seconds
 
     return () => {
         clearInterval(priceInterval);

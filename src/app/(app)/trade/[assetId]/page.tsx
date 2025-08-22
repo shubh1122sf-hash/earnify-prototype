@@ -96,15 +96,15 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
 
             // Time to potentially switch regime
             const random = Math.random();
-            if (random < 0.25) { // 25% chance of a long dip
+            if (random < 0.15) { // 15% chance of a dip
                 regime = 'Dip';
-                regimeDuration = Math.floor(Math.random() * (dataPoints * 0.4)) + Math.floor(dataPoints * 0.2); // Dip lasts for 20-60% of the chart duration
-            } else if (random < 0.35) { // 10% chance of a rally
+                regimeDuration = Math.floor(Math.random() * (dataPoints * 0.2)) + Math.floor(dataPoints * 0.1); // Dip lasts for 10-30% of the chart duration
+            } else if (random < 0.25) { // 10% chance of a rally
                 regime = 'Rally';
-                regimeDuration = Math.floor(Math.random() * (dataPoints * 0.3)) + Math.floor(dataPoints * 0.1); // Rally for 10-40%
+                regimeDuration = Math.floor(Math.random() * (dataPoints * 0.2)) + Math.floor(dataPoints * 0.1); // Rally for 10-30%
             } else {
                 regime = 'Normal';
-                regimeDuration = Math.floor(Math.random() * 20) + 10; // Normal for 10-30 steps
+                regimeDuration = Math.floor(Math.random() * 10) + 5; // Normal for 5-15 steps
             }
             regimeStartIndex = i;
         }
@@ -112,9 +112,9 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
 
         let regimeBias = 0;
         if(regime === 'Dip') {
-            regimeBias = -0.25; // Stronger downward pressure
+            regimeBias = -0.1; // Downward pressure
         } else if (regime === 'Rally') {
-            regimeBias = 0.1; // Strong upward pressure
+            regimeBias = 0.1; // Upward pressure
         }
 
         const randomFactor = (Math.random() - 0.5) * volatility;
@@ -124,7 +124,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
         let newPrice = lastPrice * (1 + priceChangePercent / 100);
         newPrice = newPrice > 0 ? newPrice : lastPrice; // Prevent negative prices
         
-        momentum = Math.max(-0.5, Math.min(0.5, (newPrice - lastPrice) / lastPrice * 5)); // Update momentum, clamp to prevent crazy spirals
+        momentum = Math.max(-0.25, Math.min(0.25, (newPrice - lastPrice) / lastPrice * 5)); // Update momentum, clamp to prevent crazy spirals
         lastPrice = newPrice;
 
         const time = new Date(now.getTime() - (dataPoints - i - 1) * interval);
