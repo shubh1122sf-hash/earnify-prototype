@@ -6,7 +6,9 @@ import { Progress } from "@/components/ui/progress";
 import { Skeleton } from '@/components/ui/skeleton';
 import { ClientPieChart } from '@/components/client-pie-chart';
 import { useSimulation } from '@/hooks/use-simulation';
-import { initialAssets } from '@/lib/assets'; // Assuming you have this file
+import { initialAssets } from '@/lib/assets';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 export default function PortfolioPage() {
   const [isClient, setIsClient] = useState(false);
@@ -19,21 +21,13 @@ export default function PortfolioPage() {
   const portfolioValue = getPortfolioValue();
   const { totalPNL, totalPNLPercent } = getPortfolioPNL();
 
-  // Dummy data for progress bars, replace with real logic if available
-  const todayPnl = 123.56;
-  const todayPnlPercent = 75;
-  const weekPnl = 1456.78;
-  const weekPnlPercent = 60;
-  const monthPnl = 2678.90;
-  const monthPnlPercent = 45;
-
-  const chartData = simulation.holdings.map((h) => {
+  const chartData = simulation.holdings.length > 0 ? simulation.holdings.map((h) => {
     const asset = initialAssets.find(a => a.ticker === h.ticker);
     return {
       name: h.ticker,
       value: (asset?.price || 0) * h.quantity
     };
-  });
+  }) : [];
 
   if (!isClient) {
     return (
@@ -62,7 +56,7 @@ export default function PortfolioPage() {
                         {totalPNL >= 0 ? '+' : '-'}${Math.abs(totalPNL).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </div>
                     <div className={`text-sm ${totalPNL >= 0 ? 'positive' : 'negative'}`}>
-                        {totalPNL >= 0 ? '+' : '-'}{Math.abs(totalPNLPercent).toFixed(2)}%
+                        ({totalPNL >= 0 ? '+' : '-'}{Math.abs(totalPNLPercent).toFixed(2)}%)
                     </div>
                 </div>
             </div>
@@ -74,28 +68,11 @@ export default function PortfolioPage() {
         </div>
 
         <div className="bg-card p-6 rounded-xl shadow-sm border">
-            <h3 className="text-lg font-semibold text-card-foreground mb-4">Performance</h3>
-            <div className="space-y-3">
+            <h3 className="text-lg font-semibold text-card-foreground mb-4">Account Balance</h3>
+             <div className="flex justify-between items-center">
                 <div>
-                    <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Today's P&L</span>
-                        <span className="font-medium positive">+${todayPnl.toLocaleString()}</span>
-                    </div>
-                    <Progress value={todayPnlPercent} />
-                </div>
-                <div>
-                    <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Week's P&L</span>
-                        <span className="font-medium positive">+${weekPnl.toLocaleString()}</span>
-                    </div>
-                    <Progress value={weekPnlPercent} />
-                </div>
-                <div>
-                    <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Month's P&L</span>
-                        <span className="font-medium positive">+${monthPnl.toLocaleString()}</span>
-                    </div>
-                    <Progress value={monthPnlPercent} />
+                    <div className="text-3xl font-bold text-foreground">${simulation.balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                    <div className="text-sm text-muted-foreground">Cash available to trade</div>
                 </div>
             </div>
         </div>
@@ -105,7 +82,12 @@ export default function PortfolioPage() {
         <h3 className="text-lg font-semibold text-foreground/80 mb-4">Your Holdings</h3>
         <div className="overflow-x-auto">
              {simulation.holdings.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground">You don't have any holdings yet.</div>
+                <div className="text-center py-12 text-muted-foreground bg-secondary/50 rounded-lg">
+                  <p className="mb-4">You don't have any holdings yet.</p>
+                  <Link href="/">
+                    <Button>Explore the Market</Button>
+                  </Link>
+                </div>
             ) : (
                 <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg border">
                     <table className="min-w-full divide-y divide-border">
@@ -132,7 +114,7 @@ export default function PortfolioPage() {
                             const pnlSign = pnl >= 0 ? "+" : "";
 
                             return (
-                                <tr key={holding.ticker} className="hover:bg-secondary">
+                                <tr key={holding.ticker} className="hover:bg-secondary/50">
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="flex items-center">
                                         <div className="flex-shrink-0 h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center">
@@ -147,7 +129,7 @@ export default function PortfolioPage() {
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">{holding.quantity.toFixed(4)}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">${holding.avgBuyPrice.toFixed(2)}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">${asset.price.toFixed(2)}</td>
-                                <td className={`px-6 py-4 whitespace-nowrap text-sm ${pnlClass}`}>
+                                <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${pnlClass}`}>
                                     {pnlSign}${Math.abs(pnl).toFixed(2)} ({pnlSign}{Math.abs(pnlPercent).toFixed(2)}%)
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground font-medium">${currentValue.toFixed(2)}</td>

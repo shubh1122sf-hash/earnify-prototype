@@ -6,21 +6,22 @@ import {
   Card,
   CardContent,
 } from "@/components/ui/card";
-import { TrendingUp, TrendingDown, Search, AlertTriangle, Info } from "lucide-react";
+import { TrendingUp, TrendingDown, Search, Info } from "lucide-react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { initialAssets as assetList } from "@/lib/assets";
+import { Button } from "@/components/ui/button";
 
 const mentorTips = [
-    "Josh says: 'The tech sector is showing strong momentum. Time to hunt for growth stocks!'",
-    "Marshall advises: 'Diversification is key. Spread your investments across at least 5 different sectors to minimize risk.'",
-    "Purav notes: 'Look for companies with a low debt-to-equity ratio. A healthy balance sheet is a good sign.'",
-    "Ken suggests: 'When the market is fearful, be greedy. Look for long-term buying opportunities in solid companies.'",
-    "Josh says: 'Keep an eye on trading volume. A sudden spike can indicate a potential price move.'",
+    "Marshall says: 'Diversification is key. Spread your investments across at least 5 different sectors to minimize risk.'",
     "Marshall advises: 'Don't invest in what you don't understand. Do your research before buying any asset.'",
-    "Purav notes: 'Check the news! Macroeconomic events can have a huge impact on the entire market.'",
-    "Ken suggests: 'Set stop-loss orders to protect your capital from significant downturns.'",
+    "Ken suggests: 'When the market is fearful, be greedy. Look for long-term buying opportunities in solid companies.'",
+    "Ken says: 'Set stop-loss orders to protect your capital from significant downturns.'",
+    "Purav notes: 'Look for companies with a low debt-to-equity ratio. A healthy balance sheet is a good sign.'",
+    "Purav advises: 'Check the news! Macroeconomic events can have a huge impact on the entire market.'",
+    "David says: 'The tech sector is showing strong momentum. Time to hunt for growth stocks!'",
+    "David notes: 'Keep an eye on trading volume. A sudden spike can indicate a potential price move.'",
 ];
 
 type Tip = {
@@ -29,85 +30,46 @@ type Tip = {
     position: { top: number; left: number; };
 };
 
+type AssetFilter = 'All' | 'Stocks' | 'Crypto';
+
 export default function MarketPage() {
   const [assets, setAssets] = useState(assetList);
-  const [marketEvent, setMarketEvent] = useState<string | null>(null);
   const [activeTip, setActiveTip] = useState<Tip | null>(null);
+  const [filter, setFilter] = useState<AssetFilter>('All');
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    // Price update interval
     const priceInterval = setInterval(() => {
-      let isMarketEvent = false;
-      const sectorTrends: {[key: string]: number} = {};
-      
-      // 20% chance of a market event on each tick
-      if (Math.random() < 0.2) {
-        isMarketEvent = true;
-        const eventMessages = [
-            "Market Alert: High volatility spike detected!",
-            "Breaking News: Major sector-wide movement happening now!",
-            "Urgent: Market event in progress - trade opportunities available!",
-            "Flash Crash: Certain assets are experiencing rapid price drops!",
-            "Bull Run: Broad market rally is pushing prices up!"
-        ];
-        setMarketEvent(eventMessages[Math.floor(Math.random() * eventMessages.length)]);
-        setTimeout(() => setMarketEvent(null), 6000); // Event lasts 6 seconds
-
-        // Determine random trends for a few sectors
-        const sectors = [...new Set(assets.map(a => a.sector))];
-        sectors.forEach(sector => {
-            if(Math.random() < 0.4) { // 40% chance for a sector to have a trend
-                sectorTrends[sector] = (Math.random() - 0.5) * 2; // Sector trend strength
-            }
-        });
-      }
-
       setAssets(prevAssets => 
         prevAssets.map(asset => {
           const baseVolatility = asset.volatility;
-          const eventVolatility = isMarketEvent ? 2.0 : 1; // Reduced event volatility multiplier
-
-          // Momentum: tends to continue in the same direction
-          let momentum = asset.momentum * 0.9 + (Math.random() - 0.5) * 0.2; // Carry over 90% of momentum, add some randomness
-          
-          // Mean Reversion: tends to pull back to a baseline (we'll use initial price as a proxy)
-          const initialPrice = assetList.find(a => a.ticker === asset.ticker)?.price || asset.price;
-          const meanReversionForce = (initialPrice - asset.price) / initialPrice * 0.05; // Gentle pull towards the mean
-          
-          // Sector Trend
-          const sectorTrend = sectorTrends[asset.sector] || 0;
-
-          // Combine forces
-          const randomFactor = (Math.random() - 0.5) * baseVolatility * eventVolatility;
-          const priceChangePercent = momentum + meanReversionForce + randomFactor + sectorTrend;
-
+          let momentum = asset.momentum * 0.95 + (Math.random() - 0.5) * 0.1;
+          const meanReversionForce = (assetList.find(a => a.ticker === asset.ticker)!.price - asset.price) / asset.price * 0.01;
+          const randomFactor = (Math.random() - 0.5) * baseVolatility * 0.5;
+          const priceChangePercent = momentum + meanReversionForce + randomFactor;
           const newPrice = Math.max(0.01, asset.price * (1 + priceChangePercent / 100));
           const newChange = ((newPrice - asset.price) / asset.price) * 100;
-          
-          // Update momentum for next tick, clamping it to prevent runaway values
-          const updatedMomentum = Math.max(-0.5, Math.min(0.5, momentum + newChange / 10));
-
-          return { ...asset, price: newPrice, change: asset.change + newChange, momentum: updatedMomentum };
+          const updatedMomentum = Math.max(-0.25, Math.min(0.25, momentum + newChange / 20));
+          return { ...asset, price: newPrice, change: newChange, momentum: updatedMomentum };
         })
       );
-    }, 2000); // Update every 2 seconds
+    }, 2500);
 
-    // Tip interval
     const tipInterval = setInterval(() => {
         const newTipText = mentorTips[Math.floor(Math.random() * mentorTips.length)];
         const newTip: Tip = {
             id: Date.now(),
             text: newTipText,
             position: {
-                top: Math.random() * 60 + 15, // Position between 15% and 75% from top
-                left: Math.random() * 70 + 15, // Position between 15% and 85% from left
+                top: Math.random() * 60 + 20, 
+                left: Math.random() * 60 + 20,
             }
         };
         setActiveTip(newTip);
         setTimeout(() => {
             setActiveTip(prev => prev?.id === newTip.id ? null : prev);
-        }, 5000); // Tip disappears after 5 seconds
-    }, 12000); // New tip every 12 seconds
+        }, 6000); 
+    }, 15000);
 
     return () => {
         clearInterval(priceInterval);
@@ -115,24 +77,36 @@ export default function MarketPage() {
     }
   }, []);
 
+  const filteredAssets = assets
+    .filter(asset => {
+        if (filter === 'All') return true;
+        return asset.type === filter;
+    })
+    .filter(asset => 
+        asset.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        asset.ticker.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
   return (
     <div className="relative">
-        <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-gray-800">Stock Market</h2>
+        <div className="flex justify-between items-center mb-6 gap-4 flex-wrap">
+            <div className="flex items-center gap-2">
+                <h2 className="text-xl font-bold text-gray-800">Stock Market</h2>
+                <Button variant={filter === 'All' ? 'secondary' : 'ghost'} size="sm" onClick={() => setFilter('All')}>All</Button>
+                <Button variant={filter === 'Stocks' ? 'secondary' : 'ghost'} size="sm" onClick={() => setFilter('Stocks')}>Stocks</Button>
+                <Button variant={filter === 'Crypto' ? 'secondary' : 'ghost'} size="sm" onClick={() => setFilter('Crypto')}>Crypto</Button>
+            </div>
             <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <Input type="text" placeholder="Search stocks..." className="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" />
+                <Input 
+                  type="text" 
+                  placeholder="Search assets..." 
+                  className="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary w-64"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
             </div>
         </div>
-        
-        {marketEvent && (
-            <div className="mb-4 p-3 bg-red-50 rounded-lg border border-red-200 flex items-center market-event">
-                <AlertTriangle className="h-5 w-5 text-red-500 mr-3" />
-                <div className="flex-1">
-                    <span className="text-sm font-medium text-red-800">{marketEvent}</span>
-                </div>
-            </div>
-        )}
 
         {activeTip && (
              <div
@@ -155,7 +129,7 @@ export default function MarketPage() {
         )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {assets.map((asset) => (
+        {filteredAssets.map((asset) => (
           <Link href={`/trade/${asset.ticker}`} key={asset.ticker}>
             <Card className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition cursor-pointer">
               <CardContent className="p-4">

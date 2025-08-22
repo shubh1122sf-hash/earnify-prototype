@@ -9,8 +9,6 @@ import {
   Card,
   CardContent,
   CardHeader,
-  CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
 import Image from "next/image";
 
@@ -55,22 +53,24 @@ export default function LearnPage() {
 
       <div className="grid gap-8 md:grid-cols-2">
         {lessons.map((lesson) => (
-          <Card key={lesson.id} className="overflow-hidden">
-            <CardHeader>
+          <Card key={lesson.id} className="overflow-hidden flex flex-col">
+            <CardHeader className="p-0">
                 <Image
                     src={lesson.image}
                     alt={lesson.title}
                     width={600}
                     height={400}
                     data-ai-hint={lesson.imageHint}
-                    className="w-full h-48 object-cover rounded-t-lg"
+                    className="w-full h-48 object-cover"
                 />
             </CardHeader>
-            <CardContent>
-                <Accordion type="single" collapsible>
-                    <AccordionItem value={lesson.id}>
-                    <AccordionTrigger className="text-xl font-semibold">{lesson.title}</AccordionTrigger>
-                    <AccordionContent className="text-base text-muted-foreground">
+            <CardContent className="p-4 flex-grow">
+                <Accordion type="single" collapsible className="w-full">
+                    <AccordionItem value={lesson.id} className="border-b-0">
+                    <AccordionTrigger className="text-xl font-semibold hover:no-underline">
+                        {lesson.title}
+                    </AccordionTrigger>
+                    <AccordionContent className="text-base text-muted-foreground pt-2">
                         {lesson.content}
                     </AccordionContent>
                     </AccordionItem>

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -33,17 +34,17 @@ export default function StatsPage() {
   }).filter(Boolean);
 
   const bestPerformer = holdingsWithData.length > 0 
-    ? holdingsWithData.reduce((max, h) => h!.pnl > max!.pnl ? h : max)
+    ? holdingsWithData.reduce((max, h) => (h && max && h.pnl > max.pnl) ? h : max)
     : null;
     
   const worstPerformer = holdingsWithData.length > 0
-    ? holdingsWithData.reduce((min, h) => h!.pnl < min!.pnl ? h : min)
+    ? holdingsWithData.reduce((min, h) => (h && min && h.pnl < min.pnl) ? h : min)
     : null;
 
   const winningTrades = holdingsWithData.filter(h => h!.pnl > 0).length;
   const losingTrades = holdingsWithData.filter(h => h!.pnl < 0).length;
-  const totalClosedTrades = winningTrades + losingTrades; // Based on current holdings PNL
-  const winRate = totalClosedTrades > 0 ? (winningTrades / totalClosedTrades) * 100 : 0;
+  const totalHeldAssets = winningTrades + losingTrades;
+  const winRate = totalHeldAssets > 0 ? (winningTrades / totalHeldAssets) * 100 : 0;
   
   const sectorAllocation = simulation.holdings.reduce((acc, holding) => {
     const asset = initialAssets.find(a => a.ticker === holding.ticker);
@@ -56,9 +57,16 @@ export default function StatsPage() {
 
   const sectorChartData = Object.entries(sectorAllocation).map(([name, value]) => ({ name, value }));
 
-
-  if (!isClient) {
-    return <div className="text-center p-12">Loading your stats...</div>;
+  if (!isClient || simulation.tradeCount === 0) {
+    return (
+        <div className="flex flex-col gap-4 text-center">
+             <h1 className="text-3xl font-bold">Your Trading Stats</h1>
+            <div className="p-12 bg-secondary/50 rounded-lg">
+                <p className="text-muted-foreground">You haven't made any trades yet.</p>
+                <p className="text-muted-foreground">Start trading to see your stats here!</p>
+            </div>
+        </div>
+    );
   }
 
   return (
@@ -69,12 +77,12 @@ export default function StatsPage() {
         <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total P&L</CardTitle>
-                <span className={`h-4 w-4 ${totalPNL >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                <span className={`h-4 w-4 ${totalPNL >= 0 ? 'positive' : 'negative'}`}>
                     {totalPNL >= 0 ? <ArrowUp/> : <ArrowDown/>}
                 </span>
             </CardHeader>
             <CardContent>
-                <div className={`text-2xl font-bold ${totalPNL >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <div className={`text-2xl font-bold ${totalPNL >= 0 ? 'positive' : 'negative'}`}>
                     {totalPNL >= 0 ? '+' : '-'}${Math.abs(totalPNL).toFixed(2)}
                 </div>
                 <p className="text-xs text-muted-foreground">Total profit or loss from all assets</p>
@@ -121,22 +129,22 @@ export default function StatsPage() {
             <CardContent className="space-y-4">
                 {bestPerformer ? (
                     <div>
-                        <div className="flex items-center gap-2 text-sm font-medium text-green-600">
+                        <div className="flex items-center gap-2 text-sm font-medium positive">
                             <CheckCircle className="h-4 w-4" />
                             Best Performer
                         </div>
                         <p className="text-lg font-semibold">{bestPerformer.assetName}</p>
-                        <p className="text-sm text-green-600 font-mono">+${bestPerformer.pnl.toFixed(2)}</p>
+                        <p className="text-sm positive font-mono">+${bestPerformer.pnl.toFixed(2)}</p>
                     </div>
                 ) : <p className="text-sm text-muted-foreground">No profitable holdings yet.</p>}
                  {worstPerformer ? (
                     <div>
-                        <div className="flex items-center gap-2 text-sm font-medium text-red-600">
+                        <div className="flex items-center gap-2 text-sm font-medium negative">
                             <XCircle className="h-4 w-4" />
                             Worst Performer
                         </div>
                         <p className="text-lg font-semibold">{worstPerformer.assetName}</p>
-                        <p className="text-sm text-red-600 font-mono">-${Math.abs(worstPerformer.pnl).toFixed(2)}</p>
+                        <p className="text-sm negative font-mono">-${Math.abs(worstPerformer.pnl).toFixed(2)}</p>
                     </div>
                 ) : <p className="text-sm text-muted-foreground">No holdings with a loss.</p>}
             </CardContent>
@@ -144,11 +152,17 @@ export default function StatsPage() {
         <Card className="lg:col-span-2">
             <CardHeader>
                 <CardTitle>Sector Allocation</CardTitle>
-                <CardDescription>How your portfolio value is distributed across different market sectors.</CardDescription>
+                <CardDescription>How your portfolio value is distributed across market sectors.</CardDescription>
             </CardHeader>
             <CardContent>
                 <div className="h-[200px] w-full">
-                    <ClientPieChart data={sectorChartData} />
+                    {sectorChartData.length > 0 ? (
+                        <ClientPieChart data={sectorChartData} />
+                    ) : (
+                        <div className="flex items-center justify-center h-full text-muted-foreground">
+                            No holdings to display allocation.
+                        </div>
+                    )}
                 </div>
             </CardContent>
         </Card>
