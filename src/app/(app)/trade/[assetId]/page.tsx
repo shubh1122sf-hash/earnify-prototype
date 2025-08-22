@@ -30,7 +30,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
   const assetId = params.assetId.toUpperCase();
   const assetDetails: { [key: string]: any } = {};
   assetDetailsList.forEach(asset => {
-      assetDetails[asset.ticker] = { name: asset.name, icon: asset.icon, basePrice: asset.price };
+      assetDetails[asset.ticker] = { name: asset.name, icon: asset.icon, basePrice: asset.price, volatility: asset.volatility };
   });
 
   const [asset, setAsset] = useState<any>(null);
@@ -59,28 +59,36 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
     }
   }, [assetId]);
   
-  const generateHistoricalData = useCallback((range: TimeRange, basePrice: number) => {
+  const generateHistoricalData = useCallback((range: TimeRange, basePrice: number, baseVolatility: number) => {
     const now = new Date();
     let dataPoints = 0;
     let interval = 0;
     let volatility = 0.0;
 
     switch(range) {
-        case '1H': dataPoints = 60; interval = 60 * 1000; volatility = 0.1; break;
-        case '1D': dataPoints = 96; interval = 15 * 60 * 1000; volatility = 0.5; break;
-        case '1W': dataPoints = 84; interval = 2 * 60 * 60 * 1000; volatility = 1.5; break;
-        case '1Y': dataPoints = 52; interval = 7 * 24 * 60 * 60 * 1000; volatility = 5; break;
+        case '1H': dataPoints = 60; interval = 60 * 1000; volatility = baseVolatility * 0.5; break;
+        case '1D': dataPoints = 96; interval = 15 * 60 * 1000; volatility = baseVolatility * 1; break;
+        case '1W': dataPoints = 84; interval = 2 * 60 * 60 * 1000; volatility = baseVolatility * 1.5; break;
+        case '1Y': dataPoints = 52; interval = 7 * 24 * 60 * 60 * 1000; volatility = baseVolatility * 2; break;
     }
 
     let lastPrice = basePrice;
+    let momentum = 0;
     const history = Array.from({ length: dataPoints }, (_, i) => {
-        const randomFactor = (Math.random() - 0.5) * 2 * volatility;
-        const newPrice = lastPrice * (1 + randomFactor / 100);
-        lastPrice = newPrice > 0 ? newPrice : lastPrice;
+        const randomFactor = (Math.random() - 0.5) * volatility;
+        const momentumFactor = momentum * 0.8; // Momentum carries over
+        const priceChangePercent = randomFactor + momentumFactor;
+        
+        let newPrice = lastPrice * (1 + priceChangePercent / 100);
+        newPrice = newPrice > 0 ? newPrice : lastPrice; // Prevent negative prices
+        
+        momentum = Math.max(-1, Math.min(1, (newPrice - lastPrice) / lastPrice * 10)); // Update momentum
+        lastPrice = newPrice;
+
         const time = new Date(now.getTime() - (dataPoints - i - 1) * interval);
 
         const formatTime = (date: Date) => {
-            switch(timeRange) {
+            switch(range) {
                 case '1H': return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 case '1D': return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 case '1W': return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
@@ -89,24 +97,24 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
             }
         };
 
-        return { time: formatTime(time), value: lastPrice };
+        return { time: formatTime(time), value: parseFloat(lastPrice.toFixed(4)) };
     });
     
     setPriceHistory(history);
     if(history.length > 0) {
-        setPrice(history[history.length - 1].value);
+        const currentPrice = history[history.length - 1].value;
+        setPrice(currentPrice);
 
         const startPrice = history[0]?.value || 0;
-        const endPrice = history[history.length - 1]?.value || 0;
-        const newChange = startPrice > 0 ? ((endPrice - startPrice) / startPrice) * 100 : 0;
+        const newChange = startPrice > 0 ? ((currentPrice - startPrice) / startPrice) * 100 : 0;
         setChange(newChange);
     }
-  }, [timeRange]);
+  }, []);
 
 
   useEffect(() => {
     if (asset) {
-        generateHistoricalData(timeRange, asset.basePrice);
+        generateHistoricalData(timeRange, asset.basePrice, asset.volatility);
     }
   }, [timeRange, asset, generateHistoricalData]);
   
@@ -117,8 +125,10 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
       setPriceHistory(prevHistory => {
         if (prevHistory.length === 0) return [];
         const lastPrice = prevHistory[prevHistory.length - 1].value;
-        const randomFactor = (Math.random() - 0.5) * 0.2;
-        const newPriceValue = Math.max(0, lastPrice * (1 + randomFactor / 100));
+        
+        // Use a more volatile random factor for live updates
+        const randomFactor = (Math.random() - 0.5) * asset.volatility * 0.75;
+        const newPriceValue = Math.max(0.01, lastPrice * (1 + randomFactor / 100));
         
         const now = new Date();
         const newTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -300,3 +310,5 @@ function TradeForm({ action, assetTicker, price, ownedQuantity = 0 }: { action: 
     </div>
   )
 }
+
+    
