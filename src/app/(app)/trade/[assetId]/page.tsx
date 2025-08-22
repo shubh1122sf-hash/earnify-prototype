@@ -310,5 +310,3 @@ function TradeForm({ action, assetTicker, price, ownedQuantity = 0 }: { action: 
     </div>
   )
 }
-
-    
