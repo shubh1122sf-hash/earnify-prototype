@@ -82,10 +82,10 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
         if (regimeDuration <= 0) {
             // Time to potentially switch regime
             const random = Math.random();
-            if (random < 0.15) { // 15% chance of a long dip
+            if (random < 0.25) { // 25% chance of a long dip
                 regime = 'Dip';
                 regimeDuration = Math.floor(Math.random() * (dataPoints * 0.4)) + Math.floor(dataPoints * 0.2); // Dip lasts for 20-60% of the chart duration
-            } else if (random < 0.25) { // 10% chance of a rally
+            } else if (random < 0.35) { // 10% chance of a rally
                 regime = 'Rally';
                 regimeDuration = Math.floor(Math.random() * (dataPoints * 0.3)) + Math.floor(dataPoints * 0.1); // Rally for 10-40%
             } else {
@@ -97,7 +97,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
 
         let regimeBias = 0;
         if(regime === 'Dip') {
-            regimeBias = -0.15; // Strong downward pressure
+            regimeBias = -0.25; // Stronger downward pressure
         } else if (regime === 'Rally') {
             regimeBias = 0.1; // Strong upward pressure
         }
