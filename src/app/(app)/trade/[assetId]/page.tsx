@@ -17,7 +17,7 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { TrendingUp, TrendingDown } from "lucide-react";
-import { ClientLineChart } from "@/components/client-line-chart";
+import { ClientLineChart, type RegimeArea } from "@/components/client-line-chart";
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
@@ -37,7 +37,8 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
   const [price, setPrice] = useState(0);
   const [change, setChange] = useState(0);
   const [timeRange, setTimeRange] = useState<TimeRange>('1H');
-  const [priceHistory, setPriceHistory] = useState<{time: string; value: number}[]>([]);
+  const [priceHistory, setPriceHistory] = useState<{time: string; value: number; regime?: string}[]>([]);
+  const [regimeAreas, setRegimeAreas] = useState<RegimeArea[]>([]);
   const [initialAction, setInitialAction] = useState('buy');
   const [isClient, setIsClient] = useState(false);
   const { simulation } = useSimulation();
@@ -78,8 +79,21 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
     let regime = 'Normal';
     let regimeDuration = 0;
     
-    const history = Array.from({ length: dataPoints }, (_, i) => {
+    const history: { time: string; value: number, regime: string }[] = [];
+    const regimes: RegimeArea[] = [];
+    let regimeStartIndex = 0;
+
+    for (let i = 0; i < dataPoints; i++) {
         if (regimeDuration <= 0) {
+            // End of the current regime, push the completed area
+            if (i > regimeStartIndex) {
+                regimes.push({
+                    x1: history[regimeStartIndex].time,
+                    x2: history[i - 1].time,
+                    type: regime,
+                });
+            }
+
             // Time to potentially switch regime
             const random = Math.random();
             if (random < 0.25) { // 25% chance of a long dip
@@ -92,6 +106,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
                 regime = 'Normal';
                 regimeDuration = Math.floor(Math.random() * 20) + 10; // Normal for 10-30 steps
             }
+            regimeStartIndex = i;
         }
         regimeDuration--;
 
@@ -124,10 +139,21 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
             }
         };
 
-        return { time: formatTime(time), value: parseFloat(lastPrice.toFixed(4)) };
-    });
-    
+        history.push({ time: formatTime(time), value: parseFloat(lastPrice.toFixed(4)), regime });
+    }
+
+    // Push the final regime area
+    if (history.length > regimeStartIndex) {
+        regimes.push({
+            x1: history[regimeStartIndex].time,
+            x2: history[history.length - 1].time,
+            type: regime,
+        });
+    }
+
+    setRegimeAreas(regimes);
     setPriceHistory(history);
+
     if(history.length > 0) {
         const currentPrice = history[history.length - 1].value;
         setPrice(currentPrice);
@@ -147,6 +173,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
   
   useEffect(() => {
     if (timeRange !== '1H' || !asset || !isClient) return;
+    setRegimeAreas([]); // Don't show regime areas for live data for simplicity
 
     const interval = setInterval(() => {
       setPriceHistory(prevHistory => {
@@ -216,6 +243,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
                             data={priceHistory}
                             dataKey="value"
                             xAxisKey="time"
+                            regimeAreas={regimeAreas}
                         />
                     ) : <Skeleton className="h-full w-full" />}
                 </div>

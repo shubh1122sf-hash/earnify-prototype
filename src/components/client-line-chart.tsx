@@ -9,7 +9,14 @@ import {
   XAxis,
   YAxis,
   ReferenceDot,
+  ReferenceArea,
 } from 'recharts';
+
+export type RegimeArea = {
+  x1: string;
+  x2: string;
+  type: 'Dip' | 'Rally' | 'Normal';
+};
 
 interface ClientLineChartProps {
   data: { [key: string]: any }[];
@@ -18,6 +25,7 @@ interface ClientLineChartProps {
   title?: string;
   description?: string;
   footerText?: string;
+  regimeAreas?: RegimeArea[];
 }
 
 export function ClientLineChart({
@@ -27,6 +35,7 @@ export function ClientLineChart({
   title,
   description,
   footerText,
+  regimeAreas = [],
 }: ClientLineChartProps) {
   if (!data || data.length === 0) {
     return (
@@ -71,6 +80,7 @@ export function ClientLineChart({
           axisLine={false}
           tickMargin={8}
           tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+          interval="preserveStartEnd"
         />
         <YAxis
           tickLine={false}
@@ -92,6 +102,24 @@ export function ClientLineChart({
           }}
           formatter={(value: number) => [`$${value.toFixed(2)}`, "Price"]}
         />
+        
+        {regimeAreas.map((area, index) => {
+            let fill = 'transparent';
+            if (area.type === 'Dip') fill = 'hsl(var(--destructive) / 0.1)';
+            if (area.type === 'Rally') fill = 'hsl(142 71% 45% / 0.1)';
+
+            return (
+                 <ReferenceArea 
+                    key={index} 
+                    x1={area.x1} 
+                    x2={area.x2} 
+                    stroke="transparent" 
+                    fill={fill} 
+                    ifOverflow="visible" 
+                />
+            )
+        })}
+
         <Line
           type="monotone"
           dataKey={dataKey}
