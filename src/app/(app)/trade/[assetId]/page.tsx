@@ -71,18 +71,45 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
         case '1W': dataPoints = 84; interval = 2 * 60 * 60 * 1000; volatility = baseVolatility * 1.5; break;
         case '1Y': dataPoints = 52; interval = 7 * 24 * 60 * 60 * 1000; volatility = baseVolatility * 2; break;
     }
-
+    
     let lastPrice = basePrice;
     let momentum = 0;
+
+    let regime = 'Normal';
+    let regimeDuration = 0;
+    
     const history = Array.from({ length: dataPoints }, (_, i) => {
+        if (regimeDuration <= 0) {
+            // Time to potentially switch regime
+            const random = Math.random();
+            if (random < 0.15) { // 15% chance of a long dip
+                regime = 'Dip';
+                regimeDuration = Math.floor(Math.random() * (dataPoints * 0.4)) + Math.floor(dataPoints * 0.2); // Dip lasts for 20-60% of the chart duration
+            } else if (random < 0.25) { // 10% chance of a rally
+                regime = 'Rally';
+                regimeDuration = Math.floor(Math.random() * (dataPoints * 0.3)) + Math.floor(dataPoints * 0.1); // Rally for 10-40%
+            } else {
+                regime = 'Normal';
+                regimeDuration = Math.floor(Math.random() * 20) + 10; // Normal for 10-30 steps
+            }
+        }
+        regimeDuration--;
+
+        let regimeBias = 0;
+        if(regime === 'Dip') {
+            regimeBias = -0.15; // Strong downward pressure
+        } else if (regime === 'Rally') {
+            regimeBias = 0.1; // Strong upward pressure
+        }
+
         const randomFactor = (Math.random() - 0.5) * volatility;
         const momentumFactor = momentum * 0.8; // Momentum carries over
-        const priceChangePercent = randomFactor + momentumFactor;
+        const priceChangePercent = randomFactor + momentumFactor + regimeBias;
         
         let newPrice = lastPrice * (1 + priceChangePercent / 100);
         newPrice = newPrice > 0 ? newPrice : lastPrice; // Prevent negative prices
         
-        momentum = Math.max(-1, Math.min(1, (newPrice - lastPrice) / lastPrice * 10)); // Update momentum
+        momentum = Math.max(-0.5, Math.min(0.5, (newPrice - lastPrice) / lastPrice * 5)); // Update momentum, clamp to prevent crazy spirals
         lastPrice = newPrice;
 
         const time = new Date(now.getTime() - (dataPoints - i - 1) * interval);
