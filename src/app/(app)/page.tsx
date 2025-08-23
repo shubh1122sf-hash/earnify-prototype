@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { initialAssets as assetList, mentorTips } from "@/lib/assets";
 import { Button } from "@/components/ui/button";
+import { useMentor } from "@/hooks/use-mentor";
 
 type Tip = {
     id: number;
@@ -19,33 +20,17 @@ type Tip = {
 };
 
 type AssetFilter = 'All' | 'Stock' | 'Crypto';
-const MENTOR_KEY = 'earnify-mentor';
 
 export default function MarketPage() {
   const [assets, setAssets] = useState(assetList);
   const [activeTip, setActiveTip] = useState<Tip | null>(null);
   const [filter, setFilter] = useState<AssetFilter>('All');
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedMentor, setSelectedMentor] = useState<string | null>(null);
+  const { selectedMentor } = useMentor();
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
-    const savedMentor = localStorage.getItem(MENTOR_KEY);
-    if (savedMentor) {
-      setSelectedMentor(savedMentor);
-    }
-    
-    const handleStorageChange = () => {
-        const savedMentor = localStorage.getItem(MENTOR_KEY);
-        setSelectedMentor(savedMentor);
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-
-    return () => {
-        window.removeEventListener('storage', handleStorageChange);
-    };
   }, []);
 
   useEffect(() => {
@@ -74,9 +59,15 @@ export default function MarketPage() {
       );
     }, 2500);
 
-    const tipInterval = setInterval(() => {
-        if (!selectedMentor) return;
+    return () => {
+        clearInterval(priceInterval);
+    }
+  }, []);
 
+  useEffect(() => {
+    if (!selectedMentor) return;
+
+    const showNewTip = () => {
         const mentorSpecificTips = mentorTips[selectedMentor as keyof typeof mentorTips] || [];
         if (mentorSpecificTips.length === 0) return;
 
@@ -86,13 +77,20 @@ export default function MarketPage() {
             text: newTipText,
         };
         setActiveTip(newTip);
-    }, 20000);
+    };
+
+    // Show first tip almost immediately
+    const firstTipTimeout = setTimeout(showNewTip, 5000);
+    
+    // Then set up the regular interval
+    const tipInterval = setInterval(showNewTip, 20000);
 
     return () => {
-        clearInterval(priceInterval);
+        clearTimeout(firstTipTimeout);
         clearInterval(tipInterval);
     }
   }, [selectedMentor]);
+
 
   const filteredAssets = assets
     .filter(asset => {

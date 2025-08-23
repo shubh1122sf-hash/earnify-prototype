@@ -6,6 +6,7 @@ import { UserNav } from "@/components/user-nav";
 import { Nav } from "@/components/nav";
 import Link from "next/link";
 import { useSimulation } from "@/hooks/use-simulation";
+import { MentorProvider } from "@/hooks/use-mentor";
 
 const AppIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-8 w-8 fill-primary-foreground">
@@ -13,7 +14,7 @@ const AppIcon = () => (
     </svg>
 )
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+function AppLayoutContent({ children }: { children: React.ReactNode }) {
   const { simulation } = useSimulation();
 
   return (
@@ -58,5 +59,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
       </footer>
     </div>
+  );
+}
+
+export default function AppLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <MentorProvider>
+      <AppLayoutContent>{children}</AppLayoutContent>
+    </MentorProvider>
   );
 }

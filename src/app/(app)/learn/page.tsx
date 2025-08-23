@@ -6,8 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { CheckCircle } from 'lucide-react';
 import Image from 'next/image';
-
-const MENTOR_KEY = 'earnify-mentor';
+import { useMentor } from '@/hooks/use-mentor';
 
 const mentors = [
   {
@@ -45,21 +44,12 @@ const mentors = [
 ];
 
 export default function LearnPage() {
-  const [selectedMentor, setSelectedMentor] = useState<string | null>(null);
+  const { selectedMentor, selectMentor } = useMentor();
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    const savedMentor = localStorage.getItem(MENTOR_KEY);
-    if (savedMentor) {
-      setSelectedMentor(savedMentor);
-    }
     setIsClient(true);
   }, []);
-
-  const handleSelectMentor = (mentorId: string) => {
-    localStorage.setItem(MENTOR_KEY, mentorId);
-    setSelectedMentor(mentorId);
-  };
 
   if (!isClient) {
     return null; // Or a loading skeleton
@@ -93,7 +83,7 @@ export default function LearnPage() {
               <p className="text-sm text-muted-foreground flex-grow">{mentor.description}</p>
               <p className="text-sm font-medium text-foreground mt-4 pt-4 border-t border-dashed">"{mentor.philosophy}"</p>
               <Button 
-                onClick={() => handleSelectMentor(mentor.id)} 
+                onClick={() => selectMentor(mentor.id)} 
                 className="w-full mt-6"
                 variant={selectedMentor === mentor.id ? 'secondary' : 'default'}
                 disabled={selectedMentor === mentor.id}
