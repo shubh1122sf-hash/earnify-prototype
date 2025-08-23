@@ -18,7 +18,7 @@ type Tip = {
     text: string;
 };
 
-type AssetFilter = 'All' | 'Stocks' | 'Crypto';
+type AssetFilter = 'All' | 'Stock' | 'Crypto';
 const MENTOR_KEY = 'earnify-mentor';
 
 export default function MarketPage() {
@@ -35,6 +35,17 @@ export default function MarketPage() {
     if (savedMentor) {
       setSelectedMentor(savedMentor);
     }
+    
+    const handleStorageChange = () => {
+        const savedMentor = localStorage.getItem(MENTOR_KEY);
+        setSelectedMentor(savedMentor);
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+        window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   useEffect(() => {
@@ -47,7 +58,7 @@ export default function MarketPage() {
           const meanReversionForce = (assetList.find(a => a.ticker === asset.ticker)!.price - asset.price) / asset.price * 0.01;
 
           // Make famous companies lose more often
-          const fameFactor = asset.isFamous ? (Math.random() > 0.3 ? -0.1 : 0.1) : 0;
+          const fameFactor = asset.isFamous && Math.random() < 0.7 ? -0.1 * baseVolatility : 0;
           
           const randomFactor = (Math.random() - 0.5) * baseVolatility * 1.5;
           
@@ -75,7 +86,7 @@ export default function MarketPage() {
             text: newTipText,
         };
         setActiveTip(newTip);
-    }, 20000); // Increased tip frequency
+    }, 20000);
 
     return () => {
         clearInterval(priceInterval);
@@ -103,7 +114,7 @@ export default function MarketPage() {
             <div className="flex items-center gap-2">
                 <h2 className="text-xl font-bold text-gray-800">Stock Market</h2>
                 <Button variant={filter === 'All' ? 'secondary' : 'ghost'} size="sm" onClick={() => setFilter('All')}>All</Button>
-                <Button variant={filter === 'Stocks' ? 'secondary' : 'ghost'} size="sm" onClick={() => setFilter('Stocks')}>Stocks</Button>
+                <Button variant={filter === 'Stock' ? 'secondary' : 'ghost'} size="sm" onClick={() => setFilter('Stock')}>Stocks</Button>
                 <Button variant={filter === 'Crypto' ? 'secondary' : 'ghost'} size="sm" onClick={() => setFilter('Crypto')}>Crypto</Button>
             </div>
             <div className="relative">
