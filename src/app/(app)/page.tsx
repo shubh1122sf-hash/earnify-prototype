@@ -43,13 +43,23 @@ export default function MarketPage() {
       setAssets(prevAssets => 
         prevAssets.map(asset => {
           const baseVolatility = asset.volatility;
-          let momentum = asset.momentum * 0.95 + (Math.random() - 0.5) * 0.1;
+          // Let's make momentum a bit more persistent and impactful
+          let momentum = asset.momentum * 0.9 + (Math.random() - 0.5) * 0.2;
+          
+          // Mean reversion force pulls the price back to its initial base price
           const meanReversionForce = (assetList.find(a => a.ticker === asset.ticker)!.price - asset.price) / asset.price * 0.01;
-          const randomFactor = (Math.random() - 0.5) * baseVolatility * 0.5;
+
+          // A stronger random factor for more daily noise
+          const randomFactor = (Math.random() - 0.5) * baseVolatility * 1.5;
+          
           const priceChangePercent = momentum + meanReversionForce + randomFactor;
+          
           const newPrice = Math.max(0.01, asset.price * (1 + priceChangePercent / 100));
           const newChange = ((newPrice - asset.price) / asset.price) * 100;
-          const updatedMomentum = Math.max(-0.25, Math.min(0.25, momentum + newChange / 20));
+          
+          // Update momentum based on the new change, but clamp it to prevent runaway prices
+          const updatedMomentum = Math.max(-0.5, Math.min(0.5, momentum + newChange / 10));
+
           return { ...asset, price: newPrice, change: newChange, momentum: updatedMomentum };
         })
       );
