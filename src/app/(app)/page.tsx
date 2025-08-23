@@ -6,58 +6,56 @@ import {
   Card,
   CardContent,
 } from "@/components/ui/card";
-import { TrendingUp, TrendingDown, Search, Info } from "lucide-react";
+import { TrendingUp, TrendingDown, Search, X } from "lucide-react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { initialAssets as assetList } from "@/lib/assets";
+import { initialAssets as assetList, mentorTips } from "@/lib/assets";
 import { Button } from "@/components/ui/button";
-
-const mentorTips = [
-    "Marshall says: 'Diversification is key. Spread your investments across at least 5 different sectors to minimize risk.'",
-    "Marshall advises: 'Don't invest in what you don't understand. Do your research before buying any asset.'",
-    "Ken suggests: 'When the market is fearful, be greedy. Look for long-term buying opportunities in solid companies.'",
-    "Ken says: 'Set stop-loss orders to protect your capital from significant downturns.'",
-    "Purav notes: 'Look for companies with a low debt-to-equity ratio. A healthy balance sheet is a good sign.'",
-    "Purav advises: 'Check the news! Macroeconomic events can have a huge impact on the entire market.'",
-    "David says: 'The tech sector is showing strong momentum. Time to hunt for growth stocks!'",
-    "David notes: 'Keep an eye on trading volume. A sudden spike can indicate a potential price move.'",
-];
 
 type Tip = {
     id: number;
     text: string;
-    position: { top: number; left: number; };
 };
 
 type AssetFilter = 'All' | 'Stocks' | 'Crypto';
+const MENTOR_KEY = 'earnify-mentor';
 
 export default function MarketPage() {
   const [assets, setAssets] = useState(assetList);
   const [activeTip, setActiveTip] = useState<Tip | null>(null);
   const [filter, setFilter] = useState<AssetFilter>('All');
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedMentor, setSelectedMentor] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+    const savedMentor = localStorage.getItem(MENTOR_KEY);
+    if (savedMentor) {
+      setSelectedMentor(savedMentor);
+    }
+  }, []);
 
   useEffect(() => {
     const priceInterval = setInterval(() => {
       setAssets(prevAssets => 
         prevAssets.map(asset => {
           const baseVolatility = asset.volatility;
-          // Let's make momentum a bit more persistent and impactful
           let momentum = asset.momentum * 0.9 + (Math.random() - 0.5) * 0.2;
           
-          // Mean reversion force pulls the price back to its initial base price
           const meanReversionForce = (assetList.find(a => a.ticker === asset.ticker)!.price - asset.price) / asset.price * 0.01;
 
-          // A stronger random factor for more daily noise
+          // Make famous companies lose more often
+          const fameFactor = asset.isFamous ? (Math.random() > 0.3 ? -0.1 : 0.1) : 0;
+          
           const randomFactor = (Math.random() - 0.5) * baseVolatility * 1.5;
           
-          const priceChangePercent = momentum + meanReversionForce + randomFactor;
+          const priceChangePercent = momentum + meanReversionForce + randomFactor + fameFactor;
           
           const newPrice = Math.max(0.01, asset.price * (1 + priceChangePercent / 100));
           const newChange = ((newPrice - asset.price) / asset.price) * 100;
           
-          // Update momentum based on the new change, but clamp it to prevent runaway prices
           const updatedMomentum = Math.max(-0.5, Math.min(0.5, momentum + newChange / 10));
 
           return { ...asset, price: newPrice, change: newChange, momentum: updatedMomentum };
@@ -66,26 +64,24 @@ export default function MarketPage() {
     }, 2500);
 
     const tipInterval = setInterval(() => {
-        const newTipText = mentorTips[Math.floor(Math.random() * mentorTips.length)];
+        if (!selectedMentor) return;
+
+        const mentorSpecificTips = mentorTips[selectedMentor as keyof typeof mentorTips] || [];
+        if (mentorSpecificTips.length === 0) return;
+
+        const newTipText = mentorSpecificTips[Math.floor(Math.random() * mentorSpecificTips.length)];
         const newTip: Tip = {
             id: Date.now(),
             text: newTipText,
-            position: {
-                top: Math.random() * 60 + 20, 
-                left: Math.random() * 60 + 20,
-            }
         };
         setActiveTip(newTip);
-        setTimeout(() => {
-            setActiveTip(prev => prev?.id === newTip.id ? null : prev);
-        }, 6000); 
-    }, 15000);
+    }, 20000); // Increased tip frequency
 
     return () => {
         clearInterval(priceInterval);
         clearInterval(tipInterval);
     }
-  }, []);
+  }, [selectedMentor]);
 
   const filteredAssets = assets
     .filter(asset => {
@@ -96,6 +92,10 @@ export default function MarketPage() {
         asset.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
         asset.ticker.toLowerCase().includes(searchTerm.toLowerCase())
     );
+  
+  if (!isClient) {
+      return null;
+  }
 
   return (
     <div className="relative">
@@ -119,23 +119,23 @@ export default function MarketPage() {
         </div>
 
         {activeTip && (
-             <div
-                key={activeTip.id}
-                className={cn(
-                    "absolute z-20 p-4 max-w-xs w-full bg-card border-2 border-primary rounded-xl shadow-2xl transition-all duration-500",
-                    "animate-in fade-in-0 zoom-in-95"
-                )}
-                style={{
-                    top: `${activeTip.position.top}%`,
-                    left: `${activeTip.position.left}%`,
-                    transform: 'translate(-50%, -50%)',
-                }}
-            >
-                <div className="flex items-start gap-3">
-                    <Info className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
-                    <p className="text-sm text-foreground font-medium">{activeTip.text}</p>
+             <>
+                <div className="fixed inset-0 bg-black/60 z-40 backdrop-blur-sm" onClick={() => setActiveTip(null)}></div>
+                <div
+                    key={activeTip.id}
+                    className={cn(
+                        "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 p-6 max-w-md w-full bg-card border-2 border-primary rounded-xl shadow-2xl transition-all duration-300",
+                        "animate-in fade-in-0 zoom-in-95"
+                    )}
+                >
+                    <CardContent className="p-0 relative">
+                        <Button variant="ghost" size="icon" className="absolute -top-4 -right-4 h-8 w-8" onClick={() => setActiveTip(null)}>
+                            <X className="h-5 w-5"/>
+                        </Button>
+                        <p className="text-base text-foreground font-medium">{activeTip.text}</p>
+                    </CardContent>
                 </div>
-            </div>
+             </>
         )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
