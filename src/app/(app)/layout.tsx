@@ -1,18 +1,79 @@
 
 'use client';
 
-import React from "react";
+import React, { useState, useEffect, useCallback, ReactNode } from "react";
 import { UserNav } from "@/components/user-nav";
 import { Nav } from "@/components/nav";
 import Link from "next/link";
 import { useSimulation } from "@/hooks/use-simulation";
-import { MentorProvider } from "@/hooks/use-mentor";
+import { MentorContext } from "@/hooks/use-mentor";
+import { usePathname } from 'next/navigation';
+
+const MENTOR_KEY = 'earnify-mentor';
 
 const AppIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-8 w-8 fill-primary-foreground">
         <path d="M12 2L1 9l4 2.5V17h14v-5.5L23 9l-3-2.1V4h-4v2.9L12 2zm0 8.5c-1.93 0-3.5-1.57-3.5-3.5S10.07 3.5 12 3.5s3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z" />
     </svg>
 )
+
+function MentorProvider({ children }: { children: ReactNode }) {
+  const [selectedMentor, setSelectedMentor] = useState<string | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const pathname = usePathname();
+
+  const getMentorFromStorage = useCallback(() => {
+    if (typeof window === 'undefined') return null;
+    try {
+        return localStorage.getItem(MENTOR_KEY);
+    } catch (error) {
+        console.error("Could not access localStorage", error);
+        return null;
+    }
+  }, []);
+
+  useEffect(() => {
+    setSelectedMentor(getMentorFromStorage());
+    setIsInitialized(true);
+  }, [getMentorFromStorage]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === MENTOR_KEY) {
+        setSelectedMentor(event.newValue);
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isInitialized) {
+        setSelectedMentor(getMentorFromStorage());
+    }
+  }, [pathname, isInitialized, getMentorFromStorage]);
+
+  const selectMentor = useCallback((mentorId: string) => {
+    if (typeof window === 'undefined') return;
+    try {
+        localStorage.setItem(MENTOR_KEY, mentorId);
+        setSelectedMentor(mentorId);
+        window.dispatchEvent(new StorageEvent('storage', { key: MENTOR_KEY, newValue: mentorId, url: window.location.href }));
+    } catch (error) {
+        console.error("Could not set item in localStorage", error);
+    }
+  }, []);
+
+  return (
+    <MentorContext.Provider value={{ selectedMentor, selectMentor }}>
+      {children}
+    </MentorContext.Provider>
+  );
+}
+
 
 function AppLayoutContent({ children }: { children: React.ReactNode }) {
   const { simulation } = useSimulation();
