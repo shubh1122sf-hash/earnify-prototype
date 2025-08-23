@@ -6,27 +6,18 @@ import {
   Card,
   CardContent,
 } from "@/components/ui/card";
-import { TrendingUp, TrendingDown, Search, X } from "lucide-react";
+import { TrendingUp, TrendingDown, Search } from "lucide-react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import { initialAssets as assetList, mentorTips } from "@/lib/assets";
+import { initialAssets as assetList } from "@/lib/assets";
 import { Button } from "@/components/ui/button";
-import { useMentor } from "@/hooks/use-mentor";
-
-type Tip = {
-    id: number;
-    text: string;
-};
 
 type AssetFilter = 'All' | 'Stock' | 'Crypto';
 
 export default function MarketPage() {
   const [assets, setAssets] = useState(assetList);
-  const [activeTip, setActiveTip] = useState<Tip | null>(null);
   const [filter, setFilter] = useState<AssetFilter>('All');
   const [searchTerm, setSearchTerm] = useState('');
-  const { selectedMentor } = useMentor();
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -42,7 +33,6 @@ export default function MarketPage() {
           
           const meanReversionForce = (assetList.find(a => a.ticker === asset.ticker)!.price - asset.price) / asset.price * 0.01;
 
-          // Make famous companies lose more often
           const fameFactor = asset.isFamous && Math.random() < 0.7 ? -0.1 * baseVolatility : 0;
           
           const randomFactor = (Math.random() - 0.5) * baseVolatility * 1.5;
@@ -64,38 +54,12 @@ export default function MarketPage() {
     }
   }, []);
 
-  useEffect(() => {
-    if (!selectedMentor) return;
-
-    const showNewTip = () => {
-        const mentorSpecificTips = mentorTips[selectedMentor as keyof typeof mentorTips] || [];
-        if (mentorSpecificTips.length === 0) return;
-
-        const newTipText = mentorSpecificTips[Math.floor(Math.random() * mentorSpecificTips.length)];
-        const newTip: Tip = {
-            id: Date.now(),
-            text: newTipText,
-        };
-        setActiveTip(newTip);
-    };
-
-    // Show first tip almost immediately
-    const firstTipTimeout = setTimeout(showNewTip, 5000);
-    
-    // Then set up the regular interval
-    const tipInterval = setInterval(showNewTip, 20000);
-
-    return () => {
-        clearTimeout(firstTipTimeout);
-        clearInterval(tipInterval);
-    }
-  }, [selectedMentor]);
-
-
   const filteredAssets = assets
     .filter(asset => {
         if (filter === 'All') return true;
-        return asset.type === filter;
+        if (filter === 'Stock') return asset.type === 'Stock';
+        if (filter === 'Crypto') return asset.type === 'Crypto';
+        return true;
     })
     .filter(asset => 
         asset.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -126,26 +90,6 @@ export default function MarketPage() {
                 />
             </div>
         </div>
-
-        {activeTip && (
-             <>
-                <div className="fixed inset-0 bg-black/60 z-40 backdrop-blur-sm" onClick={() => setActiveTip(null)}></div>
-                <div
-                    key={activeTip.id}
-                    className={cn(
-                        "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 p-6 max-w-md w-full bg-card border-2 border-primary rounded-xl shadow-2xl transition-all duration-300",
-                        "animate-in fade-in-0 zoom-in-95"
-                    )}
-                >
-                    <CardContent className="p-0 relative">
-                        <Button variant="ghost" size="icon" className="absolute -top-4 -right-4 h-8 w-8" onClick={() => setActiveTip(null)}>
-                            <X className="h-5 w-5"/>
-                        </Button>
-                        <p className="text-base text-foreground font-medium">{activeTip.text}</p>
-                    </CardContent>
-                </div>
-             </>
-        )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredAssets.map((asset) => (

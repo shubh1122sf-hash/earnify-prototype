@@ -22,7 +22,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import { useSimulation } from '@/hooks/use-simulation';
-import { initialAssets as assetDetailsList } from '@/lib/assets';
+import { initialAssets as assetDetailsList, mentorTips } from '@/lib/assets';
+import { useMentor } from '@/hooks/use-mentor';
 
 type TimeRange = '1H' | '1D' | '1W' | '1Y';
 
@@ -292,6 +293,7 @@ function TradeForm({ action, assetTicker, price, ownedQuantity = 0 }: { action: 
   const { toast } = useToast();
   const { simulation, buyAsset, sellAsset } = useSimulation();
   const { balance } = simulation;
+  const { selectedMentor } = useMentor();
 
   useEffect(() => {
     const numericAmount = parseFloat(amount);
@@ -301,6 +303,22 @@ function TradeForm({ action, assetTicker, price, ownedQuantity = 0 }: { action: 
       setTotal(0);
     }
   }, [amount, price]);
+
+  const showMentorTip = () => {
+    if (selectedMentor) {
+      const tips = mentorTips[selectedMentor as keyof typeof mentorTips];
+      if (tips && tips.length > 0) {
+        const randomTip = tips[Math.floor(Math.random() * tips.length)];
+        setTimeout(() => {
+            toast({
+                title: "A word from your mentor...",
+                description: randomTip,
+                duration: 8000,
+            })
+        }, 1500);
+      }
+    }
+  };
 
   const handleTransaction = () => {
     const numericAmount = parseFloat(amount);
@@ -315,9 +333,9 @@ function TradeForm({ action, assetTicker, price, ownedQuantity = 0 }: { action: 
     toast({
       title: `Order Successful`,
       description: `${action === 'Buy' ? 'Bought' : 'Sold'} ${numericAmount.toLocaleString()} ${assetTicker} for $${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-      variant: action === 'Buy' ? 'default' : 'destructive',
     });
     setAmount('');
+    showMentorTip();
   }
 
   const isSellDisabled = action === 'Sell' && (parseFloat(amount) > ownedQuantity);
