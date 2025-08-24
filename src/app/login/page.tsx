@@ -10,7 +10,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { signInWithGoogle, useAuth } from "@/lib/auth.tsx";
+import { signInWithGoogle } from "@/lib/auth.ts";
+import { useAuth, AuthProvider } from "@/lib/auth.tsx";
 import { useRouter } from "next/navigation";
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -41,7 +42,7 @@ function LoginPageContent() {
   const handleSignIn = async () => {
     try {
       await signInWithGoogle();
-      // The useEffect above will handle the redirect
+      router.push('/');
     } catch (error) {
         console.error("An error occurred during sign-in:", error);
     }
