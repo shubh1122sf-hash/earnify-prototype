@@ -32,9 +32,16 @@ export default function LoginPage() {
   const router = useRouter();
 
   const handleSignIn = async () => {
-    const user = await signInWithGoogle();
-    if (user) {
-      router.push('/');
+    try {
+      const user = await signInWithGoogle();
+      if (user) {
+        router.push('/');
+      } else {
+        // Handle case where user closes popup
+        console.log("Sign-in process was not completed.");
+      }
+    } catch (error) {
+        console.error("An error occurred during sign-in:", error);
     }
   };
 
