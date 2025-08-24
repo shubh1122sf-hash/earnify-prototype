@@ -1,8 +1,6 @@
 
 'use client';
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,7 +10,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { signInWithGoogle } from "@/lib/auth.ts";
-import { useAuth } from "@/lib/auth.tsx";
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg {...props} viewBox="0 0 48 48" >
@@ -30,58 +27,14 @@ const AppIcon = () => (
 )
 
 export default function LoginPage() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
 
-  // This hook handles the case where a user is already logged in
-  // and navigates to the login page. It will redirect them to the app.
-  useEffect(() => {
-    if (!loading && user) {
-      router.push('/');
-    }
-  }, [user, loading, router]);
-
-  // This function handles the sign-in button click.
-  // It directly pushes to the main page on success.
   const handleSignIn = async () => {
     try {
-        const resultUser = await signInWithGoogle();
-        if (resultUser) {
-            router.push('/');
-        } else {
-            // Handle case where signInWithGoogle returns null (e.g., popup closed)
-            console.log("Sign-in process was not completed.");
-        }
+        await signInWithGoogle();
     } catch (error) {
-        // Handle any other errors from the sign-in process
         console.error("An error occurred during sign-in:", error);
     }
   };
-  
-  // Shows a loading state while Firebase auth is initializing.
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background p-4">
-        <div className="flex flex-col items-center gap-4">
-          <AppIcon />
-          <p className="text-muted-foreground">Authenticating...</p>
-        </div>
-      </div>
-    );
-  }
-  
-  // If user is already loaded and exists, this prevents the login form from flashing
-  // before the useEffect above redirects.
-  if (user) {
-    return (
-        <div className="flex min-h-screen items-center justify-center bg-background p-4">
-            <div className="flex flex-col items-center gap-4">
-            <AppIcon />
-            <p className="text-muted-foreground">Redirecting...</p>
-            </div>
-        </div>
-    );
-  }
   
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">

@@ -7,7 +7,7 @@ import { Nav } from "@/components/nav";
 import Link from "next/link";
 import { useSimulation } from "@/hooks/use-simulation";
 import { MentorContext } from "@/hooks/use-mentor";
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useAuth } from "@/lib/auth.tsx";
 import { Skeleton } from "@/components/ui/skeleton";
 import { signOut } from "@/lib/auth.ts";
@@ -80,45 +80,6 @@ function MentorProvider({ children }: { children: ReactNode }) {
 
 function AppLayoutContent({ children }: { children: React.ReactNode }) {
   const { simulation } = useSimulation();
-  const { user, loading } = useAuth();
-  const router = useRouter();
-  
-  useEffect(() => {
-    if (!loading && !user) {
-        router.push('/login');
-    }
-  }, [user, loading, router]);
-  
-  if (loading || !user) {
-    // Show a loading skeleton while we verify authentication or if user is null (being redirected).
-    return (
-        <div className="container mx-auto max-w-7xl font-sans">
-            <header className="bg-card rounded-xl p-4 my-4 border">
-                <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-4">
-                        <AppIcon />
-                        <div>
-                            <h1 className="text-2xl font-bold text-foreground">Earnify</h1>
-                            <p className="text-muted-foreground text-sm">Virtual trading with real market dynamics</p>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-6">
-                        <Skeleton className="h-10 w-24" />
-                        <Skeleton className="h-9 w-9 rounded-full" />
-                    </div>
-                </div>
-            </header>
-            <main>
-                <div className="border-b">
-                  <Skeleton className="h-12 w-full" />
-                </div>
-                <div className="py-6">
-                  <Skeleton className="h-96 w-full" />
-                </div>
-            </main>
-        </div>
-    );
-  }
 
   return (
     <div className="container mx-auto max-w-7xl font-sans">
