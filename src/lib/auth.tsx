@@ -1,7 +1,7 @@
 
 'use client';
 
-import { onAuthStateChanged, type User, getRedirectResult } from "firebase/auth";
+import { onAuthStateChanged, type User } from "firebase/auth";
 import { auth } from "./firebase";
 import { useEffect, useState, createContext, useContext, ReactNode } from "react";
 
@@ -17,36 +17,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const processAuth = async () => {
-            setLoading(true);
-            try {
-                // Check if we are returning from a redirect
-                const result = await getRedirectResult(auth);
-                if (result) {
-                    // This means the user has just signed in.
-                    setUser(result.user);
-                }
-            } catch (error) {
-                console.error("Error handling redirect result:", error);
-            } finally {
-                // Set up the regular auth state listener
-                 const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-                    setUser(currentUser);
-                    setLoading(false);
-                });
-                return unsubscribe;
-            }
-        };
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setUser(currentUser);
+            setLoading(false);
+        });
 
-        const unsubscribePromise = processAuth();
-
-        return () => {
-            unsubscribePromise.then(unsubscribe => {
-                if (unsubscribe) {
-                    unsubscribe();
-                }
-            });
-        };
+        // Cleanup subscription on unmount
+        return () => unsubscribe();
     }, []);
 
     return (
