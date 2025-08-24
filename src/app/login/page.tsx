@@ -41,10 +41,8 @@ export default function LoginPage() {
   }, [user, loading, router]);
 
   const handleSignIn = async () => {
-    const loggedInUser = await signInWithGoogle();
-    if (loggedInUser) {
-      router.push('/');
-    }
+    await signInWithGoogle();
+    // The useEffect will handle the redirect once the auth state changes.
   };
 
   if (loading) {
@@ -53,15 +51,14 @@ export default function LoginPage() {
         <div className="flex flex-col items-center gap-4">
           <AppIcon />
           <p className="text-muted-foreground">Authenticating...</p>
-          <Skeleton className="h-12 w-48" />
         </div>
       </div>
     );
   }
   
+  // This prevents a flash of the login page if the user is already logged in
+  // and the redirect is in progress.
   if (user) {
-    // If user is already available, we will be redirected by the useEffect.
-    // Render a loading state to avoid a flash of the login page.
     return (
         <div className="flex min-h-screen items-center justify-center bg-background p-4">
             <div className="flex flex-col items-center gap-4">
