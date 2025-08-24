@@ -1,6 +1,6 @@
 
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth, initializeAuth, browserLocalPersistence } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
   "projectId": "earnify-simulator",
@@ -11,12 +11,8 @@ const firebaseConfig = {
   "messagingSenderId": "175164373016"
 };
 
-// Initialize Firebase for SSR
+// Initialize Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-
-// Initialize Auth with persistence
-const auth = initializeAuth(app, {
-    persistence: browserLocalPersistence
-});
+const auth = getAuth(app);
 
 export { app, auth };
