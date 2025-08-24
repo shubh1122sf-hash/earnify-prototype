@@ -1,6 +1,7 @@
 
 'use client';
 
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { signInWithGoogle } from "@/lib/auth.ts";
+import { signInWithGoogle, useAuth } from "@/lib/auth.tsx";
 import { useRouter } from "next/navigation";
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -27,23 +28,32 @@ const AppIcon = () => (
     </svg>
 )
 
-
-export default function LoginPage() {
+function LoginPageContent() {
   const router = useRouter();
+  const { user, loading } = useAuth();
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.push('/');
+    }
+  }, [user, loading, router]);
 
   const handleSignIn = async () => {
     try {
-      const user = await signInWithGoogle();
-      if (user) {
-        router.push('/');
-      } else {
-        // Handle case where user closes popup
-        console.log("Sign-in process was not completed.");
-      }
+      await signInWithGoogle();
+      // The useEffect above will handle the redirect
     } catch (error) {
         console.error("An error occurred during sign-in:", error);
     }
   };
+  
+  if (loading || user) {
+    return (
+        <div className="flex min-h-screen items-center justify-center bg-background p-4">
+            <p>Loading...</p>
+        </div>
+    )
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
@@ -66,4 +76,12 @@ export default function LoginPage() {
       </Card>
     </div>
   );
+}
+
+export default function LoginPage() {
+    return (
+        <AuthProvider>
+            <LoginPageContent />
+        </AuthProvider>
+    )
 }
