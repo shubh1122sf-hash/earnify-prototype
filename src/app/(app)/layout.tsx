@@ -81,7 +81,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="container mx-auto max-w-7xl font-sans">
-      <header className="bg-card rounded-xl p-4 my-4 border sticky top-0 z-50">
+      <header className="bg-card rounded-xl p-4 my-4 border">
           <div className="flex justify-between items-center">
               <div className="flex items-center gap-4">
                   <AppIcon />
