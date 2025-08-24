@@ -329,6 +329,8 @@ function TradeForm({ action, assetTicker, price, ownedQuantity = 0 }: { action: 
       description: `${action === 'Buy' ? 'Bought' : 'Sold'} ${numericAmount.toLocaleString()} ${assetTicker} for $${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
     });
     setAmount('');
+    
+    // Show mentor tip right after the transaction toast
     showMentorTip();
   }
 
