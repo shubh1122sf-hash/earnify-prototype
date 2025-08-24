@@ -20,39 +20,45 @@ const AuthContext = createContext<AuthContextType>({ user: null, loading: true }
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
-    const router = useRouter();
-    const pathname = usePathname();
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            if (user) {
-                setUser(user);
-                if (pathname === '/login') {
-                    router.push('/');
-                }
-            } else {
-                 setUser(null);
-            }
-            setLoading(false);
-        });
-
-        handleRedirectResult().then((redirectUser) => {
-            if (redirectUser) {
-                if (!user) {
+        const processAuth = async () => {
+            // First, try to get the result from a redirect
+            try {
+                const redirectUser = await handleRedirectResult();
+                if (redirectUser) {
                     setUser(redirectUser);
                 }
-                if (pathname === '/login') {
-                    router.push('/');
-                }
+            } catch (error) {
+                console.error("Error processing redirect result in AuthProvider", error);
             }
-             setLoading(false);
-        }).catch(() => {
-            setLoading(false);
-        })
+
+            // Then, set up the state listener for subsequent changes
+            const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+                setUser(currentUser);
+                setLoading(false);
+            });
+            
+            // If there was no redirect user, the initial state might still be loading
+            // onAuthStateChanged will handle setting loading to false.
+            // If we still don't have a user from the redirect, we check the current auth state
+            if (!auth.currentUser) {
+                setLoading(false);
+            }
+
+            return unsubscribe;
+        };
+
+        let unsubscribe: (() => void) | undefined;
+        processAuth().then(unsub => unsubscribe = unsub);
 
         // Cleanup subscription on unmount
-        return () => unsubscribe();
-    }, [router, pathname, user]);
+        return () => {
+            if (unsubscribe) {
+                unsubscribe();
+            }
+        };
+    }, []);
 
     return (
         <AuthContext.Provider value={{ user, loading }}>

@@ -1,6 +1,7 @@
 
 'use client';
 
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,6 +13,7 @@ import {
 import { signInWithGoogle } from "@/lib/auth.ts";
 import { useAuth } from "@/lib/auth";
 import { useRouter } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg {...props} viewBox="0 0 48 48" >
@@ -33,17 +35,22 @@ export default function LoginPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
 
-  if (loading) {
+  useEffect(() => {
+    if (!loading && user) {
+      router.push('/');
+    }
+  }, [user, loading, router]);
+  
+  if (loading || user) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background p-4">
-        <p>Loading...</p>
+        <div className="flex flex-col items-center gap-4">
+            <AppIcon />
+            <p className="text-muted-foreground">Signing you in...</p>
+            <Skeleton className="h-12 w-48" />
+        </div>
       </div>
     );
-  }
-  
-  if (user) {
-    router.push('/');
-    return null;
   }
 
   const handleSignIn = async () => {

@@ -152,10 +152,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
           <p>This is a simulation. All data is virtual.</p>
           <div className="flex justify-center gap-4 mt-2">
               <Link href="/account" className="hover:text-primary">Account</Link>
-              <button onClick={() => {
-                  const { signOut } = require("@/lib/auth.ts");
-                  signOut();
-              }} className="hover:text-primary">Log Out</button>
+              <button onClick={() => signOut()} className="hover:text-primary">Log Out</button>
           </div>
         </footer>
       </main>
