@@ -3,8 +3,9 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
-// Your web app's Firebase configuration
+// TODO: Replace this with your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// You can get this from your Firebase project settings -> General -> Your apps -> SDK setup and configuration
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "your-project-id.firebaseapp.com",
