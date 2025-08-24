@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Home, Briefcase, Trophy, User, GraduationCap, BarChart3 } from "lucide-react";
+import { Home, Briefcase, Trophy, User, GraduationCap, BarChart3, Newspaper } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 const links = [
@@ -17,6 +17,11 @@ const links = [
     href: "/portfolio",
     label: "Portfolio",
     icon: Briefcase
+  },
+   {
+    href: "/news",
+    label: "News",
+    icon: Newspaper
   },
   {
     href: "/leaderboard",
