@@ -86,7 +86,6 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
 
     for (let i = 0; i < dataPoints; i++) {
         if (regimeDuration <= 0) {
-            // End of the current regime, push the completed area
             if (i > regimeStartIndex) {
                 regimes.push({
                     x1: history[regimeStartIndex].time,
@@ -95,17 +94,16 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
                 });
             }
 
-            // Time to potentially switch regime
             const random = Math.random();
-            if (random < 0.15) { // 15% chance of a dip
+            if (random < 0.15) { 
                 regime = 'Dip';
-                regimeDuration = Math.floor(Math.random() * (dataPoints * 0.2)) + Math.floor(dataPoints * 0.1); // Dip lasts for 10-30% of the chart duration
-            } else if (random < 0.25) { // 10% chance of a rally
+                regimeDuration = Math.floor(Math.random() * (dataPoints * 0.2)) + Math.floor(dataPoints * 0.1); 
+            } else if (random < 0.25) { 
                 regime = 'Rally';
-                regimeDuration = Math.floor(Math.random() * (dataPoints * 0.2)) + Math.floor(dataPoints * 0.1); // Rally for 10-30%
+                regimeDuration = Math.floor(Math.random() * (dataPoints * 0.2)) + Math.floor(dataPoints * 0.1);
             } else {
                 regime = 'Normal';
-                regimeDuration = Math.floor(Math.random() * 10) + 5; // Normal for 5-15 steps
+                regimeDuration = Math.floor(Math.random() * 10) + 5;
             }
             regimeStartIndex = i;
         }
@@ -113,19 +111,19 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
 
         let regimeBias = 0;
         if(regime === 'Dip') {
-            regimeBias = -0.1; // Downward pressure
+            regimeBias = -0.1;
         } else if (regime === 'Rally') {
-            regimeBias = 0.1; // Upward pressure
+            regimeBias = 0.1;
         }
 
         const randomFactor = (Math.random() - 0.5) * volatility;
-        const momentumFactor = momentum * 0.8; // Momentum carries over
+        const momentumFactor = momentum * 0.8;
         const priceChangePercent = randomFactor + momentumFactor + regimeBias;
         
         let newPrice = lastPrice * (1 + priceChangePercent / 100);
-        newPrice = newPrice > 0 ? newPrice : lastPrice; // Prevent negative prices
+        newPrice = newPrice > 0 ? newPrice : lastPrice; 
         
-        momentum = Math.max(-0.25, Math.min(0.25, (newPrice - lastPrice) / lastPrice * 5)); // Update momentum, clamp to prevent crazy spirals
+        momentum = Math.max(-0.25, Math.min(0.25, (newPrice - lastPrice) / lastPrice * 5));
         lastPrice = newPrice;
 
         const time = new Date(now.getTime() - (dataPoints - i - 1) * interval);
@@ -143,7 +141,6 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
         history.push({ time: formatTime(time), value: parseFloat(lastPrice.toFixed(4)), regime });
     }
 
-    // Push the final regime area
     if (history.length > regimeStartIndex) {
         regimes.push({
             x1: history[regimeStartIndex].time,
@@ -174,14 +171,13 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
   
   useEffect(() => {
     if (timeRange !== '1H' || !asset || !isClient) return;
-    setRegimeAreas([]); // Don't show regime areas for live data for simplicity
+    setRegimeAreas([]);
 
     const interval = setInterval(() => {
       setPriceHistory(prevHistory => {
         if (prevHistory.length === 0) return [];
         const lastPrice = prevHistory[prevHistory.length - 1].value;
         
-        // Use a more volatile random factor for live updates
         const randomFactor = (Math.random() - 0.5) * asset.volatility * 0.75;
         const newPriceValue = Math.max(0.01, lastPrice * (1 + randomFactor / 100));
         
@@ -192,7 +188,7 @@ export default function TradePage({ params }: { params: { assetId: string } }) {
         
         const startPrice = newHistory[0]?.value || 0;
         const endPrice = newHistory[newHistory.length - 1]?.value || 0;
-        const newChange = startPrice > 0 ? ((endPrice - startPrice) / startPrice) * 100 : 0;
+        const newChange = startPrice > 0 ? ((endPrice - startPrice) / endPrice) * 100 : 0;
         setChange(newChange);
         setPrice(endPrice);
 
@@ -304,7 +300,7 @@ function TradeForm({ action, assetTicker, price, ownedQuantity = 0 }: { action: 
     }
   }, [amount, price]);
 
-  const showMentorTip = () => {
+  const showMentorTip = useCallback(() => {
     if (selectedMentor) {
       const tips = mentorTips[selectedMentor as keyof typeof mentorTips];
       if (tips && tips.length > 0) {
@@ -316,7 +312,7 @@ function TradeForm({ action, assetTicker, price, ownedQuantity = 0 }: { action: 
         });
       }
     }
-  };
+  }, [selectedMentor, toast]);
 
   const handleTransaction = () => {
     const numericAmount = parseFloat(amount);

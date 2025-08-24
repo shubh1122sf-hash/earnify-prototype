@@ -61,7 +61,7 @@ export default function StatsPage() {
     return (
         <div className="flex flex-col gap-4 text-center">
              <h1 className="text-3xl font-bold">Your Trading Stats</h1>
-            <div className="p-12 bg-secondary/50 rounded-lg">
+            <div className="p-12 bg-card rounded-lg">
                 <p className="text-muted-foreground">You haven't made any trades yet.</p>
                 <p className="text-muted-foreground">Start trading to see your stats here!</p>
             </div>
@@ -77,7 +77,7 @@ export default function StatsPage() {
         <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total P&L</CardTitle>
-                <span className={`h-4 w-4 ${totalPNL >= 0 ? 'positive' : 'negative'}`}>
+                <span className={`h-4 w-4 ${totalPNL >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                     {totalPNL >= 0 ? <ArrowUp/> : <ArrowDown/>}
                 </span>
             </CardHeader>

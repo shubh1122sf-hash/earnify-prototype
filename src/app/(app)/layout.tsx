@@ -8,11 +8,12 @@ import Link from "next/link";
 import { useSimulation } from "@/hooks/use-simulation";
 import { MentorContext } from "@/hooks/use-mentor";
 import { usePathname } from 'next/navigation';
+import { cn } from "@/lib/utils";
 
 const MENTOR_KEY = 'earnify-mentor';
 
 const AppIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-8 w-8 fill-primary-foreground">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-8 w-8 fill-primary">
         <path d="M12 2L1 9l4 2.5V17h14v-5.5L23 9l-3-2.1V4h-4v2.9L12 2zm0 8.5c-1.93 0-3.5-1.57-3.5-3.5S10.07 3.5 12 3.5s3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z" />
     </svg>
 )
@@ -61,7 +62,6 @@ function MentorProvider({ children }: { children: ReactNode }) {
     try {
         localStorage.setItem(MENTOR_KEY, mentorId);
         setSelectedMentor(mentorId);
-        // This event dispatch is crucial for cross-component updates
         window.dispatchEvent(new StorageEvent('storage', { key: MENTOR_KEY, newValue: mentorId, url: window.location.href }));
     } catch (error) {
         console.error("Could not set item in localStorage", error);
@@ -81,15 +81,13 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="container mx-auto max-w-7xl p-4 font-sans flex flex-col min-h-screen">
-      <header className="bg-card rounded-xl shadow-sm p-4 mb-6 border">
+      <header className="bg-card/50 backdrop-blur-sm rounded-xl p-4 mb-6 border sticky top-4 z-10">
           <div className="flex justify-between items-center">
               <div className="flex items-center gap-4">
-                   <div className="bg-primary text-primary-foreground p-3 rounded-xl">
-                        <AppIcon />
-                   </div>
+                  <AppIcon />
                   <div>
-                      <h1 className="text-2xl font-bold text-foreground">Earnify Simulator</h1>
-                      <p className="text-muted-foreground">Virtual trading with real market dynamics</p>
+                      <h1 className="text-2xl font-bold text-foreground">Earnify</h1>
+                      <p className="text-muted-foreground text-sm">Virtual trading with real market dynamics</p>
                   </div>
               </div>
               <div className="flex items-center gap-6">
@@ -104,11 +102,11 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
           </div>
       </header>
 
-      <main className="bg-card rounded-xl shadow-sm border flex-grow flex flex-col">
+      <main className="flex-grow flex flex-col">
         <div className="flex flex-col border-b">
-          <Nav />
+           <Nav />
         </div>
-        <div className="p-6 flex-grow">
+        <div className="py-6 flex-grow">
           {children}
         </div>
       </main>
@@ -127,7 +125,9 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <MentorProvider>
-      <AppLayoutContent>{children}</AppLayoutContent>
+        <div className="dark">
+            <AppLayoutContent>{children}</AppLayoutContent>
+        </div>
     </MentorProvider>
   );
 }

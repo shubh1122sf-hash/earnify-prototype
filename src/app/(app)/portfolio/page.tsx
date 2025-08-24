@@ -44,7 +44,7 @@ export default function PortfolioPage() {
       <h2 className="text-xl font-bold text-foreground/80 mb-6">Your Portfolio</h2>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <div className="bg-card p-6 rounded-xl shadow-sm border">
+        <div className="bg-card p-6 rounded-xl border">
             <h3 className="text-lg font-semibold text-card-foreground mb-4">Portfolio Value</h3>
             <div className="flex justify-between items-end">
                 <div>
@@ -62,12 +62,12 @@ export default function PortfolioPage() {
             </div>
         </div>
 
-        <div className="bg-card p-6 rounded-xl shadow-sm border flex flex-col items-center justify-center">
+        <div className="bg-card p-6 rounded-xl border flex flex-col items-center justify-center">
             <h3 className="text-lg font-semibold text-card-foreground mb-4">Allocation</h3>
               <ClientPieChart data={chartData} />
         </div>
 
-        <div className="bg-card p-6 rounded-xl shadow-sm border">
+        <div className="bg-card p-6 rounded-xl border">
             <h3 className="text-lg font-semibold text-card-foreground mb-4">Account Balance</h3>
              <div className="flex justify-between items-center">
                 <div>
@@ -82,16 +82,16 @@ export default function PortfolioPage() {
         <h3 className="text-lg font-semibold text-foreground/80 mb-4">Your Holdings</h3>
         <div className="overflow-x-auto">
              {simulation.holdings.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground bg-secondary/50 rounded-lg">
+                <div className="text-center py-12 text-muted-foreground bg-card rounded-lg">
                   <p className="mb-4">You don't have any holdings yet.</p>
                   <Link href="/">
                     <Button>Explore the Market</Button>
                   </Link>
                 </div>
             ) : (
-                <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg border">
+                <div className="overflow-hidden rounded-lg border">
                     <table className="min-w-full divide-y divide-border">
-                        <thead className="bg-secondary">
+                        <thead className="bg-secondary/50">
                             <tr>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Asset</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Quantity</th>
@@ -114,7 +114,7 @@ export default function PortfolioPage() {
                             const pnlSign = pnl >= 0 ? "+" : "";
 
                             return (
-                                <tr key={holding.ticker} className="hover:bg-secondary/50">
+                                <tr key={holding.ticker} className="hover:bg-secondary/20">
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="flex items-center">
                                         <div className="flex-shrink-0 h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center">

@@ -45,14 +45,14 @@ export function Nav() {
 
   return (
     <ScrollArea className="w-full whitespace-nowrap">
-        <div className="flex w-max">
+      <div className="flex w-max">
         {links.map((link) => {
             const isActive = pathname === link.href || (link.href === "/" && pathname.startsWith("/trade"));
             return (
             <Link href={link.href} key={link.label}>
                 <button
                 className={cn(
-                    "py-4 px-6 font-medium text-muted-foreground hover:text-primary hover:border-primary transition flex items-center gap-2 border-b-2",
+                    "py-4 px-6 font-medium text-muted-foreground hover:text-primary hover:border-primary transition-colors flex items-center gap-2 border-b-2",
                     isActive ? "border-primary text-primary" : "border-transparent"
                 )}
                 >
@@ -62,7 +62,7 @@ export function Nav() {
             </Link>
             );
         })}
-        </div>
+      </div>
     </ScrollArea>
   );
 }
