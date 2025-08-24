@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { signInWithGoogle } from "@/lib/auth";
+import { signInWithGoogle } from "@/lib/auth.ts";
 import { useRouter } from "next/navigation";
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
