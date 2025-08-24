@@ -8,6 +8,7 @@ import {
 import { auth } from "./firebase";
 import { useEffect, useState, createContext, useContext, ReactNode } from "react";
 import { handleRedirectResult } from "./auth.ts";
+import { useRouter, usePathname } from 'next/navigation';
 
 interface AuthContextType {
     user: User | null;
@@ -19,28 +20,39 @@ const AuthContext = createContext<AuthContextType>({ user: null, loading: true }
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
+    const router = useRouter();
+    const pathname = usePathname();
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (user) {
                 setUser(user);
-                setLoading(false);
+                if (pathname === '/login') {
+                    router.push('/');
+                }
             } else {
-                // This will handle the case where the page loads and there is no user initially.
-                // We then check for a redirect result.
-                handleRedirectResult().then((redirectUser) => {
-                    if (!redirectUser) {
-                        // Only set user to null if there's also no redirect result.
-                         setUser(null);
-                    }
-                    setLoading(false);
-                });
+                 setUser(null);
             }
+            setLoading(false);
         });
+
+        handleRedirectResult().then((redirectUser) => {
+            if (redirectUser) {
+                if (!user) {
+                    setUser(redirectUser);
+                }
+                if (pathname === '/login') {
+                    router.push('/');
+                }
+            }
+             setLoading(false);
+        }).catch(() => {
+            setLoading(false);
+        })
 
         // Cleanup subscription on unmount
         return () => unsubscribe();
-    }, []);
+    }, [router, pathname, user]);
 
     return (
         <AuthContext.Provider value={{ user, loading }}>

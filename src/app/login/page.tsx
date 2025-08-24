@@ -10,9 +10,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { signInWithGoogle } from "@/lib/auth.ts";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
-import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg {...props} viewBox="0 0 48 48" >
@@ -31,34 +30,30 @@ const AppIcon = () => (
 )
 
 export default function LoginPage() {
-  const router = useRouter();
   const { user, loading } = useAuth();
+  const router = useRouter();
 
-  useEffect(() => {
-    if (!loading && user) {
-      router.push('/');
-    }
-  }, [user, loading, router]);
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background p-4">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+  
+  if (user) {
+    router.push('/');
+    return null;
+  }
 
   const handleSignIn = async () => {
     try {
       await signInWithGoogle();
-      // Redirection is handled by the redirect flow and the effect hook now
     } catch (error) {
         console.error("An error occurred during sign-in:", error);
     }
   };
 
-  if (loading) {
-      return (
-        <div className="flex min-h-screen items-center justify-center bg-background p-4">
-          <p>Loading...</p>
-        </div>
-      )
-  }
-
-  // If user is already logged in, the effect will redirect. 
-  // Otherwise, show the login page.
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-sm">
