@@ -1,14 +1,10 @@
 
 'use client';
 
-import { 
-  onAuthStateChanged,
-  type User,
-} from "firebase/auth";
+import { onAuthStateChanged, type User } from "firebase/auth";
 import { auth } from "./firebase";
 import { useEffect, useState, createContext, useContext, ReactNode } from "react";
 import { handleRedirectResult } from "./auth.ts";
-import { useRouter, usePathname } from 'next/navigation';
 
 interface AuthContextType {
     user: User | null;
@@ -23,7 +19,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     useEffect(() => {
         const processAuth = async () => {
-            // First, try to get the result from a redirect
+            // First, try to get the result from a redirect. This handles the case
+            // where the user is returning from the Google Sign-In page.
             try {
                 const redirectUser = await handleRedirectResult();
                 if (redirectUser) {
@@ -33,7 +30,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 console.error("Error processing redirect result in AuthProvider", error);
             }
 
-            // Then, set up the state listener for subsequent changes
+            // Then, set up the state listener for all subsequent auth changes.
+            // This will handle login, logout, and token refresh.
             const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
                 setUser(currentUser);
                 setLoading(false);
@@ -41,7 +39,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             
             // If there was no redirect user, the initial state might still be loading
             // onAuthStateChanged will handle setting loading to false.
-            // If we still don't have a user from the redirect, we check the current auth state
             if (!auth.currentUser) {
                 setLoading(false);
             }

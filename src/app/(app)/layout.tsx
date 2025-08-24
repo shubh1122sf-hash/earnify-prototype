@@ -10,6 +10,7 @@ import { MentorContext } from "@/hooks/use-mentor";
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from "@/lib/auth.tsx";
 import { Skeleton } from "@/components/ui/skeleton";
+import { signOut } from "@/lib/auth.ts";
 
 const MENTOR_KEY = 'earnify-mentor';
 
@@ -83,12 +84,14 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
+    // Only redirect if loading is complete and there's no user.
     if (!loading && !user) {
       router.push('/login');
     }
   }, [user, loading, router]);
   
   if (loading || !user) {
+    // Show a loading skeleton while we verify authentication.
     return (
         <div className="container mx-auto max-w-7xl font-sans">
             <header className="bg-card rounded-xl p-4 my-4 border">
