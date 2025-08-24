@@ -1,6 +1,8 @@
 
 'use client';
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,8 +14,6 @@ import {
 import { signInWithGoogle } from "@/lib/auth.ts";
 import { useAuth } from "@/lib/auth.tsx";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg {...props} viewBox="0 0 48 48" >
@@ -36,42 +36,49 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!loading && user) {
-        router.push('/');
+      router.push('/');
     }
   }, [user, loading, router]);
 
   const handleSignIn = async () => {
     const loggedInUser = await signInWithGoogle();
     if (loggedInUser) {
-        router.push('/');
+      router.push('/');
     }
-  }
+  };
 
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background p-4">
         <div className="flex flex-col items-center gap-4">
-            <AppIcon />
-            <p className="text-muted-foreground">Authenticating...</p>
-            <Skeleton className="h-12 w-48" />
+          <AppIcon />
+          <p className="text-muted-foreground">Authenticating...</p>
+          <Skeleton className="h-12 w-48" />
         </div>
       </div>
     );
   }
   
-  // If we are done loading and there's a user, this component will be redirecting,
-  // so we can render null or a loading spinner to avoid a flash of the login page.
   if (user) {
-    return null;
+    // If user is already available, we will be redirected by the useEffect.
+    // Render a loading state to avoid a flash of the login page.
+    return (
+        <div className="flex min-h-screen items-center justify-center bg-background p-4">
+            <div className="flex flex-col items-center gap-4">
+            <AppIcon />
+            <p className="text-muted-foreground">Redirecting...</p>
+            </div>
+        </div>
+    );
   }
   
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-            <div className="flex justify-center mb-4">
-                <AppIcon />
-            </div>
+          <div className="flex justify-center mb-4">
+              <AppIcon />
+          </div>
           <CardTitle className="text-2xl font-bold">Welcome to Earnify Simulator</CardTitle>
           <CardDescription>
             Your personal trading simulator. Sign in to continue.
@@ -79,8 +86,8 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent>
           <Button variant="outline" className="w-full" onClick={handleSignIn}>
-              <GoogleIcon className="mr-2 h-5 w-5"/>
-              Sign in with Google
+            <GoogleIcon className="mr-2 h-5 w-5"/>
+            Sign in with Google
           </Button>
         </CardContent>
       </Card>
