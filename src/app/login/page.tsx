@@ -42,7 +42,7 @@ export default function LoginPage() {
   const handleSignIn = async () => {
     try {
       await signInWithGoogle();
-      // No need to redirect here, the AuthProvider will handle it
+      // Redirection is handled by the effect hook now
     } catch (error) {
         console.error("An error occurred during sign-in:", error);
     }
@@ -56,6 +56,8 @@ export default function LoginPage() {
       )
   }
 
+  // If user is already logged in, the effect will redirect. 
+  // Otherwise, show the login page.
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-sm">
