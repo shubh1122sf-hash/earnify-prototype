@@ -309,13 +309,11 @@ function TradeForm({ action, assetTicker, price, ownedQuantity = 0 }: { action: 
       const tips = mentorTips[selectedMentor as keyof typeof mentorTips];
       if (tips && tips.length > 0) {
         const randomTip = tips[Math.floor(Math.random() * tips.length)];
-        setTimeout(() => {
-            toast({
-                title: "A word from your mentor...",
-                description: randomTip,
-                duration: 8000,
-            })
-        }, 1500);
+        toast({
+            title: "A word from your mentor...",
+            description: randomTip,
+            duration: 8000,
+        });
       }
     }
   };
@@ -383,3 +381,5 @@ function TradeForm({ action, assetTicker, price, ownedQuantity = 0 }: { action: 
     </div>
   )
 }
+
+    
