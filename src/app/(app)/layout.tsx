@@ -104,8 +104,8 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
           </div>
       </header>
 
-      <main className="bg-card rounded-xl shadow-sm overflow-hidden border flex-grow flex flex-col">
-        <div className="flex border-b">
+      <main className="bg-card rounded-xl shadow-sm border flex-grow flex flex-col">
+        <div className="flex flex-col border-b">
           <Nav />
         </div>
         <div className="p-6 flex-grow">
