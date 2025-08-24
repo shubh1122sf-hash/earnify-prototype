@@ -9,20 +9,53 @@ import {
 import { TrendingUp, TrendingDown, Search } from "lucide-react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
-import { initialAssets as assetList } from "@/lib/assets";
+import { initialAssets as assetList, mentorTips } from "@/lib/assets";
 import { Button } from "@/components/ui/button";
+import { useMentor } from "@/hooks/use-mentor";
+import { useToast } from "@/hooks/use-toast";
 
 type AssetFilter = 'All' | 'Stock' | 'Crypto';
+const TUTORIAL_KEY = 'earnify-tutorial-complete';
 
 export default function MarketPage() {
   const [assets, setAssets] = useState(assetList);
   const [filter, setFilter] = useState<AssetFilter>('All');
   const [searchTerm, setSearchTerm] = useState('');
   const [isClient, setIsClient] = useState(false);
+  const { selectedMentor } = useMentor();
+  const { toast } = useToast();
 
   useEffect(() => {
     setIsClient(true);
   }, []);
+  
+  useEffect(() => {
+    if (isClient && selectedMentor) {
+      const isTutorialComplete = localStorage.getItem(TUTORIAL_KEY);
+      if (!isTutorialComplete) {
+        const welcomeTips = [
+          `Welcome to Earnify Simulator! I'm ${selectedMentor}, your new mentor. I'm here to help you learn the ropes.`,
+          "This is the Market page. Here you can see all the assets available for trading. Click on any of them to see more details.",
+          "Check out your Portfolio page to see your holdings and performance. You start with $10,000 to get you going.",
+          "Ready to make your first move? Find an asset that looks interesting and try buying a small amount. Good luck!",
+        ];
+
+        let delay = 1000;
+        welcomeTips.forEach(tip => {
+          setTimeout(() => {
+            toast({
+              title: `A word from ${selectedMentor}`,
+              description: tip,
+              duration: 8000,
+            });
+          }, delay);
+          delay += 9000; // Stagger the tips
+        });
+        
+        localStorage.setItem(TUTORIAL_KEY, 'true');
+      }
+    }
+  }, [isClient, selectedMentor, toast]);
 
   useEffect(() => {
     const priceInterval = setInterval(() => {
@@ -33,6 +66,7 @@ export default function MarketPage() {
           
           const meanReversionForce = (assetList.find(a => a.ticker === asset.ticker)!.price - asset.price) / asset.price * 0.01;
 
+          // Make famous stocks more prone to loss
           const fameFactor = asset.isFamous && Math.random() < 0.7 ? -0.1 * baseVolatility : 0;
           
           const randomFactor = (Math.random() - 0.5) * baseVolatility * 1.5;
@@ -57,6 +91,7 @@ export default function MarketPage() {
   const filteredAssets = assets
     .filter(asset => {
         if (filter === 'All') return true;
+        // This is the fix for the filtering logic
         if (filter === 'Stock') return asset.type === 'Stock';
         if (filter === 'Crypto') return asset.type === 'Crypto';
         return true;

@@ -310,7 +310,7 @@ function TradeForm({ action, assetTicker, price, ownedQuantity = 0 }: { action: 
       if (tips && tips.length > 0) {
         const randomTip = tips[Math.floor(Math.random() * tips.length)];
         toast({
-            title: "A word from your mentor...",
+            title: `A word from ${selectedMentor}`,
             description: randomTip,
             duration: 8000,
         });
@@ -381,5 +381,3 @@ function TradeForm({ action, assetTicker, price, ownedQuantity = 0 }: { action: 
     </div>
   )
 }
-
-    

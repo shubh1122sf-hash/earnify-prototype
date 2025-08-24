@@ -61,6 +61,7 @@ function MentorProvider({ children }: { children: ReactNode }) {
     try {
         localStorage.setItem(MENTOR_KEY, mentorId);
         setSelectedMentor(mentorId);
+        // This event dispatch is crucial for cross-component updates
         window.dispatchEvent(new StorageEvent('storage', { key: MENTOR_KEY, newValue: mentorId, url: window.location.href }));
     } catch (error) {
         console.error("Could not set item in localStorage", error);
@@ -104,7 +105,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
       </header>
 
       <main className="bg-card rounded-xl shadow-sm overflow-hidden border flex-grow flex flex-col">
-        <div className="flex border-b">
+        <div className="flex border-b overflow-hidden">
           <Nav />
         </div>
         <div className="p-6 flex-grow">
