@@ -12,6 +12,8 @@ import {
 import { signInWithGoogle } from "@/lib/auth.ts";
 import { useAuth } from "@/lib/auth.tsx";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg {...props} viewBox="0 0 48 48" >
@@ -31,9 +33,14 @@ const AppIcon = () => (
 
 export default function LoginPage() {
   const { user, loading } = useAuth();
+  const router = useRouter();
 
-  // The AuthProvider now handles all redirection.
-  // This page just needs to show a loading state or the login form.
+  useEffect(() => {
+    if (!loading && user) {
+        router.push('/');
+    }
+  }, [user, loading, router]);
+
 
   if (loading || user) {
     // Show a loading skeleton while we verify authentication or if user exists (and is being redirected).
@@ -47,15 +54,6 @@ export default function LoginPage() {
       </div>
     );
   }
-
-  const handleSignIn = async () => {
-    try {
-      await signInWithGoogle();
-      // No navigation here. The AuthProvider will handle it.
-    } catch (error) {
-        console.error("An error occurred during sign-in:", error);
-    }
-  };
 
   // If loading is finished and there's no user, show the login form.
   return (
@@ -71,7 +69,7 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Button variant="outline" className="w-full" onClick={handleSignIn}>
+          <Button variant="outline" className="w-full" onClick={signInWithGoogle}>
               <GoogleIcon className="mr-2 h-5 w-5"/>
               Sign in with Google
           </Button>
