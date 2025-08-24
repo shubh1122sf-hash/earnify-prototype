@@ -41,10 +41,8 @@ function LoginPageContent() {
 
   const handleSignIn = async () => {
     try {
-      const user = await signInWithGoogle();
-      if (user) {
-        window.location.href = '/';
-      }
+      await signInWithGoogle();
+      // The useEffect hook above will handle the redirect
     } catch (error) {
         console.error("An error occurred during sign-in:", error);
     }
