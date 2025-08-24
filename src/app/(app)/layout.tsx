@@ -9,7 +9,7 @@ import { useSimulation } from "@/hooks/use-simulation";
 import { MentorContext } from "@/hooks/use-mentor";
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from "@/lib/utils";
-import { AuthProvider, useAuth } from "@/lib/auth";
+import { AuthProvider, useAuth } from "@/lib/auth.tsx";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const MENTOR_KEY = 'earnify-mentor';

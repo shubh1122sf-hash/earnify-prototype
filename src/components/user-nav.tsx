@@ -13,7 +13,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuth, signOut } from "@/lib/auth";
+import { useAuth } from "@/lib/auth.tsx";
+import { signOut } from "@/lib/auth.ts";
 import { useRouter } from "next/navigation";
 
 export function UserNav() {
