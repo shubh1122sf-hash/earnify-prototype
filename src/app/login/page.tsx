@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { signInWithGoogle } from "@/lib/auth.ts";
-import { useAuth, AuthProvider } from "@/lib/auth.tsx";
+import { useAuth } from "@/lib/auth.tsx";
 import { useRouter } from "next/navigation";
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -29,7 +29,7 @@ const AppIcon = () => (
     </svg>
 )
 
-function LoginPageContent() {
+export default function LoginPage() {
   const router = useRouter();
   const { user, loading } = useAuth();
 
@@ -77,12 +77,4 @@ function LoginPageContent() {
       </Card>
     </div>
   );
-}
-
-export default function LoginPage() {
-    return (
-        <AuthProvider>
-            <LoginPageContent />
-        </AuthProvider>
-    )
 }

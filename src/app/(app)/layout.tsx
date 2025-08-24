@@ -9,7 +9,7 @@ import { useSimulation } from "@/hooks/use-simulation";
 import { MentorContext } from "@/hooks/use-mentor";
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from "@/lib/utils";
-import { AuthProvider, useAuth } from "@/lib/auth.tsx";
+import { useAuth } from "@/lib/auth.tsx";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const MENTOR_KEY = 'earnify-mentor';
@@ -163,10 +163,8 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <AuthProvider>
-        <MentorProvider>
-            <AppLayoutContent>{children}</AppLayoutContent>
-        </MentorProvider>
-    </AuthProvider>
+    <MentorProvider>
+        <AppLayoutContent>{children}</AppLayoutContent>
+    </MentorProvider>
   );
 }
