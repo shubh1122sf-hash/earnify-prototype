@@ -80,8 +80,8 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
   const { simulation } = useSimulation();
 
   return (
-    <div className="container mx-auto max-w-7xl p-4 font-sans flex flex-col min-h-screen">
-      <header className="bg-card rounded-xl p-4 mb-6 border sticky top-4 z-50">
+    <div className="container mx-auto max-w-7xl font-sans flex flex-col h-screen">
+      <header className="bg-card rounded-xl p-4 my-4 border">
           <div className="flex justify-between items-center">
               <div className="flex items-center gap-4">
                   <AppIcon />
@@ -102,22 +102,21 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
           </div>
       </header>
 
-      <main className="flex-grow flex flex-col">
+      <main className="flex-grow flex flex-col overflow-y-auto">
         <div className="flex flex-col border-b">
            <Nav />
         </div>
         <div className="py-6 flex-grow">
           {children}
         </div>
+        <footer className="text-center text-sm text-muted-foreground mt-8 py-4">
+          <p>This is a simulation. All data is virtual.</p>
+          <div className="flex justify-center gap-4 mt-2">
+              <Link href="/account" className="hover:text-primary">Account</Link>
+              <Link href="/login" className="hover:text-primary">Log Out</Link>
+          </div>
+        </footer>
       </main>
-
-      <footer className="text-center text-sm text-muted-foreground mt-8">
-        <p>This is a simulation. All data is virtual.</p>
-        <div className="flex justify-center gap-4 mt-2">
-            <Link href="/account" className="hover:text-primary">Account</Link>
-            <Link href="/login" className="hover:text-primary">Log Out</Link>
-        </div>
-      </footer>
     </div>
   );
 }
@@ -125,9 +124,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <MentorProvider>
-        <div>
-            <AppLayoutContent>{children}</AppLayoutContent>
-        </div>
+        <AppLayoutContent>{children}</AppLayoutContent>
     </MentorProvider>
   );
 }
