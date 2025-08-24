@@ -41,8 +41,10 @@ function LoginPageContent() {
 
   const handleSignIn = async () => {
     try {
-      await signInWithGoogle();
-      router.push('/');
+      const user = await signInWithGoogle();
+      if (user) {
+        window.location.href = '/';
+      }
     } catch (error) {
         console.error("An error occurred during sign-in:", error);
     }
