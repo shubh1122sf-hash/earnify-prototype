@@ -125,7 +125,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <MentorProvider>
-        <div className="dark">
+        <div>
             <AppLayoutContent>{children}</AppLayoutContent>
         </div>
     </MentorProvider>
