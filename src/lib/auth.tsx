@@ -4,24 +4,9 @@
 import { 
   onAuthStateChanged,
   type User,
-  GoogleAuthProvider,
-  signInWithPopup,
 } from "firebase/auth";
 import { auth } from "./firebase";
 import { useEffect, useState, createContext, useContext, ReactNode } from "react";
-
-const provider = new GoogleAuthProvider();
-
-export const signInWithGoogle = async () => {
-  try {
-    const result = await signInWithPopup(auth, provider);
-    return result.user;
-  } catch (error) {
-    console.error("Error during sign-in:", error);
-    throw error;
-  }
-};
-
 
 interface AuthContextType {
     user: User | null;
@@ -40,6 +25,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             setLoading(false);
         });
 
+        // Cleanup subscription on unmount
         return () => unsubscribe();
     }, []);
 

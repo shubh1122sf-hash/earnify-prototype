@@ -13,6 +13,7 @@ import {
 import { signInWithGoogle } from "@/lib/auth.ts";
 import { useAuth } from "@/lib/auth.tsx";
 import { useRouter } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg {...props} viewBox="0 0 48 48" >
@@ -42,7 +43,7 @@ export default function LoginPage() {
   const handleSignIn = async () => {
     try {
       await signInWithGoogle();
-      // The useEffect hook above will handle the redirect
+      // The useEffect hook will handle the redirect on auth state change.
     } catch (error) {
         console.error("An error occurred during sign-in:", error);
     }
@@ -51,7 +52,10 @@ export default function LoginPage() {
   if (loading || user) {
     return (
         <div className="flex min-h-screen items-center justify-center bg-background p-4">
-            <p>Loading...</p>
+            <div className="flex flex-col items-center gap-4">
+              <p>Signing in...</p>
+              <Skeleton className="h-48 w-96" />
+            </div>
         </div>
     )
   }

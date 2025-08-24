@@ -13,11 +13,10 @@ const provider = new GoogleAuthProvider();
 export const signInWithGoogle = async () => {
   try {
     const result = await signInWithPopup(auth, provider);
-    const user = result.user;
-    return user;
+    return result.user;
   } catch (error) {
     console.error("Error during sign-in:", error);
-    return null;
+    throw error; // Re-throw the error so the calling function knows something went wrong
   }
 };
 
