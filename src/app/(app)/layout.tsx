@@ -80,8 +80,8 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
   const { simulation } = useSimulation();
 
   return (
-    <div className="container mx-auto max-w-7xl font-sans flex flex-col h-screen">
-      <header className="bg-card rounded-xl p-4 my-4 border">
+    <div className="container mx-auto max-w-7xl font-sans">
+      <header className="bg-card rounded-xl p-4 my-4 border sticky top-0 z-50">
           <div className="flex justify-between items-center">
               <div className="flex items-center gap-4">
                   <AppIcon />
@@ -102,11 +102,11 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
           </div>
       </header>
 
-      <main className="flex-grow flex flex-col overflow-y-auto">
-        <div className="flex flex-col border-b">
+      <main>
+        <div className="border-b">
            <Nav />
         </div>
-        <div className="py-6 flex-grow">
+        <div className="py-6">
           {children}
         </div>
         <footer className="text-center text-sm text-muted-foreground mt-8 py-4">
