@@ -30,7 +30,7 @@ const links = [
   },
   {
     href: "/learn",
-    label: "Learn",
+    label: "Mentors",
     icon: GraduationCap
   },
   {
