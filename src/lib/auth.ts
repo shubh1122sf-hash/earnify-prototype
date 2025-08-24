@@ -3,7 +3,8 @@
 
 import { 
   GoogleAuthProvider,
-  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signOut as firebaseSignOut
 } from "firebase/auth";
 import { auth } from "./firebase";
@@ -12,13 +13,25 @@ const provider = new GoogleAuthProvider();
 
 export const signInWithGoogle = async () => {
   try {
-    const result = await signInWithPopup(auth, provider);
-    return result.user;
+    await signInWithRedirect(auth, provider);
   } catch (error) {
-    console.error("Error during sign-in:", error);
-    throw error; // Re-throw the error so the calling function knows something went wrong
+    console.error("Error during sign-in redirect:", error);
+    throw error;
   }
 };
+
+export const handleRedirectResult = async () => {
+    try {
+        const result = await getRedirectResult(auth);
+        if (result) {
+            return result.user;
+        }
+        return null;
+    } catch (error) {
+        console.error("Error handling redirect result:", error);
+        return null;
+    }
+}
 
 export const signOut = async () => {
     try {

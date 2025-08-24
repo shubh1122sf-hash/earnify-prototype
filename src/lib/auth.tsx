@@ -7,7 +7,7 @@ import {
 } from "firebase/auth";
 import { auth } from "./firebase";
 import { useEffect, useState, createContext, useContext, ReactNode } from "react";
-import { useRouter } from 'next/navigation';
+import { handleRedirectResult } from "./auth.ts";
 
 interface AuthContextType {
     user: User | null;
@@ -22,8 +22,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
-            setUser(user);
-            setLoading(false);
+            if (user) {
+                setUser(user);
+                setLoading(false);
+            } else {
+                // This will handle the case where the page loads and there is no user initially.
+                // We then check for a redirect result.
+                handleRedirectResult().then((redirectUser) => {
+                    if (!redirectUser) {
+                        // Only set user to null if there's also no redirect result.
+                         setUser(null);
+                    }
+                    setLoading(false);
+                });
+            }
         });
 
         // Cleanup subscription on unmount
