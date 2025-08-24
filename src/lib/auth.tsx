@@ -20,29 +20,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const processAuth = async () => {
             setLoading(true);
             try {
+                // Check if we are returning from a redirect
                 const result = await getRedirectResult(auth);
                 if (result) {
+                    // This means the user has just signed in.
                     setUser(result.user);
                 }
             } catch (error) {
                 console.error("Error handling redirect result:", error);
+            } finally {
+                // Set up the regular auth state listener
+                 const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+                    setUser(currentUser);
+                    setLoading(false);
+                });
+                return unsubscribe;
             }
-            
-            const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-                setUser(currentUser);
-                setLoading(false);
-            });
-
-            return unsubscribe;
         };
 
-        let unsubscribe: (() => void) | undefined;
-        processAuth().then(unsub => unsubscribe = unsub);
+        const unsubscribePromise = processAuth();
 
         return () => {
-            if (unsubscribe) {
-                unsubscribe();
-            }
+            unsubscribePromise.then(unsubscribe => {
+                if (unsubscribe) {
+                    unsubscribe();
+                }
+            });
         };
     }, []);
 

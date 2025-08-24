@@ -42,8 +42,7 @@ export default function LoginPage() {
   }, [user, loading, router]);
 
 
-  if (loading || user) {
-    // Show a loading skeleton while we verify authentication or if user exists (and is being redirected).
+  if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background p-4">
         <div className="flex flex-col items-center gap-4">
@@ -54,8 +53,16 @@ export default function LoginPage() {
       </div>
     );
   }
+  
+  if (user) {
+    // This is a fallback in case the useEffect hasn't fired yet for the redirect.
+    return (
+         <div className="flex min-h-screen items-center justify-center bg-background p-4">
+            <p>Redirecting...</p>
+        </div>
+    );
+  }
 
-  // If loading is finished and there's no user, show the login form.
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-sm">
