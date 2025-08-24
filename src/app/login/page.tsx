@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/card";
 import { signInWithGoogle } from "@/lib/auth.ts";
 import { useAuth } from "@/lib/auth.tsx";
-import { Skeleton } from "@/components/ui/skeleton";
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg {...props} viewBox="0 0 48 48" >
@@ -42,9 +41,9 @@ export default function LoginPage() {
 
   const handleSignIn = async () => {
     await signInWithGoogle();
-    // The useEffect will handle the redirect once the auth state changes.
+    // The useEffect will handle the redirect once the auth state changes
   };
-
+  
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background p-4">
@@ -56,8 +55,7 @@ export default function LoginPage() {
     );
   }
   
-  // This prevents a flash of the login page if the user is already logged in
-  // and the redirect is in progress.
+  // Prevents a flash of the login page if the user is already authenticated
   if (user) {
     return (
         <div className="flex min-h-screen items-center justify-center bg-background p-4">
