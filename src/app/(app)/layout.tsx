@@ -7,7 +7,7 @@ import { Nav } from "@/components/nav";
 import Link from "next/link";
 import { useSimulation } from "@/hooks/use-simulation";
 import { MentorContext } from "@/hooks/use-mentor";
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useAuth } from "@/lib/auth.tsx";
 import { Skeleton } from "@/components/ui/skeleton";
 import { signOut } from "@/lib/auth.ts";
@@ -81,17 +81,9 @@ function MentorProvider({ children }: { children: ReactNode }) {
 function AppLayoutContent({ children }: { children: React.ReactNode }) {
   const { simulation } = useSimulation();
   const { user, loading } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    // Only redirect if loading is complete and there's no user.
-    if (!loading && !user) {
-      router.push('/login');
-    }
-  }, [user, loading, router]);
   
   if (loading || !user) {
-    // Show a loading skeleton while we verify authentication.
+    // Show a loading skeleton while we verify authentication or if user is null (being redirected).
     return (
         <div className="container mx-auto max-w-7xl font-sans">
             <header className="bg-card rounded-xl p-4 my-4 border">
