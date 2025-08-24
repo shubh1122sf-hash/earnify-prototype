@@ -1,9 +1,7 @@
 
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { initializeApp, getApps, getApp } from "firebase/app";
+import { getAuth, initializeAuth, browserLocalPersistence } from "firebase/auth";
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
   "projectId": "earnify-simulator",
   "appId": "1:175164373016:web:5344960ccd36dc98d4eb6d",
@@ -13,6 +11,12 @@ const firebaseConfig = {
   "messagingSenderId": "175164373016"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
+// Initialize Firebase for SSR
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+
+// Initialize Auth with persistence
+const auth = initializeAuth(app, {
+    persistence: browserLocalPersistence
+});
+
+export { app, auth };

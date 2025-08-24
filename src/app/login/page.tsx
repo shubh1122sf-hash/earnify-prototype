@@ -34,7 +34,6 @@ export default function LoginPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
 
-  // This hook will redirect logged-in users away from the login page
   useEffect(() => {
     if (!loading && user) {
         router.push('/');
@@ -46,12 +45,9 @@ export default function LoginPage() {
     if (loggedInUser) {
         router.push('/');
     }
-    // If signInWithGoogle returns null, an error occurred and we stay on the login page.
-    // The error is logged in the console from within the function.
   }
 
-  if (loading || user) {
-    // Show a loading skeleton while we verify authentication or if the user exists (and is being redirected).
+  if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background p-4">
         <div className="flex flex-col items-center gap-4">
@@ -61,6 +57,12 @@ export default function LoginPage() {
         </div>
       </div>
     );
+  }
+  
+  // If we are done loading and there's a user, this component will be redirecting,
+  // so we can render null or a loading spinner to avoid a flash of the login page.
+  if (user) {
+    return null;
   }
   
   return (
