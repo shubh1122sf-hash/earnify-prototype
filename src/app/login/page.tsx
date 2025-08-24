@@ -1,4 +1,6 @@
 
+'use client';
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -7,7 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import Link from "next/link";
+import { signInWithGoogle } from "@/lib/auth";
+import { useRouter } from "next/navigation";
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg {...props} viewBox="0 0 48 48" >
@@ -26,6 +29,15 @@ const AppIcon = () => (
 
 
 export default function LoginPage() {
+  const router = useRouter();
+
+  const handleSignIn = async () => {
+    const user = await signInWithGoogle();
+    if (user) {
+      router.push('/');
+    }
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-sm">
@@ -39,12 +51,10 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Link href="/" className="w-full">
-            <Button variant="outline" className="w-full">
-                <GoogleIcon className="mr-2 h-5 w-5"/>
-                Sign in with Google
-            </Button>
-          </Link>
+          <Button variant="outline" className="w-full" onClick={handleSignIn}>
+              <GoogleIcon className="mr-2 h-5 w-5"/>
+              Sign in with Google
+          </Button>
         </CardContent>
       </Card>
     </div>
