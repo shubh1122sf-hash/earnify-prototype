@@ -3,16 +3,14 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
-// TODO: Replace this with your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-// You can get this from your Firebase project settings -> General -> Your apps -> SDK setup and configuration
+// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "your-project-id.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project-id.appspot.com",
-  messagingSenderId: "your-sender-id",
-  appId: "your-app-id",
+  "projectId": "earnify-simulator",
+  "appId": "1:175164373016:web:5344960ccd36dc98d4eb6d",
+  "storageBucket": "earnify-simulator.firebasestorage.app",
+  "apiKey": "AIzaSyCbMlgngCxOgTY8Qf-lnb4sIUD0-0gut0c",
+  "authDomain": "earnify-simulator.firebaseapp.com",
+  "messagingSenderId": "175164373016"
 };
 
 // Initialize Firebase
