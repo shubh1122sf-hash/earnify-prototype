@@ -7,9 +7,9 @@ import { Nav } from "@/components/nav";
 import Link from "next/link";
 import { useSimulation } from "@/hooks/use-simulation";
 import { MentorContext } from "@/hooks/use-mentor";
-// import { usePathname, useRouter } from 'next/navigation';
-// import { useAuth } from "@/lib/auth.tsx";
-// import { signOut } from "@/lib/auth.ts";
+import { usePathname, useRouter } from 'next/navigation';
+import { useAuth } from "@/lib/auth.tsx";
+import { signOut } from "@/lib/auth.ts";
 
 const MENTOR_KEY = 'earnify-mentor';
 
@@ -32,7 +32,6 @@ const LoadingScreen = () => (
 function MentorProvider({ children }: { children: ReactNode }) {
   const [selectedMentor, setSelectedMentor] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
-  // const pathname = usePathname();
 
   const getMentorFromStorage = useCallback(() => {
     if (typeof window === 'undefined') return null;
@@ -89,6 +88,7 @@ function MentorProvider({ children }: { children: ReactNode }) {
 
 function AppLayoutContent({ children }: { children: React.ReactNode }) {
   const { simulation } = useSimulation();
+  const router = useRouter();
 
   return (
     <div className="container mx-auto max-w-7xl font-sans">
@@ -108,7 +108,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
                     </div>
                     <div className="text-sm text-muted-foreground">Available Balance</div>
                 </div>
-                {/* <UserNav /> */}
+                <UserNav />
               </div>
           </div>
       </header>
@@ -124,7 +124,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
           <p>This is a simulation. All data is virtual.</p>
           <div className="flex justify-center gap-4 mt-2">
               <Link href="/account" className="hover:text-primary">Account</Link>
-              {/* <button onClick={() => signOut()} className="hover:text-primary">Log Out</button> */}
+              <button onClick={() => { signOut().then(() => router.push('/login')) }} className="hover:text-primary">Log Out</button>
           </div>
         </footer>
       </main>
@@ -133,18 +133,18 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
 }
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  // const { user, loading } = useAuth();
-  // const router = useRouter();
+  const { user, loading } = useAuth();
+  const router = useRouter();
 
-  // useEffect(() => {
-  //   if (!loading && !user) {
-  //     router.push('/login');
-  //   }
-  // }, [user, loading, router]);
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [user, loading, router]);
 
-  // if (loading || !user) {
-  //   return <LoadingScreen />;
-  // }
+  if (loading || !user) {
+    return <LoadingScreen />;
+  }
 
   return (
     <MentorProvider>

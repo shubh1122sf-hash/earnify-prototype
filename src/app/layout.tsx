@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
-// import { AuthProvider } from "@/lib/auth.tsx"; // Temporarily disabled
+import { AuthProvider } from "@/lib/auth.tsx";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -20,10 +20,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`font-sans ${inter.variable} antialiased`}>
-        {/* <AuthProvider> */}
+        <AuthProvider>
           {children}
           <Toaster />
-        {/* </AuthProvider> */}
+        </AuthProvider>
       </body>
     </html>
   );

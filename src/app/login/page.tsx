@@ -1,11 +1,32 @@
 
 'use client';
 
-// This page is temporarily disabled to fix the application.
-// You will be taken directly to the main app experience.
-
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { signInWithGoogle } from "@/lib/auth.ts";
+import { useAuth } from "@/lib/auth.tsx";
+
+const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    role="img"
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <path
+      d="M12.48 10.92v3.28h7.84c-.24 1.84-.854 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l-2.333 2.333c-.933-.933-2.2-2.347-3.573-2.347-3.227 0-5.867 2.6-5.867 5.867s2.64 5.867 5.867 5.867c3.427 0 4.787-2.667 5.067-4.067H12.48z"
+      fill="currentColor"
+    />
+  </svg>
+);
 
 const AppIcon = () => (
     <svg
@@ -18,12 +39,23 @@ const AppIcon = () => (
   );
 
 export default function LoginPage() {
-    const router = useRouter();
+  const { user, loading } = useAuth();
+  const router = useRouter();
 
-    useEffect(() => {
+  useEffect(() => {
+    if (!loading && user) {
+      router.push('/');
+    }
+  }, [user, loading, router]);
+  
+  const handleSignIn = async () => {
+    const user = await signInWithGoogle();
+    if (user) {
         router.push('/');
-    }, [router]);
-
+    }
+  }
+  
+  if (loading) {
     return (
         <div className="flex min-h-screen items-center justify-center bg-background p-4">
             <div className="flex flex-col items-center gap-4">
@@ -32,4 +64,33 @@ export default function LoginPage() {
             </div>
         </div>
     );
+  }
+
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-secondary p-4">
+      <Card className="w-full max-w-md shadow-2xl">
+        <CardHeader className="text-center">
+            <div className="mx-auto mb-4">
+                <AppIcon />
+            </div>
+          <CardTitle className="text-3xl font-bold">Welcome to Earnify</CardTitle>
+          <CardDescription>
+            The ultimate virtual trading simulator. Sign in to start your journey.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-4">
+            <Button
+              variant="outline"
+              className="w-full h-12 text-lg"
+              onClick={handleSignIn}
+            >
+              <GoogleIcon className="mr-2 h-6 w-6" />
+              Sign In with Google
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </main>
+  );
 }
