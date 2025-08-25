@@ -1,6 +1,7 @@
 
 'use client';
 
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,6 +11,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { signInWithGoogle } from "@/lib/auth.ts";
+import { useAuth } from "@/lib/auth.tsx";
+import { useRouter } from "next/navigation";
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg {...props} viewBox="0 0 48 48" >
@@ -27,14 +30,29 @@ const AppIcon = () => (
 )
 
 export default function LoginPage() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.push('/');
+    }
+  }, [user, loading, router]);
 
   const handleSignIn = async () => {
-    try {
-        await signInWithGoogle();
-    } catch (error) {
-        console.error("An error occurred during sign-in:", error);
-    }
+    await signInWithGoogle();
   };
+  
+  if (loading || (!loading && user)) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background p-4">
+        <div className="flex flex-col items-center gap-4">
+          <AppIcon />
+          <p className="text-muted-foreground">Authenticating...</p>
+        </div>
+      </div>
+    );
+  }
   
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">

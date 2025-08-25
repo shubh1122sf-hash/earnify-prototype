@@ -7,9 +7,8 @@ import { Nav } from "@/components/nav";
 import Link from "next/link";
 import { useSimulation } from "@/hooks/use-simulation";
 import { MentorContext } from "@/hooks/use-mentor";
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from "@/lib/auth.tsx";
-import { Skeleton } from "@/components/ui/skeleton";
 import { signOut } from "@/lib/auth.ts";
 
 const MENTOR_KEY = 'earnify-mentor';
@@ -19,6 +18,16 @@ const AppIcon = () => (
         <path d="M12 2L1 9l4 2.5V17h14v-5.5L23 9l-3-2.1V4h-4v2.9L12 2zm0 8.5c-1.93 0-3.5-1.57-3.5-3.5S10.07 3.5 12 3.5s3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z" />
     </svg>
 )
+
+const LoadingScreen = () => (
+  <div className="flex min-h-screen items-center justify-center bg-background p-4">
+    <div className="flex flex-col items-center gap-4">
+      <AppIcon />
+      <p className="text-muted-foreground">Loading App...</p>
+    </div>
+  </div>
+);
+
 
 function MentorProvider({ children }: { children: ReactNode }) {
   const [selectedMentor, setSelectedMentor] = useState<string | null>(null);
@@ -124,6 +133,19 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
 }
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [user, loading, router]);
+
+  if (loading || !user) {
+    return <LoadingScreen />;
+  }
+
   return (
     <MentorProvider>
         <AppLayoutContent>{children}</AppLayoutContent>
