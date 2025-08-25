@@ -43,18 +43,20 @@ export default function LoginPage() {
   const router = useRouter();
 
   useEffect(() => {
+    // If loading is finished and we have a user, redirect to the main app.
     if (!loading && user) {
       router.push('/');
     }
   }, [user, loading, router]);
   
   const handleSignIn = async () => {
-    const user = await signInWithGoogle();
-    if (user) {
-        router.push('/');
-    }
+    // This function will only be called if the user clicks the button.
+    // It has no effect if the user is already signed in.
+    await signInWithGoogle();
   }
   
+  // While loading, we can show a simple loading state.
+  // If a user is already logged in, the useEffect will redirect them.
   if (loading) {
     return (
         <div className="flex min-h-screen items-center justify-center bg-background p-4">
@@ -66,6 +68,7 @@ export default function LoginPage() {
     );
   }
 
+  // If loading is done and there is no user, show the login page.
   return (
     <main className="flex min-h-screen items-center justify-center bg-secondary p-4">
       <Card className="w-full max-w-md shadow-2xl">
