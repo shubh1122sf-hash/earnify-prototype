@@ -1,29 +1,40 @@
-
 'use client';
 
-import { 
+import {
   GoogleAuthProvider,
-  signInWithPopup,
-  signOut as firebaseSignOut
-} from "firebase/auth";
-import { auth } from "./firebase";
+  signInWithRedirect,
+  signOut as firebaseSignOut,
+  getRedirectResult,
+} from 'firebase/auth';
+import { auth } from './firebase';
 
 const provider = new GoogleAuthProvider();
 
 export const signInWithGoogle = async () => {
   try {
-    const result = await signInWithPopup(auth, provider);
-    return result.user;
+    await signInWithRedirect(auth, provider);
   } catch (error) {
-    console.error("Error during signInWithGoogle:", error);
-    return null;
+    console.error('Error starting Google sign-in redirect:', error);
   }
 };
 
-export const signOut = async () => {
+export const handleRedirectResult = async () => {
   try {
-      await firebaseSignOut(auth);
+    const result = await getRedirectResult(auth);
+    if (result) {
+      return result.user;
+    }
+    return null;
   } catch (error) {
-      console.error("Error signing out:", error);
+    console.error('Error handling redirect result:', error);
+    return null;
   }
 }
+
+export const signOut = async () => {
+  try {
+    await firebaseSignOut(auth);
+  } catch (error) {
+    console.error('Error signing out:', error);
+  }
+};
