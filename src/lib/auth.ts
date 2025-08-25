@@ -2,9 +2,10 @@
 
 import {
   GoogleAuthProvider,
-  signInWithRedirect,
+  signInWithPopup,
   signOut as firebaseSignOut,
-  getRedirectResult,
+  setPersistence,
+  browserLocalPersistence
 } from 'firebase/auth';
 import { auth } from './firebase';
 
@@ -12,24 +13,15 @@ const provider = new GoogleAuthProvider();
 
 export const signInWithGoogle = async () => {
   try {
-    await signInWithRedirect(auth, provider);
+    // Ensure auth state is persisted locally
+    await setPersistence(auth, browserLocalPersistence);
+    const result = await signInWithPopup(auth, provider);
+    return result.user;
   } catch (error) {
-    console.error('Error starting Google sign-in redirect:', error);
+    console.error("Error signing in with Google popup:", error);
+    return null;
   }
 };
-
-export const handleRedirectResult = async () => {
-  try {
-    const result = await getRedirectResult(auth);
-    if (result) {
-      return result.user;
-    }
-    return null;
-  } catch (error) {
-    console.error('Error handling redirect result:', error);
-    return null;
-  }
-}
 
 export const signOut = async () => {
   try {

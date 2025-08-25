@@ -3,7 +3,6 @@
 import { onAuthStateChanged, type User } from "firebase/auth";
 import { auth } from "./firebase";
 import { useEffect, useState, createContext, useContext, ReactNode } from "react";
-import { handleRedirectResult } from "./auth.ts";
 
 interface AuthContextType {
     user: User | null;
@@ -17,21 +16,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // First, check for redirect result
-        handleRedirectResult().then((redirectUser) => {
-            if (redirectUser) {
-                setUser(redirectUser);
-            }
-            // Then, set up the normal auth state listener
-            const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-                setUser(currentUser);
-                setLoading(false);
-            });
-            return () => unsubscribe();
-        }).catch(() => {
-            // Ensure loading is always set to false even if redirect check fails
-             setLoading(false);
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setUser(currentUser);
+            setLoading(false);
         });
+
+        // Cleanup subscription on unmount
+        return () => unsubscribe();
     }, []);
 
     return (
