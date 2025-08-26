@@ -38,6 +38,15 @@ const AppIcon = () => (
       <path d="M12 2L1 9l4 2.5V17h14v-5.5L23 9l-3-2.1V4h-4v2.9L12 2zm0 8.5c-1.93 0-3.5-1.57-3.5-3.5S10.07 3.5 12 3.5s3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z" />
     </svg>
   );
+  
+const LoadingScreen = () => (
+  <div className="flex min-h-screen items-center justify-center bg-background p-4">
+    <div className="flex flex-col items-center gap-4">
+      <AppIcon />
+      <p className="text-muted-foreground">Loading App...</p>
+    </div>
+  </div>
+);
 
 export default function LoginPage() {
   const { user, loading } = useAuth();
@@ -52,25 +61,15 @@ export default function LoginPage() {
   
   const handleSignIn = async () => {
     setIsSigningIn(true);
-    try {
-      await signInWithGoogle();
-      // The user will be redirected. The AuthProvider will handle the result.
-    } catch (error) {
-      console.error("Sign in failed", error);
-      setIsSigningIn(false); // Reset on failure
-    }
+    await signInWithGoogle();
+    // After this, the user is redirected to Google.
+    // The AuthProvider will handle the result when they return.
   }
   
-  // Show a generic loading screen while auth state is being determined
+  // Show a loading screen while Firebase is initializing, while the user is being redirected,
+  // or if the user is already logged in and we're about to redirect them to the app.
   if (loading || isSigningIn || (!loading && user)) {
-    return (
-        <div className="flex min-h-screen items-center justify-center bg-background p-4">
-            <div className="flex flex-col items-center gap-4">
-                <AppIcon />
-                <p className="text-muted-foreground">Loading App...</p>
-            </div>
-        </div>
-    );
+    return <LoadingScreen />;
   }
 
   return (

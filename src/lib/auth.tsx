@@ -1,7 +1,7 @@
 
 'use client';
 
-import { onAuthStateChanged, type User, getRedirectResult, setPersistence, browserLocalPersistence } from "firebase/auth";
+import { onAuthStateChanged, type User, setPersistence, browserLocalPersistence } from "firebase/auth";
 import { auth } from "./firebase";
 import { useEffect, useState, createContext, useContext, ReactNode } from "react";
 
@@ -17,51 +17,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // This function now correctly handles all auth states.
-        const checkAuth = async () => {
-            try {
-                // Set persistence at the start.
-                await setPersistence(auth, browserLocalPersistence);
-                
-                // Check for the result of a redirect first.
-                const result = await getRedirectResult(auth);
-                if (result) {
-                    // User signed in via redirect.
-                    setUser(result.user);
-                }
-                
-                // Listen for subsequent auth state changes.
-                const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-                    setUser(currentUser);
-                    setLoading(false);
-                });
+        // Set persistence at the start. This helps keep the user logged in
+        // across browser sessions.
+        setPersistence(auth, browserLocalPersistence);
 
-                // If no redirect result and no user from onAuthStateChanged, stop loading.
-                if (!result) {
-                    setLoading(false);
-                }
-
-                return unsubscribe;
-            } catch (error) {
-                console.error("Auth provider error:", error);
-                setLoading(false);
-            }
-        };
-
-        const unsubscribePromise = checkAuth();
+        // onAuthStateChanged is the recommended way to get the current user.
+        // It's a listener that triggers whenever the user's sign-in state changes.
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setUser(currentUser);
+            // This is the most important part: we only stop loading *after*
+            // Firebase has confirmed the user's authentication state.
+            setLoading(false);
+        });
 
         // Cleanup subscription on unmount
-        return () => {
-            unsubscribePromise.then(unsubscribe => {
-                if (unsubscribe) {
-                    unsubscribe();
-                }
-            });
-        };
+        return () => unsubscribe();
     }, []);
 
+    const value = { user, loading };
+
     return (
-        <AuthContext.Provider value={{ user, loading }}>
+        <AuthContext.Provider value={value}>
             {children}
         </AuthContext.Provider>
     );
