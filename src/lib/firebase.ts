@@ -15,16 +15,13 @@ const firebaseConfig = {
 
 // Initialize Firebase and export instances
 let app: FirebaseApp;
-let auth: Auth;
-let db: Firestore;
-
 if (getApps().length === 0) {
   app = initializeApp(firebaseConfig);
 } else {
   app = getApp();
 }
 
-auth = getAuth(app);
-db = getFirestore(app);
+const auth: Auth = getAuth(app);
+const db: Firestore = getFirestore(app);
 
 export { app, auth, db };
