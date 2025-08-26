@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { initialAssets } from '@/lib/assets';
-import { useAuthListener } from '@/hooks/use-auth-listener';
+import { useAuth } from '@/app/auth-provider';
 import { db } from '@/lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
@@ -26,7 +26,7 @@ const getInitialState = (): SimulationState => ({
 });
 
 export function useSimulation() {
-  const { user, loading: authLoading } = useAuthListener();
+  const { user, loading: authLoading } = useAuth();
   const [simulation, setSimulation] = useState<SimulationState>(getInitialState());
   const [loading, setLoading] = useState(true);
 

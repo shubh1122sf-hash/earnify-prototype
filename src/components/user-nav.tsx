@@ -13,13 +13,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuthListener } from "@/hooks/use-auth-listener";
 import { signOut } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "./ui/skeleton";
+import { useAuth } from "@/app/auth-provider";
 
 export function UserNav() {
-  const { user, loading } = useAuthListener();
+  const { user, loading } = useAuth();
   const router = useRouter();
 
   const handleSignOut = async () => {

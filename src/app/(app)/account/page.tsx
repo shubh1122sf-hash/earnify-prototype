@@ -13,11 +13,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { useAuthListener } from "@/hooks/use-auth-listener";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/app/auth-provider";
 
 export default function AccountPage() {
-  const { user, loading } = useAuthListener();
+  const { user, loading } = useAuth();
 
   if (loading || !user) {
       return (
@@ -68,7 +68,7 @@ export default function AccountPage() {
             <CardDescription>
                 Choose what you want to be notified about.
             </CardDescription>
-        </CardHeader>
+        </Header>
         <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
                 <div>

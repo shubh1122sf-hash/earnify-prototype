@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { signInWithGoogle } from "@/lib/auth";
-import { useAuthListener } from '@/hooks/use-auth-listener';
+import { useAuth } from '@/app/auth-provider';
 import { useEffect } from 'react';
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -31,7 +31,7 @@ const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
 const AppIcon = () => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
+      viewBox="0 0 24"
       className="h-12 w-12 fill-primary"
     >
       <path d="M12 2L1 9l4 2.5V17h14v-5.5L23 9l-3-2.1V4h-4v2.9L12 2zm0 8.5c-1.93 0-3.5-1.57-3.5-3.5S10.07 3.5 12 3.5s3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z" />
@@ -41,7 +41,7 @@ const AppIcon = () => (
 const AppLoaderIcon = () => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
+      viewBox="0 0 24"
       className="h-12 w-12 fill-primary animate-pulse"
     >
       <path d="M12 2L1 9l4 2.5V17h14v-5.5L23 9l-3-2.1V4h-4v2.9L12 2zm0 8.5c-1.93 0-3.5-1.57-3.5-3.5S10.07 3.5 12 3.5s3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z" />
@@ -50,7 +50,7 @@ const AppLoaderIcon = () => (
 
 
 export default function LoginPage() {
-  const { user, loading } = useAuthListener();
+  const { user, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -58,52 +58,56 @@ export default function LoginPage() {
       router.push('/');
     }
   }, [user, loading, router]);
-
-  const handleSignIn = async () => {
-    try {
-      // This will now redirect the user, not return a value
-      await signInWithGoogle();
-    } catch (error) {
-      console.error("Sign in failed", error);
-    }
-  };
-
-  if (loading || user) {
-    return (
+  
+  if (loading) {
+     return (
       <main className="flex min-h-screen items-center justify-center bg-secondary p-4">
         <div className="flex flex-col items-center gap-4">
           <AppLoaderIcon />
-          <p className="text-muted-foreground">Initializing...</p>
+          <p className="text-muted-foreground">Loading...</p>
         </div>
       </main>
     );
   }
 
+  // Only show the login page if not loading and no user is found
+  if (!user) {
+      return (
+          <main className="flex min-h-screen items-center justify-center bg-secondary p-4">
+            <Card className="w-full max-w-md shadow-2xl">
+                <CardHeader className="text-center">
+                    <div className="mx-auto mb-4">
+                        <AppIcon />
+                    </div>
+                    <CardTitle className="text-3xl font-bold">Welcome to Earnify</CardTitle>
+                    <CardDescription>
+                        The ultimate virtual trading simulator. Sign in to start your journey.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex flex-col gap-4">
+                        <Button
+                            variant="outline"
+                            className="w-full h-12 text-lg"
+                            onClick={signInWithGoogle}
+                        >
+                            <GoogleIcon className="mr-2 h-6 w-6" />
+                            Sign In with Google
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
+          </main>
+      );
+  }
+
+  // If user exists, show a loader while redirecting
   return (
-      <main className="flex min-h-screen items-center justify-center bg-secondary p-4">
-        <Card className="w-full max-w-md shadow-2xl">
-            <CardHeader className="text-center">
-                <div className="mx-auto mb-4">
-                    <AppIcon />
-                </div>
-                <CardTitle className="text-3xl font-bold">Welcome to Earnify</CardTitle>
-                <CardDescription>
-                    The ultimate virtual trading simulator. Sign in to start your journey.
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <div className="flex flex-col gap-4">
-                    <Button
-                        variant="outline"
-                        className="w-full h-12 text-lg"
-                        onClick={handleSignIn}
-                    >
-                        <GoogleIcon className="mr-2 h-6 w-6" />
-                        Sign In with Google
-                    </Button>
-                </div>
-            </CardContent>
-        </Card>
-      </main>
+    <main className="flex min-h-screen items-center justify-center bg-secondary p-4">
+        <div className="flex flex-col items-center gap-4">
+        <AppLoaderIcon />
+        <p className="text-muted-foreground">Redirecting...</p>
+        </div>
+    </main>
   );
 }

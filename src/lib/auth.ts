@@ -5,11 +5,9 @@ import {
   GoogleAuthProvider,
   signInWithRedirect,
   signOut as firebaseSignOut,
-  getAuth,
 } from 'firebase/auth';
-import { app } from './firebase';
+import { auth } from './firebase';
 
-const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
 export async function signInWithGoogle() {
