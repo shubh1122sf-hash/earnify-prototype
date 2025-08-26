@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { initialAssets } from '@/lib/assets';
 import { useAuth } from '@/lib/auth';
 import { db } from '@/lib/firebase';
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 type Holding = {
   ticker: string;
@@ -31,7 +31,13 @@ export function useSimulation() {
   const [loading, setLoading] = useState(true);
 
   const fetchSimulationState = useCallback(async () => {
-    if (!user) return;
+    if (!user) {
+        // If there's no user and auth is done loading, we can stop loading the sim.
+        if (!authLoading) {
+            setLoading(false);
+        }
+        return;
+    }
 
     setLoading(true);
     const simDocRef = doc(db, 'simulations', user.uid);
@@ -52,16 +58,16 @@ export function useSimulation() {
       }
     } catch (error) {
       console.error("Error fetching simulation state from Firestore:", error);
+      // In case of error, reset to initial state to avoid bad data
+      setSimulation(getInitialState());
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, authLoading]);
 
   useEffect(() => {
-    if (!authLoading) {
-      fetchSimulationState();
-    }
-  }, [authLoading, fetchSimulationState]);
+    fetchSimulationState();
+  }, [fetchSimulationState]);
 
 
   const buyAsset = useCallback(async (ticker: string, quantity: number, price: number) => {
@@ -69,7 +75,6 @@ export function useSimulation() {
     
     const cost = quantity * price;
     if (simulation.balance < cost) {
-      // Maybe show a toast message here in the future
       return;
     }
 
