@@ -14,9 +14,47 @@ import { Button } from "@/components/ui/button";
 import { useMentor } from "@/hooks/use-mentor";
 import { useToast } from "@/hooks/use-toast";
 import { useSimulation } from "@/hooks/use-simulation";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type AssetFilter = 'All' | 'Stock' | 'Crypto';
 const TUTORIAL_KEY = 'earnify-tutorial-complete';
+
+function MarketPageSkeleton() {
+    return (
+        <div>
+            <div className="flex justify-between items-center mb-6 gap-4 flex-wrap">
+                <div className="flex items-center gap-2">
+                    <Skeleton className="h-9 w-24" />
+                    <Skeleton className="h-9 w-16" />
+                    <Skeleton className="h-9 w-20" />
+                    <Skeleton className="h-9 w-20" />
+                </div>
+                <Skeleton className="h-10 w-64" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[...Array(9)].map((_, i) => (
+                    <Card key={i} className="p-4">
+                        <div className="flex justify-between items-start mb-2">
+                            <div>
+                                <Skeleton className="h-5 w-16 mb-2" />
+                                <Skeleton className="h-4 w-24" />
+                            </div>
+                            <div className="text-right">
+                                <Skeleton className="h-5 w-20 mb-2" />
+                                <Skeleton className="h-4 w-16" />
+                            </div>
+                        </div>
+                         <div className="flex justify-between">
+                            <Skeleton className="h-3 w-20" />
+                            <Skeleton className="h-3 w-12" />
+                        </div>
+                    </Card>
+                ))}
+            </div>
+        </div>
+    );
+}
+
 
 export default function MarketPage() {
   const [assets, setAssets] = useState(assetList);
@@ -24,7 +62,7 @@ export default function MarketPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const { selectedMentor } = useMentor();
   const { toast } = useToast();
-  const { simulation, loading } = useSimulation();
+  const { loading } = useSimulation();
 
   useEffect(() => {
     if (!loading && selectedMentor) {
@@ -98,7 +136,7 @@ export default function MarketPage() {
     );
   
   if (loading) {
-      return null; // Or a loading skeleton
+      return <MarketPageSkeleton />;
   }
 
   return (
