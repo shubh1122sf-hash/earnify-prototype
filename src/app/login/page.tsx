@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/card";
 import { signInWithGoogle } from "@/lib/auth";
 import { useAuth } from "@/lib/auth.tsx";
+import { Skeleton } from "@/components/ui/skeleton";
 
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -49,10 +50,29 @@ export default function LoginPage() {
     }
   }, [user, loading, router]);
   
-  if (loading || user) {
-    // The AuthProvider shows a full-screen loader, so we can return null here
-    // while we wait for the auth state to resolve and redirect if necessary.
-    return null;
+  if (loading) {
+    return (
+        <main className="flex min-h-screen items-center justify-center bg-secondary p-4">
+            <Card className="w-full max-w-md shadow-2xl">
+                <CardHeader className="text-center">
+                    <div className="mx-auto mb-4">
+                        <AppIcon />
+                    </div>
+                    <Skeleton className="h-8 w-48 mx-auto" />
+                    <Skeleton className="h-4 w-full max-w-xs mx-auto mt-2" />
+                </CardHeader>
+                <CardContent>
+                    <Skeleton className="h-12 w-full" />
+                </CardContent>
+            </Card>
+        </main>
+    );
+  }
+
+  // If a user is already logged in (but loading is false), the useEffect above will trigger the redirect.
+  // We can return null here to avoid rendering the login page for a split second.
+  if (user) {
+      return null;
   }
 
   return (

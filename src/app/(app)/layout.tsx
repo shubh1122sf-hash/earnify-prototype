@@ -10,6 +10,7 @@ import { MentorContext } from "@/hooks/use-mentor";
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from "@/lib/auth.tsx";
 import { signOut } from "@/lib/auth";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const MENTOR_KEY = 'earnify-mentor';
 
@@ -133,9 +134,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }, [user, loading, router]);
 
   if (loading || !user) {
-    // The AuthProvider shows a global loader, so we can return null here
-    // while we wait for the auth state to resolve and redirect if necessary.
-    return null;
+    return (
+        <div className="flex items-center justify-center min-h-screen">
+            <Skeleton className="h-12 w-12 rounded-full animate-pulse" />
+        </div>
+    );
   }
 
   return (
