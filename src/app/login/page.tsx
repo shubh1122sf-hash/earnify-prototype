@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/card";
 import { signInWithGoogle } from "@/lib/auth.ts";
 import { useAuth } from "@/lib/auth.tsx";
+import { useToast } from "@/hooks/use-toast";
+
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -41,6 +43,7 @@ const AppIcon = () => (
 export default function LoginPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const { toast } = useToast();
 
   useEffect(() => {
     // If loading is finished and we have a user, redirect to the main app.
@@ -50,9 +53,16 @@ export default function LoginPage() {
   }, [user, loading, router]);
   
   const handleSignIn = async () => {
-    // This function will only be called if the user clicks the button.
-    // It has no effect if the user is already signed in.
-    await signInWithGoogle();
+    const { user, error } = await signInWithGoogle();
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Sign-in Failed",
+        description: `Error: ${error.code}. ${error.message}`,
+      });
+    } else if (user) {
+        router.push('/');
+    }
   }
   
   // While loading, we can show a simple loading state.
