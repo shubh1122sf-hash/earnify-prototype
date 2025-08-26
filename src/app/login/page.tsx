@@ -49,15 +49,10 @@ export default function LoginPage() {
     }
   }, [user, loading, router]);
   
+  // The AuthProvider shows a full-screen loader, so we don't need a separate one here.
+  // We can return null or a minimal loader if we want to avoid layout shifts.
   if (loading || user) {
-    return (
-        <main className="flex min-h-screen items-center justify-center bg-secondary p-4">
-             <div className="flex flex-col items-center gap-4">
-                <AppIcon />
-                <p className="text-muted-foreground">Loading App...</p>
-            </div>
-        </main>
-    );
+    return null;
   }
 
   return (
@@ -77,7 +72,7 @@ export default function LoginPage() {
               <Button
               variant="outline"
               className="w-full h-12 text-lg"
-              onClick={async () => await signInWithGoogle()}
+              onClick={signInWithGoogle}
               >
               <GoogleIcon className="mr-2 h-6 w-6" />
               Sign In with Google

@@ -10,16 +10,16 @@ import { auth } from './firebase';
 
 const provider = new GoogleAuthProvider();
 
-export const signInWithGoogle = async () => {
+export async function signInWithGoogle() {
   try {
     await signInWithPopup(auth, provider);
   } catch (error: any) {
     console.error("Error during sign-in with popup:", error);
-    alert(`Sign-in failed. Check the console for details. Error: ${error.message}`);
+    // Potentially show a user-facing error message here
   }
 };
 
-export const signOut = async () => {
+export async function signOut() {
   try {
     await firebaseSignOut(auth);
   } catch (error) {

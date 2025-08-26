@@ -9,7 +9,7 @@ import { useSimulation } from "@/hooks/use-simulation";
 import { MentorContext } from "@/hooks/use-mentor";
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from "@/lib/auth.tsx";
-import { signOut } from "@/lib/auth.ts";
+import { signOut } from "@/lib/auth";
 
 const MENTOR_KEY = 'earnify-mentor';
 
@@ -133,7 +133,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }, [user, loading, router]);
 
   if (loading || !user) {
-    return null; // The AuthProvider shows a global loader
+    // The AuthProvider shows a global loader, so we can return null here
+    // while we wait for the auth state to resolve and redirect if necessary.
+    return null;
   }
 
   return (
