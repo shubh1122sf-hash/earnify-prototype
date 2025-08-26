@@ -46,27 +46,24 @@ export default function LoginPage() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // If loading is finished and we have a user, redirect to the main app.
     if (!loading && user) {
       router.push('/');
     }
   }, [user, loading, router]);
   
   const handleSignIn = async () => {
-    const { user, error } = await signInWithGoogle();
+    const { error } = await signInWithGoogle();
     if (error) {
-      toast({
+       toast({
         variant: "destructive",
         title: "Sign-in Failed",
-        description: `Error: ${error.code}. ${error.message}`,
+        description: `Error: ${error.code}. Please check your project configuration.`,
       });
-    } else if (user) {
-        router.push('/');
+    } else {
+        // Successful sign in will be handled by the useEffect
     }
   }
   
-  // While loading, we can show a simple loading state.
-  // If a user is already logged in, the useEffect will redirect them.
   if (loading) {
     return (
         <div className="flex min-h-screen items-center justify-center bg-background p-4">
@@ -78,32 +75,46 @@ export default function LoginPage() {
     );
   }
 
-  // If loading is done and there is no user, show the login page.
-  return (
-    <main className="flex min-h-screen items-center justify-center bg-secondary p-4">
-      <Card className="w-full max-w-md shadow-2xl">
-        <CardHeader className="text-center">
-            <div className="mx-auto mb-4">
-                <AppIcon />
+  // If not loading and no user, show login page.
+  // If there is a user, the useEffect will redirect.
+  if (!user) {
+    return (
+        <main className="flex min-h-screen items-center justify-center bg-secondary p-4">
+        <Card className="w-full max-w-md shadow-2xl">
+            <CardHeader className="text-center">
+                <div className="mx-auto mb-4">
+                    <AppIcon />
+                </div>
+            <CardTitle className="text-3xl font-bold">Welcome to Earnify</CardTitle>
+            <CardDescription>
+                The ultimate virtual trading simulator. Sign in to start your journey.
+            </CardDescription>
+            </CardHeader>
+            <CardContent>
+            <div className="flex flex-col gap-4">
+                <Button
+                variant="outline"
+                className="w-full h-12 text-lg"
+                onClick={handleSignIn}
+                >
+                <GoogleIcon className="mr-2 h-6 w-6" />
+                Sign In with Google
+                </Button>
             </div>
-          <CardTitle className="text-3xl font-bold">Welcome to Earnify</CardTitle>
-          <CardDescription>
-            The ultimate virtual trading simulator. Sign in to start your journey.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col gap-4">
-            <Button
-              variant="outline"
-              className="w-full h-12 text-lg"
-              onClick={handleSignIn}
-            >
-              <GoogleIcon className="mr-2 h-6 w-6" />
-              Sign In with Google
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </main>
+            </CardContent>
+        </Card>
+        </main>
+    );
+  }
+
+  // If we are here, it means we are logged in, but the redirect hasn't happened yet.
+  // Show a loading screen to prevent a flicker of the login page.
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-background p-4">
+        <div className="flex flex-col items-center gap-4">
+            <AppIcon />
+            <p className="text-muted-foreground">Signing In...</p>
+        </div>
+    </div>
   );
 }
