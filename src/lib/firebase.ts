@@ -3,6 +3,8 @@ import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
+// This is a public configuration and is safe to expose.
+// Security is enforced by Firebase Security Rules.
 const firebaseConfig = {
   "projectId": "earnify-simulator",
   "appId": "1:175164373016:web:5344960ccd36dc98d4eb6d",

@@ -50,7 +50,14 @@ export default function LoginPage() {
   }, [user, loading, router]);
   
   if (loading || user) {
-    return null; // The AuthProvider handles the main loading screen
+    return (
+        <main className="flex min-h-screen items-center justify-center bg-secondary p-4">
+             <div className="flex flex-col items-center gap-4">
+                <AppIcon />
+                <p className="text-muted-foreground">Loading App...</p>
+            </div>
+        </main>
+    );
   }
 
   return (
@@ -70,7 +77,7 @@ export default function LoginPage() {
               <Button
               variant="outline"
               className="w-full h-12 text-lg"
-              onClick={signInWithGoogle}
+              onClick={async () => await signInWithGoogle()}
               >
               <GoogleIcon className="mr-2 h-6 w-6" />
               Sign In with Google

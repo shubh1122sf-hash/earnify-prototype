@@ -14,8 +14,10 @@ export const signInWithGoogle = async () => {
   try {
     await signInWithPopup(auth, provider);
   } catch (error: any) {
-    // This can happen if the user closes the popup.
-    console.error("Error during sign-in:", error);
+    // This can happen if the user closes the popup or due to other errors.
+    console.error("Error during sign-in with popup:", error);
+    // Alerting the user can be helpful for debugging in the preview environment.
+    alert(`Sign-in failed. Check the console for details. Error: ${error.message}`);
   }
 };
 
