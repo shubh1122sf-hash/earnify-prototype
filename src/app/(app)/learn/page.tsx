@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle } from 'lucide-react';
 import Image from 'next/image';
 import { useMentor } from '@/hooks/use-mentor';
+import { useSimulation } from '@/hooks/use-simulation';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const mentors = [
   {
@@ -45,14 +47,36 @@ const mentors = [
 
 export default function LearnPage() {
   const { selectedMentor, selectMentor } = useMentor();
-  const [isClient, setIsClient] = useState(false);
+  const { loading } = useSimulation();
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
-  if (!isClient) {
-    return null; // Or a loading skeleton
+  if (loading) {
+     return (
+        <div className="flex flex-col gap-6">
+            <div className="text-center">
+                <Skeleton className="h-8 w-64 mx-auto" />
+                <Skeleton className="h-4 w-full max-w-2xl mx-auto mt-4" />
+                <Skeleton className="h-4 w-full max-w-lg mx-auto mt-2" />
+            </div>
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+                {[...Array(4)].map((_, i) => (
+                    <Card key={i}>
+                        <CardHeader className="items-center text-center p-6 bg-secondary/50">
+                            <Skeleton className="w-20 h-20 rounded-full mb-4" />
+                            <Skeleton className="h-6 w-24" />
+                            <Skeleton className="h-4 w-32 mt-2" />
+                        </CardHeader>
+                        <CardContent className="p-6">
+                            <Skeleton className="h-4 w-full" />
+                             <Skeleton className="h-4 w-full mt-2" />
+                             <Skeleton className="h-4 w-2/3 mt-2" />
+                            <Skeleton className="h-10 w-full mt-6" />
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+        </div>
+     );
   }
 
   return (

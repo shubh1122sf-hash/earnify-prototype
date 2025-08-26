@@ -9,10 +9,11 @@ import {
 import { TrendingUp, TrendingDown, Search } from "lucide-react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
-import { initialAssets as assetList, mentorTips } from "@/lib/assets";
+import { initialAssets as assetList } from "@/lib/assets";
 import { Button } from "@/components/ui/button";
 import { useMentor } from "@/hooks/use-mentor";
 import { useToast } from "@/hooks/use-toast";
+import { useSimulation } from "@/hooks/use-simulation";
 
 type AssetFilter = 'All' | 'Stock' | 'Crypto';
 const TUTORIAL_KEY = 'earnify-tutorial-complete';
@@ -21,16 +22,12 @@ export default function MarketPage() {
   const [assets, setAssets] = useState(assetList);
   const [filter, setFilter] = useState<AssetFilter>('All');
   const [searchTerm, setSearchTerm] = useState('');
-  const [isClient, setIsClient] = useState(false);
   const { selectedMentor } = useMentor();
   const { toast } = useToast();
+  const { simulation, loading } = useSimulation();
 
   useEffect(() => {
-    setIsClient(true);
-  }, []);
-  
-  useEffect(() => {
-    if (isClient && selectedMentor) {
+    if (!loading && selectedMentor) {
       const isTutorialComplete = localStorage.getItem(TUTORIAL_KEY);
       if (!isTutorialComplete) {
         const welcomeTips = [
@@ -55,7 +52,7 @@ export default function MarketPage() {
         localStorage.setItem(TUTORIAL_KEY, 'true');
       }
     }
-  }, [isClient, selectedMentor, toast]);
+  }, [loading, selectedMentor, toast]);
 
   useEffect(() => {
     const priceInterval = setInterval(() => {
@@ -100,8 +97,8 @@ export default function MarketPage() {
         asset.ticker.toLowerCase().includes(searchTerm.toLowerCase())
     );
   
-  if (!isClient) {
-      return null;
+  if (loading) {
+      return null; // Or a loading skeleton
   }
 
   return (

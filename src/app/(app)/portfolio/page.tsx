@@ -11,12 +11,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
 export default function PortfolioPage() {
-  const [isClient, setIsClient] = useState(false);
-  const { simulation, getPortfolioValue, getPortfolioPNL } = useSimulation();
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  const { simulation, getPortfolioValue, getPortfolioPNL, loading } = useSimulation();
 
   const portfolioValue = getPortfolioValue();
   const { totalPNL, totalPNLPercent } = getPortfolioPNL();
@@ -29,12 +24,13 @@ export default function PortfolioPage() {
     };
   }) : [];
 
-  if (!isClient) {
+  if (loading) {
     return (
         <div className="flex flex-col gap-6">
             <h2 className="text-xl font-bold text-foreground/80 mb-6">Your Portfolio</h2>
             <Skeleton className="h-24 w-full" />
             <Skeleton className="h-64 w-full" />
+            <Skeleton className="h-48 w-full" />
         </div>
     )
   }
