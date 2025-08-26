@@ -19,8 +19,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // This effect handles both the initial redirect result and subsequent auth changes.
     const processAuth = async () => {
+      setLoading(true);
       try {
-        // Check for redirect result first. This will be null on normal page loads.
+        // Check for redirect result first. This will be null on normal page loads
+        // and after popup-based sign-ins. It is only populated after a redirect.
         const result = await getRedirectResult(auth);
         if (result) {
           // User has just signed in via redirect.
@@ -32,6 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       
       // Set up the permanent listener for auth state changes.
+      // This is the primary mechanism for tracking the user's state.
       const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
         setUser(currentUser);
         setLoading(false);
