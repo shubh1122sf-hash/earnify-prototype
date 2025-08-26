@@ -17,33 +17,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // This effect runs once on mount to handle the redirect result
-    // and set up the permanent auth state listener.
-    const handleAuth = async () => {
+    // This effect handles both the initial redirect result and subsequent auth changes.
+    const processAuth = async () => {
       try {
+        // Check for redirect result first. This will be null on normal page loads.
         const result = await getRedirectResult(auth);
         if (result) {
           // User has just signed in via redirect.
+          // onAuthStateChanged will also fire, but this gives immediate feedback.
           setUser(result.user);
         }
-        // For subsequent loads, result will be null.
-        // We let onAuthStateChanged handle the user state.
       } catch (error) {
         console.error("Error processing redirect result:", error);
-      } finally {
-        // After processing the redirect (or not), set up the listener.
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-          setUser(currentUser);
-          setLoading(false);
-        });
-        
-        // Return the cleanup function for the listener.
-        return () => unsubscribe();
       }
+      
+      // Set up the permanent listener for auth state changes.
+      const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+        setUser(currentUser);
+        setLoading(false);
+      });
+
+      // Cleanup the listener on component unmount
+      return () => unsubscribe();
     };
-    
-    handleAuth();
-    
+
+    processAuth();
   }, []);
 
   return (

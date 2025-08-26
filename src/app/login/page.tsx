@@ -48,18 +48,19 @@ const AppLoaderIcon = () => (
     </svg>
 );
 
-
 export default function LoginPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
+    // If loading is finished and there's a user, redirect them to the main app.
     if (!loading && user) {
       router.push('/');
     }
   }, [user, loading, router]);
   
-  if (loading) {
+  // While checking for a user, or if a user is found (and redirect is in progress), show a loader.
+  if (loading || user) {
      return (
       <main className="flex min-h-screen items-center justify-center bg-secondary p-4">
         <div className="flex flex-col items-center gap-4">
@@ -71,43 +72,31 @@ export default function LoginPage() {
   }
 
   // Only show the login page if not loading and no user is found
-  if (!user) {
-      return (
-          <main className="flex min-h-screen items-center justify-center bg-secondary p-4">
-            <Card className="w-full max-w-md shadow-2xl">
-                <CardHeader className="text-center">
-                    <div className="mx-auto mb-4">
-                        <AppIcon />
-                    </div>
-                    <CardTitle className="text-3xl font-bold">Welcome to Earnify</CardTitle>
-                    <CardDescription>
-                        The ultimate virtual trading simulator. Sign in to start your journey.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="flex flex-col gap-4">
-                        <Button
-                            variant="outline"
-                            className="w-full h-12 text-lg"
-                            onClick={signInWithGoogle}
-                        >
-                            <GoogleIcon className="mr-2 h-6 w-6" />
-                            Sign In with Google
-                        </Button>
-                    </div>
-                </CardContent>
-            </Card>
-          </main>
-      );
-  }
-
-  // If user exists, show a loader while redirecting
   return (
-    <main className="flex min-h-screen items-center justify-center bg-secondary p-4">
-        <div className="flex flex-col items-center gap-4">
-        <AppLoaderIcon />
-        <p className="text-muted-foreground">Redirecting...</p>
-        </div>
-    </main>
+      <main className="flex min-h-screen items-center justify-center bg-secondary p-4">
+        <Card className="w-full max-w-md shadow-2xl">
+            <CardHeader className="text-center">
+                <div className="mx-auto mb-4">
+                    <AppIcon />
+                </div>
+                <CardTitle className="text-3xl font-bold">Welcome to Earnify</CardTitle>
+                <CardDescription>
+                    The ultimate virtual trading simulator. Sign in to start your journey.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="flex flex-col gap-4">
+                    <Button
+                        variant="outline"
+                        className="w-full h-12 text-lg"
+                        onClick={signInWithGoogle}
+                    >
+                        <GoogleIcon className="mr-2 h-6 w-6" />
+                        Sign In with Google
+                    </Button>
+                </div>
+            </CardContent>
+        </Card>
+      </main>
   );
 }
