@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
+import { useParams } from 'next/navigation';
 import {
   Card,
   CardContent,
@@ -27,8 +28,9 @@ import { useMentor } from '@/hooks/use-mentor';
 
 type TimeRange = '1H' | '1D' | '1W' | '1Y';
 
-export default function TradePage({ params }: { params: { assetId: string } }) {
-  const assetId = params.assetId.toUpperCase();
+export default function TradePage() {
+  const params = useParams();
+  const assetId = (Array.isArray(params.assetId) ? params.assetId[0] : params.assetId).toUpperCase();
   const assetDetails: { [key: string]: any } = {};
   assetDetailsList.forEach(asset => {
       assetDetails[asset.ticker] = { name: asset.name, icon: asset.icon, basePrice: asset.price, volatility: asset.volatility };
