@@ -16,10 +16,9 @@ export async function signInWithGoogle() {
   try {
     await signInWithPopup(auth, provider);
   } catch (error: any) {
-    console.error("Error during sign-in with popup:", error);
-    // Potentially show a user-facing error message here
+    console.error("Error signing in with Google:", error.message);
   }
-};
+}
 
 export async function signOut() {
   try {
@@ -27,4 +26,4 @@ export async function signOut() {
   } catch (error) {
     console.error('Error signing out:', error);
   }
-};
+}
