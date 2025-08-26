@@ -336,19 +336,34 @@ function TradeForm({ action, assetTicker, price, ownedQuantity = 0 }: { action: 
     showMentorTip();
   }
 
-  const isSellDisabled = action === 'Sell' && (parseFloat(amount) > ownedQuantity);
+  const isSellDisabled = action === 'Sell' && (parseFloat(amount) > ownedQuantity + 0.000001);
 
   return (
     <div className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="amount">Quantity ({assetTicker})</Label>
-        <Input 
-          id="amount" 
-          type="number" 
-          placeholder="0.00"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-        />
+        <div className="relative">
+          <Input 
+            id="amount" 
+            type="number" 
+            placeholder="0.00"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            className={action === 'Sell' ? 'pr-12' : ''}
+          />
+          {action === 'Sell' && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="absolute right-1 top-1/2 -translate-y-1/2 h-7"
+              onClick={() => setAmount(String(ownedQuantity))}
+              disabled={ownedQuantity <= 0}
+            >
+              Max
+            </Button>
+          )}
+        </div>
       </div>
       
       <Card className="bg-muted/50">
