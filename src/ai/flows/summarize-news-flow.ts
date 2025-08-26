@@ -15,7 +15,7 @@ export const summarizeNewsArticle = ai.defineFlow(
     outputSchema: z.string().describe('A concise, easy-to-read summary of the article.'),
   },
   async (articleContent) => {
-    const {output} = await ai.generate({
+    const response = await ai.generate({
         prompt: `You are a financial news assistant. Your goal is to provide a clear and concise summary of the provided news article. Focus on the key takeaways and the potential impact on the market or the specific company involved. Keep the summary to 2-3 short sentences.
 
         Article Content:
@@ -24,6 +24,6 @@ export const summarizeNewsArticle = ai.defineFlow(
         ---
       `,
     });
-    return output!;
+    return response.text || 'AI summary could not be generated at this time.';
   }
 );
