@@ -13,12 +13,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuth } from "@/lib/auth.tsx";
-import { signOut } from "@/lib/auth.ts";
+import { useAuthListener } from "@/hooks/use-auth-listener";
+import { signOut } from "@/lib/auth";
 import { useRouter } from "next/navigation";
+import { Skeleton } from "./ui/skeleton";
 
 export function UserNav() {
-  const { user, loading } = useAuth();
+  const { user, loading } = useAuthListener();
   const router = useRouter();
 
   const handleSignOut = async () => {
@@ -26,7 +27,11 @@ export function UserNav() {
     router.push('/login');
   };
 
-  if (loading || !user) {
+  if (loading) {
+    return <Skeleton className="h-9 w-9 rounded-full" />;
+  }
+  
+  if (!user) {
     return null;
   }
 

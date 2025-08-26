@@ -8,7 +8,8 @@ import Link from "next/link";
 import { useSimulation } from "@/hooks/use-simulation";
 import { MentorContext } from "@/hooks/use-mentor";
 import { useRouter } from 'next/navigation';
-import { useAuth, signOut } from "@/lib/auth";
+import { useAuthListener } from "@/hooks/use-auth-listener";
+import { signOut } from "@/lib/auth";
 
 const MENTOR_KEY = 'earnify-mentor';
 
@@ -142,7 +143,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
 }
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
+  const { user, loading } = useAuthListener();
   const router = useRouter();
 
   useEffect(() => {

@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -17,6 +16,8 @@ export async function signInWithGoogle() {
     await signInWithPopup(auth, provider);
   } catch (error: any) {
     console.error("Error signing in with Google:", error.message);
+    // This allows the UI to know there was an issue.
+    throw error;
   }
 }
 
