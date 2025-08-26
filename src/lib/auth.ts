@@ -3,7 +3,7 @@
 
 import {
   GoogleAuthProvider,
-  signInWithPopup,
+  signInWithRedirect,
   signOut as firebaseSignOut,
   setPersistence,
   browserLocalPersistence
@@ -14,14 +14,13 @@ const provider = new GoogleAuthProvider();
 
 export const signInWithGoogle = async () => {
   try {
-    // Ensure auth state is persisted locally
     await setPersistence(auth, browserLocalPersistence);
-    const result = await signInWithPopup(auth, provider);
-    return { user: result.user, error: null };
+    // This function doesn't return a user directly.
+    // It redirects the page to Google's sign-in page.
+    await signInWithRedirect(auth, provider);
+    // No error object is needed here as errors are handled by getRedirectResult
   } catch (error: any) {
-    console.error("Error signing in with Google popup:", error);
-    // Return a structured error object
-    return { user: null, error: { code: error.code, message: error.message } };
+    console.error("Error initiating redirect sign-in:", error);
   }
 };
 

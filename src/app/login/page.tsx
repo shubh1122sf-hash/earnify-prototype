@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import {
@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/card";
 import { signInWithGoogle } from "@/lib/auth.ts";
 import { useAuth } from "@/lib/auth.tsx";
-import { useToast } from "@/hooks/use-toast";
 
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -43,7 +42,7 @@ const AppIcon = () => (
 export default function LoginPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const { toast } = useToast();
+  const [isSigningIn, setIsSigningIn] = useState(false);
 
   useEffect(() => {
     if (!loading && user) {
@@ -52,19 +51,15 @@ export default function LoginPage() {
   }, [user, loading, router]);
   
   const handleSignIn = async () => {
-    const { error } = await signInWithGoogle();
-    if (error) {
-       toast({
-        variant: "destructive",
-        title: "Sign-in Failed",
-        description: `Error: ${error.code}. Please check your project configuration.`,
-      });
-    } else {
-        // Successful sign in will be handled by the useEffect
-    }
+    setIsSigningIn(true); // Show a loading state
+    await signInWithGoogle();
+    // The page will redirect, so we don't need to handle success here.
+    // If it fails, the user will stay on the page.
+    // We could add more complex error handling if needed.
   }
   
-  if (loading) {
+  // Show a generic loading screen while auth state is being determined
+  if (loading || isSigningIn || user) {
     return (
         <div className="flex min-h-screen items-center justify-center bg-background p-4">
             <div className="flex flex-col items-center gap-4">
@@ -75,46 +70,32 @@ export default function LoginPage() {
     );
   }
 
-  // If not loading and no user, show login page.
-  // If there is a user, the useEffect will redirect.
-  if (!user) {
-    return (
-        <main className="flex min-h-screen items-center justify-center bg-secondary p-4">
-        <Card className="w-full max-w-md shadow-2xl">
-            <CardHeader className="text-center">
-                <div className="mx-auto mb-4">
-                    <AppIcon />
-                </div>
-            <CardTitle className="text-3xl font-bold">Welcome to Earnify</CardTitle>
-            <CardDescription>
-                The ultimate virtual trading simulator. Sign in to start your journey.
-            </CardDescription>
-            </CardHeader>
-            <CardContent>
-            <div className="flex flex-col gap-4">
-                <Button
-                variant="outline"
-                className="w-full h-12 text-lg"
-                onClick={handleSignIn}
-                >
-                <GoogleIcon className="mr-2 h-6 w-6" />
-                Sign In with Google
-                </Button>
-            </div>
-            </CardContent>
-        </Card>
-        </main>
-    );
-  }
-
-  // If we are here, it means we are logged in, but the redirect hasn't happened yet.
-  // Show a loading screen to prevent a flicker of the login page.
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-        <div className="flex flex-col items-center gap-4">
-            <AppIcon />
-            <p className="text-muted-foreground">Signing In...</p>
-        </div>
-    </div>
+      <main className="flex min-h-screen items-center justify-center bg-secondary p-4">
+      <Card className="w-full max-w-md shadow-2xl">
+          <CardHeader className="text-center">
+              <div className="mx-auto mb-4">
+                  <AppIcon />
+              </div>
+          <CardTitle className="text-3xl font-bold">Welcome to Earnify</CardTitle>
+          <CardDescription>
+              The ultimate virtual trading simulator. Sign in to start your journey.
+          </CardDescription>
+          </CardHeader>
+          <CardContent>
+          <div className="flex flex-col gap-4">
+              <Button
+              variant="outline"
+              className="w-full h-12 text-lg"
+              onClick={handleSignIn}
+              disabled={isSigningIn}
+              >
+              <GoogleIcon className="mr-2 h-6 w-6" />
+              Sign In with Google
+              </Button>
+          </div>
+          </CardContent>
+      </Card>
+      </main>
   );
 }

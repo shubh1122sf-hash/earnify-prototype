@@ -1,6 +1,7 @@
+
 'use client';
 
-import { onAuthStateChanged, type User } from "firebase/auth";
+import { onAuthStateChanged, type User, getRedirectResult } from "firebase/auth";
 import { auth } from "./firebase";
 import { useEffect, useState, createContext, useContext, ReactNode } from "react";
 
@@ -20,6 +21,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             setUser(currentUser);
             setLoading(false);
         });
+
+        // Also check for redirect result
+        getRedirectResult(auth)
+            .then((result) => {
+                if (result?.user) {
+                    setUser(result.user);
+                }
+            })
+            .catch((error) => {
+                console.error("Error getting redirect result:", error);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
 
         // Cleanup subscription on unmount
         return () => unsubscribe();
