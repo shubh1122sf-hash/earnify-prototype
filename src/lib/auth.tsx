@@ -1,7 +1,7 @@
 
 'use client';
 
-import { onAuthStateChanged, type User, getRedirectResult } from "firebase/auth";
+import { onAuthStateChanged, type User, getRedirectResult, setPersistence, browserLocalPersistence } from "firebase/auth";
 import { auth } from "./firebase";
 import { useEffect, useState, createContext, useContext, ReactNode } from "react";
 
@@ -17,30 +17,47 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            if (!currentUser) {
-                 // If onAuthStateChanged says no user, check for redirect result.
-                 // This handles the case where the page loads after a redirect.
-                getRedirectResult(auth)
-                    .then((result) => {
-                        if (result?.user) {
-                            setUser(result.user);
-                        }
-                    })
-                    .catch((error) => {
-                        console.error("Error getting redirect result:", error);
-                    })
-                    .finally(() => {
-                        setLoading(false);
-                    });
-            } else {
-                setUser(currentUser);
+        // This function now correctly handles all auth states.
+        const checkAuth = async () => {
+            try {
+                // Set persistence at the start.
+                await setPersistence(auth, browserLocalPersistence);
+                
+                // Check for the result of a redirect first.
+                const result = await getRedirectResult(auth);
+                if (result) {
+                    // User signed in via redirect.
+                    setUser(result.user);
+                }
+                
+                // Listen for subsequent auth state changes.
+                const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+                    setUser(currentUser);
+                    setLoading(false);
+                });
+
+                // If no redirect result and no user from onAuthStateChanged, stop loading.
+                if (!result) {
+                    setLoading(false);
+                }
+
+                return unsubscribe;
+            } catch (error) {
+                console.error("Auth provider error:", error);
                 setLoading(false);
             }
-        });
+        };
+
+        const unsubscribePromise = checkAuth();
 
         // Cleanup subscription on unmount
-        return () => unsubscribe();
+        return () => {
+            unsubscribePromise.then(unsubscribe => {
+                if (unsubscribe) {
+                    unsubscribe();
+                }
+            });
+        };
     }, []);
 
     return (

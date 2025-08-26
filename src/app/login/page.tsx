@@ -51,15 +51,18 @@ export default function LoginPage() {
   }, [user, loading, router]);
   
   const handleSignIn = async () => {
-    setIsSigningIn(true); // Show a loading state
-    await signInWithGoogle();
-    // The page will redirect, so we don't need to handle success here.
-    // If it fails, the user will stay on the page.
-    // We could add more complex error handling if needed.
+    setIsSigningIn(true);
+    try {
+      await signInWithGoogle();
+      // The user will be redirected. The AuthProvider will handle the result.
+    } catch (error) {
+      console.error("Sign in failed", error);
+      setIsSigningIn(false); // Reset on failure
+    }
   }
   
   // Show a generic loading screen while auth state is being determined
-  if (loading || isSigningIn || user) {
+  if (loading || isSigningIn || (!loading && user)) {
     return (
         <div className="flex min-h-screen items-center justify-center bg-background p-4">
             <div className="flex flex-col items-center gap-4">
