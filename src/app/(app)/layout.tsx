@@ -7,9 +7,8 @@ import { Nav } from "@/components/nav";
 import Link from "next/link";
 import { useSimulation } from "@/hooks/use-simulation";
 import { MentorContext } from "@/hooks/use-mentor";
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useAuth, signOut } from "@/lib/auth";
-import { Skeleton } from "@/components/ui/skeleton";
 
 const MENTOR_KEY = 'earnify-mentor';
 
