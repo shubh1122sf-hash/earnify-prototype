@@ -11,31 +11,33 @@ interface AuthState {
 }
 
 export function useAuthListener(): AuthState {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(auth.currentUser);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // This function runs once on initial mount to handle the redirect result.
     const handleRedirect = async () => {
       try {
-        // This checks if the page is loading after a redirect from Google.
         const result = await getRedirectResult(auth);
+        // If a result is returned, it means the user has just signed in via redirect.
         if (result) {
-          // User signed in.
           setUser(result.user);
         }
       } catch (error) {
-        console.error("Error getting redirect result:", error);
+        console.error("Error processing redirect result:", error);
       }
     };
 
-    // Check for redirect result on initial load.
     handleRedirect();
 
+    // onAuthStateChanged sets up a listener for any subsequent auth state changes.
+    // It also runs once when it's first attached, giving the current auth state.
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
     });
 
+    // Cleanup the listener when the component unmounts.
     return () => unsubscribe();
   }, []);
 

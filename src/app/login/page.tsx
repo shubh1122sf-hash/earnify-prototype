@@ -65,12 +65,10 @@ export default function LoginPage() {
       await signInWithGoogle();
     } catch (error) {
       console.error("Sign in failed", error);
-      // Optionally, show an error to the user in a toast
     }
   };
 
-  // While checking auth status, show a loader
-  if (loading) {
+  if (loading || user) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-secondary p-4">
         <div className="flex flex-col items-center gap-4">
@@ -81,20 +79,6 @@ export default function LoginPage() {
     );
   }
 
-  // If user is already logged in, this will soon redirect via useEffect.
-  // Showing a loader prevents a flash of the login page.
-  if (user) {
-    return (
-       <main className="flex min-h-screen items-center justify-center bg-secondary p-4">
-        <div className="flex flex-col items-center gap-4">
-          <AppLoaderIcon />
-          <p className="text-muted-foreground">Redirecting...</p>
-        </div>
-      </main>
-    )
-  }
-
-  // If not loading and no user, show the login page
   return (
       <main className="flex min-h-screen items-center justify-center bg-secondary p-4">
         <Card className="w-full max-w-md shadow-2xl">
