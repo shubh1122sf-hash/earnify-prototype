@@ -1,9 +1,14 @@
-
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { onAuthStateChanged, User, getRedirectResult } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+
+// Define a user type that matches the structure we'll get from our API
+interface User {
+  uid: string;
+  email?: string | null;
+  displayName?: string | null;
+  photoURL?: string | null;
+}
 
 interface AuthContextType {
   user: User | null;
@@ -12,39 +17,30 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// This is a new, simplified provider. Its only job is to fetch the current user
+// from our own backend API, which will check for the presence of a session cookie.
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // This effect handles both the initial redirect result and subsequent auth changes.
-    const processAuth = async () => {
-      setLoading(true);
+    async function checkUserStatus() {
       try {
-        // Check for redirect result first. This will be null on normal page loads
-        // and after popup-based sign-ins. It is only populated after a redirect.
-        const result = await getRedirectResult(auth);
-        if (result) {
-          // User has just signed in via redirect.
-          // onAuthStateChanged will also fire, but this gives immediate feedback.
-          setUser(result.user);
+        const response = await fetch('/api/auth/me'); // A new endpoint to get the current user
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data.user);
+        } else {
+          setUser(null);
         }
       } catch (error) {
-        console.error("Error processing redirect result:", error);
-      }
-      
-      // Set up the permanent listener for auth state changes.
-      // This is the primary mechanism for tracking the user's state.
-      const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-        setUser(currentUser);
+        console.error('Failed to fetch user status', error);
+        setUser(null);
+      } finally {
         setLoading(false);
-      });
-
-      // Cleanup the listener on component unmount
-      return () => unsubscribe();
-    };
-
-    processAuth();
+      }
+    }
+    checkUserStatus();
   }, []);
 
   return (

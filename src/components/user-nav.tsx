@@ -1,5 +1,4 @@
-
-"use client";
+'use client';
 
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -14,17 +13,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { signOut } from "@/lib/auth";
-import { useRouter } from "next/navigation";
 import { Skeleton } from "./ui/skeleton";
 import { useAuth } from "@/app/auth-provider";
 
 export function UserNav() {
   const { user, loading } = useAuth();
-  const router = useRouter();
 
   const handleSignOut = async () => {
     await signOut();
-    router.push('/login');
   };
 
   if (loading) {

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useRouter } from 'next/navigation';
@@ -10,7 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { signInWithGoogle } from "@/lib/auth";
 import { useAuth } from '@/app/auth-provider';
 import { useEffect } from 'react';
 
@@ -53,13 +51,11 @@ export default function LoginPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // If loading is finished and there's a user, redirect them to the main app.
     if (!loading && user) {
       router.push('/');
     }
   }, [user, loading, router]);
   
-  // While checking for a user, or if a user is found (and redirect is in progress), show a loader.
   if (loading || user) {
      return (
       <main className="flex min-h-screen items-center justify-center bg-secondary p-4">
@@ -71,7 +67,6 @@ export default function LoginPage() {
     );
   }
 
-  // Only show the login page if not loading and no user is found
   return (
       <main className="flex min-h-screen items-center justify-center bg-secondary p-4">
         <Card className="w-full max-w-md shadow-2xl">
@@ -86,14 +81,15 @@ export default function LoginPage() {
             </CardHeader>
             <CardContent>
                 <div className="flex flex-col gap-4">
-                    <Button
-                        variant="outline"
-                        className="w-full h-12 text-lg"
-                        onClick={signInWithGoogle}
-                    >
-                        <GoogleIcon className="mr-2 h-6 w-6" />
-                        Sign In with Google
-                    </Button>
+                    <a href="/api/auth/signin">
+                        <Button
+                            variant="outline"
+                            className="w-full h-12 text-lg"
+                        >
+                            <GoogleIcon className="mr-2 h-6 w-6" />
+                            Sign In with Google
+                        </Button>
+                    </a>
                 </div>
             </CardContent>
         </Card>

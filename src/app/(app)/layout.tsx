@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useCallback, ReactNode } from "react";
@@ -98,7 +97,6 @@ function MentorProvider({ children }: { children: ReactNode }) {
 
 function AppLayoutContent({ children }: { children: React.ReactNode }) {
   const { simulation } = useSimulation();
-  const router = useRouter();
 
   return (
     <div className="container mx-auto max-w-7xl font-sans">
@@ -134,7 +132,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
           <p>This is a simulation. All data is virtual.</p>
           <div className="flex justify-center gap-4 mt-2">
               <Link href="/account" className="hover:text-primary">Account</Link>
-              <button onClick={() => { signOut().then(() => router.push('/login')) }} className="hover:text-primary">Log Out</button>
+              <button onClick={() => { signOut().then(() => {}) }} className="hover:text-primary">Log Out</button>
           </div>
         </footer>
       </main>
