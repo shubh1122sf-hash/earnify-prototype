@@ -61,8 +61,8 @@ export default function LoginPage() {
 
   const handleSignIn = async () => {
     try {
+      // This will now redirect the user, not return a value
       await signInWithGoogle();
-      // The useEffect will handle the redirect on successful login
     } catch (error) {
       console.error("Sign in failed", error);
       // Optionally, show an error to the user in a toast
