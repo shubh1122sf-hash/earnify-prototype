@@ -18,23 +18,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            setUser(currentUser);
-            setLoading(false);
-        });
-
-        // Also check for redirect result
-        getRedirectResult(auth)
-            .then((result) => {
-                if (result?.user) {
-                    setUser(result.user);
-                }
-            })
-            .catch((error) => {
-                console.error("Error getting redirect result:", error);
-            })
-            .finally(() => {
+            if (!currentUser) {
+                 // If onAuthStateChanged says no user, check for redirect result.
+                 // This handles the case where the page loads after a redirect.
+                getRedirectResult(auth)
+                    .then((result) => {
+                        if (result?.user) {
+                            setUser(result.user);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error getting redirect result:", error);
+                    })
+                    .finally(() => {
+                        setLoading(false);
+                    });
+            } else {
+                setUser(currentUser);
                 setLoading(false);
-            });
+            }
+        });
 
         // Cleanup subscription on unmount
         return () => unsubscribe();
