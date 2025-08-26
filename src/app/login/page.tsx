@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import {
@@ -51,7 +51,6 @@ const LoadingScreen = () => (
 export default function LoginPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const [isSigningIn, setIsSigningIn] = useState(false);
 
   useEffect(() => {
     if (!loading && user) {
@@ -59,16 +58,7 @@ export default function LoginPage() {
     }
   }, [user, loading, router]);
   
-  const handleSignIn = async () => {
-    setIsSigningIn(true);
-    await signInWithGoogle();
-    // After this, the user is redirected to Google.
-    // The AuthProvider will handle the result when they return.
-  }
-  
-  // Show a loading screen while Firebase is initializing, while the user is being redirected,
-  // or if the user is already logged in and we're about to redirect them to the app.
-  if (loading || isSigningIn || (!loading && user)) {
+  if (loading || user) {
     return <LoadingScreen />;
   }
 
@@ -89,8 +79,7 @@ export default function LoginPage() {
               <Button
               variant="outline"
               className="w-full h-12 text-lg"
-              onClick={handleSignIn}
-              disabled={isSigningIn}
+              onClick={signInWithGoogle}
               >
               <GoogleIcon className="mr-2 h-6 w-6" />
               Sign In with Google

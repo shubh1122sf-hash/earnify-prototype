@@ -26,7 +26,6 @@ export function UserNav() {
     router.push('/login');
   };
 
-  // Do not render anything if auth is still loading or there is no user
   if (loading || !user) {
     return null;
   }
