@@ -19,16 +19,6 @@ const AppIcon = () => (
     </svg>
 )
 
-const LoadingScreen = () => (
-  <div className="flex min-h-screen items-center justify-center bg-background p-4">
-    <div className="flex flex-col items-center gap-4">
-      <AppIcon />
-      <p className="text-muted-foreground">Loading App...</p>
-    </div>
-  </div>
-);
-
-
 function MentorProvider({ children }: { children: ReactNode }) {
   const [selectedMentor, setSelectedMentor] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -142,8 +132,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     }
   }, [user, loading, router]);
 
+  // The AuthProvider handles the main loading state.
+  // We just need to check if we have a user after loading is complete.
   if (loading || !user) {
-    return <LoadingScreen />;
+    return null;
   }
 
   return (

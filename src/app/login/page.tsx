@@ -39,15 +39,6 @@ const AppIcon = () => (
     </svg>
   );
   
-const LoadingScreen = () => (
-  <div className="flex min-h-screen items-center justify-center bg-background p-4">
-    <div className="flex flex-col items-center gap-4">
-      <AppIcon />
-      <p className="text-muted-foreground">Loading App...</p>
-    </div>
-  </div>
-);
-
 export default function LoginPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
@@ -58,8 +49,10 @@ export default function LoginPage() {
     }
   }, [user, loading, router]);
   
+  // The AuthProvider will show a loading screen, so we don't need a separate one here.
+  // If we've finished loading and there's still no user, show the login UI.
   if (loading || user) {
-    return <LoadingScreen />;
+    return null; // The AuthProvider is handling the loading state
   }
 
   return (
