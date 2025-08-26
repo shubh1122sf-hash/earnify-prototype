@@ -49,9 +49,9 @@ export default function LoginPage() {
     }
   }, [user, loading, router]);
   
-  // The AuthProvider shows a full-screen loader, so we don't need a separate one here.
-  // We can return null or a minimal loader if we want to avoid layout shifts.
   if (loading || user) {
+    // The AuthProvider shows a full-screen loader, so we can return null here
+    // while we wait for the auth state to resolve and redirect if necessary.
     return null;
   }
 
