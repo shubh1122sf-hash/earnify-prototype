@@ -11,10 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { signInWithGoogle } from "@/lib/auth";
-import { useAuth } from "@/lib/auth.tsx";
-import { Skeleton } from "@/components/ui/skeleton";
-
+import { signInWithGoogle, useAuth } from "@/lib/auth";
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -50,29 +47,26 @@ export default function LoginPage() {
     }
   }, [user, loading, router]);
   
-  if (loading) {
-    return (
-        <main className="flex min-h-screen items-center justify-center bg-secondary p-4">
-            <Card className="w-full max-w-md shadow-2xl">
-                <CardHeader className="text-center">
-                    <div className="mx-auto mb-4">
-                        <AppIcon />
-                    </div>
-                    <Skeleton className="h-8 w-48 mx-auto" />
-                    <Skeleton className="h-4 w-full max-w-xs mx-auto mt-2" />
-                </CardHeader>
-                <CardContent>
-                    <Skeleton className="h-12 w-full" />
-                </CardContent>
-            </Card>
-        </main>
+  if (loading || user) {
+    const AppLoaderIcon = () => (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          className="h-12 w-12 fill-primary animate-pulse"
+        >
+          <path d="M12 2L1 9l4 2.5V17h14v-5.5L23 9l-3-2.1V4h-4v2.9L12 2zm0 8.5c-1.93 0-3.5-1.57-3.5-3.5S10.07 3.5 12 3.5s3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z" />
+        </svg>
+      );
+    
+    const FullPageLoader = () => (
+        <div className="flex min-h-screen items-center justify-center bg-background p-4">
+          <div className="flex flex-col items-center gap-4">
+            <AppLoaderIcon />
+            <p className="text-muted-foreground">Initializing...</p>
+          </div>
+        </div>
     );
-  }
-
-  // If a user is already logged in (but loading is false), the useEffect above will trigger the redirect.
-  // We can return null here to avoid rendering the login page for a split second.
-  if (user) {
-      return null;
+    return <FullPageLoader />;
   }
 
   return (
@@ -90,12 +84,12 @@ export default function LoginPage() {
           <CardContent>
           <div className="flex flex-col gap-4">
               <Button
-              variant="outline"
-              className="w-full h-12 text-lg"
-              onClick={signInWithGoogle}
+                variant="outline"
+                className="w-full h-12 text-lg"
+                onClick={signInWithGoogle}
               >
-              <GoogleIcon className="mr-2 h-6 w-6" />
-              Sign In with Google
+                <GoogleIcon className="mr-2 h-6 w-6" />
+                Sign In with Google
               </Button>
           </div>
           </CardContent>
