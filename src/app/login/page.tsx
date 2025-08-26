@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { signInWithGoogle } from "@/lib/auth.ts";
+import { signInWithGoogle } from "@/lib/auth";
 import { useAuth } from "@/lib/auth.tsx";
 
 
@@ -49,10 +49,8 @@ export default function LoginPage() {
     }
   }, [user, loading, router]);
   
-  // The AuthProvider will show a loading screen, so we don't need a separate one here.
-  // If we've finished loading and there's still no user, show the login UI.
   if (loading || user) {
-    return null; // The AuthProvider is handling the loading state
+    return null; // The AuthProvider handles the main loading screen
   }
 
   return (

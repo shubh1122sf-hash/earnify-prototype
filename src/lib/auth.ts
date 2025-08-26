@@ -5,19 +5,17 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   signOut as firebaseSignOut,
-  getAuth,
 } from 'firebase/auth';
-import { app } from './firebase';
+import { auth } from './firebase';
 
 const provider = new GoogleAuthProvider();
-const auth = getAuth(app);
 
 export const signInWithGoogle = async () => {
   try {
-    // This allows the popup to work correctly in the preview iframe
     await signInWithPopup(auth, provider);
   } catch (error: any) {
-    console.error("Error signing in with Google popup:", error);
+    // This can happen if the user closes the popup.
+    console.error("Error during sign-in:", error);
   }
 };
 

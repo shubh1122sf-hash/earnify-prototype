@@ -132,10 +132,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     }
   }, [user, loading, router]);
 
-  // The AuthProvider handles the main loading state.
-  // We just need to check if we have a user after loading is complete.
   if (loading || !user) {
-    return null;
+    return null; // The AuthProvider shows a global loader
   }
 
   return (

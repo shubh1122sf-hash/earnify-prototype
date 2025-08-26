@@ -4,6 +4,7 @@
 import { onAuthStateChanged, type User } from "firebase/auth";
 import { auth } from "./firebase";
 import { useEffect, useState, createContext, useContext, ReactNode } from "react";
+import { useRouter } from 'next/navigation';
 
 interface AuthContextType {
     user: User | null;
@@ -30,7 +31,6 @@ const FullPageLoader = () => (
       </div>
     </div>
 );
-
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
