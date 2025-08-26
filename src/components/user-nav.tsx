@@ -18,7 +18,7 @@ import { signOut } from "@/lib/auth.ts";
 import { useRouter } from "next/navigation";
 
 export function UserNav() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const router = useRouter();
 
   const handleSignOut = async () => {
@@ -26,7 +26,8 @@ export function UserNav() {
     router.push('/login');
   };
 
-  if (!user) {
+  // Do not render anything if auth is still loading or there is no user
+  if (loading || !user) {
     return null;
   }
 

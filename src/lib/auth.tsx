@@ -1,7 +1,7 @@
 
 'use client';
 
-import { onAuthStateChanged, type User, setPersistence, browserLocalPersistence } from "firebase/auth";
+import { onAuthStateChanged, type User } from "firebase/auth";
 import { auth } from "./firebase";
 import { useEffect, useState, createContext, useContext, ReactNode } from "react";
 
@@ -17,10 +17,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Set persistence at the start. This helps keep the user logged in
-        // across browser sessions.
-        setPersistence(auth, browserLocalPersistence);
-
         // onAuthStateChanged is the recommended way to get the current user.
         // It's a listener that triggers whenever the user's sign-in state changes.
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
