@@ -1,6 +1,14 @@
 # Settings to manage and configure a Firebase App Hosting backend.
 # https://firebase.google.com/docs/app-hosting/configure
 
+# Exclude Firebase auth handler paths from the Next.js rewrite
+# to allow Firebase Authentication to work correctly.
+# This is a critical step for redirect-based sign-in flows.
+rewrites:
+  - source: "/__/auth{,/**}"
+    # By not specifying a destination, we let Firebase's reserved URLs handle this path.
+    # This is the equivalent of {"source": "/__/auth/**", "function": null} in firebase.json
+  
 runConfig:
   # Increase this value if you'd like to automatically spin up
   # more instances in response to increased traffic.
