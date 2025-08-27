@@ -128,7 +128,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} dark`}>
+      <body className={inter.className}>
         <MentorProvider>
           <AppLayoutContent>{children}</AppLayoutContent>
         </MentorProvider>
