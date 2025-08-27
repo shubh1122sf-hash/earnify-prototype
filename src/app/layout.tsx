@@ -2,9 +2,8 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, ReactNode } from "react";
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
+import { Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/toaster";
 import { UserNav } from "@/components/user-nav";
 import { Nav } from "@/components/nav";
@@ -129,7 +128,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={`${inter.className} dark`}>
         <MentorProvider>
           <AppLayoutContent>{children}</AppLayoutContent>
         </MentorProvider>
