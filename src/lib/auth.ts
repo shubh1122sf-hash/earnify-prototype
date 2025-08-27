@@ -1,11 +1,13 @@
 
 import type { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from "next";
-import type { NextAuthOptions, User } from "next-auth";
+import type { NextAuthOptions } from "next-auth";
 import { getServerSession as originalGetServerSession } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "./db";
 
 export const authOptions: NextAuthOptions = {
+  adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -15,41 +17,23 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
   },
+  pages: {
+    signIn: '/login',
+  },
   callbacks: {
-    async jwt({ token, user, account }) {
-      if (account && user) {
-        // This is the first sign-in
-        const dbUser = await prisma.user.findUnique({
-          where: { email: user.email! },
-        });
-
-        if (dbUser) {
-          // User exists, just pass their ID to the token
-          token.id = dbUser.id;
-        } else {
-          // New user, create them in the database
-          const newUser = await prisma.user.create({
-            data: {
-              email: user.email!,
-              name: user.name,
-              image: user.image,
-            },
-          });
-          token.id = newUser.id;
-        }
-      }
-      return token;
-    },
-    session({ session, token }) {
-      if (session.user && token.id) {
-        session.user.id = token.id as string;
+    async session({ session, token }) {
+      if (token && session.user) {
+        session.user.id = token.sub!; // Use sub from JWT as user id
       }
       return session;
     },
+    async jwt({ token, user }) {
+      if (user) {
+        token.sub = user.id;
+      }
+      return token;
+    },
   },
-  pages: {
-    signIn: '/login',
-  }
 };
 
 export const getServerSession = (
