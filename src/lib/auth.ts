@@ -1,13 +1,12 @@
+
 import type { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from "next";
 import type { NextAuthOptions } from "next-auth";
 import { getServerSession as originalGetServerSession } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "./db";
-import { requireEnv } from "./env";
 
 export const authOptions: NextAuthOptions = {
-  // The adapter is instantiated here and will only be used in a Node.js environment
   adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
@@ -32,22 +31,12 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
     jwt({ token, user }) {
-      // On initial sign-in, user object is available
       if (user) {
         token.sub = user.id;
       }
       return token;
     },
   },
-  events: {
-    signIn() {
-        requireEnv(
-            "GOOGLE_CLIENT_ID",
-            "GOOGLE_CLIENT_SECRET",
-            "NEXTAUTH_SECRET"
-        );
-    }
-  }
 };
 
 /**
@@ -57,5 +46,8 @@ export const authOptions: NextAuthOptions = {
 export const getServerSession = (
   ...args: [GetServerSidePropsContext["req"], GetServerSidePropsContext["res"]] | [NextApiRequest, NextApiResponse] | []
 ) => {
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET || !process.env.NEXTAUTH_SECRET) {
+      throw new Error("Missing required environment variables for authentication.");
+  }
   return originalGetServerSession(...args, authOptions);
 };

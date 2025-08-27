@@ -1,3 +1,4 @@
+
 # Next.js + NextAuth + Prisma: Production-Ready Leaderboard
 
 This is a production-ready Next.js 14+ application with a leaderboard, user authentication via Google OAuth (NextAuth.js v4), and data persistence using Prisma.
@@ -27,8 +28,9 @@ Create a `.env.local` file in your project root. For Vercel, set these in **Proj
 ## Local Development (SQLite)
 
 1.  **Install dependencies:** `npm install`
-2.  **Set up `.env.local`:**
+2.  **Create your `.env.local` file:** Copy the contents of `.env` into a new file named `.env.local` and fill in your actual secrets.
     ```env
+    # .env.local
     DATABASE_URL="file:./dev.db"
     NEXTAUTH_URL="http://localhost:3000"
     NEXTAUTH_SECRET="your_nextauth_secret_here"
