@@ -13,8 +13,37 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+import { useSession } from "next-auth/react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AccountPage() {
+  const { data: session, status } = useSession();
+
+  if (status === 'loading') {
+    return (
+      <div className="flex flex-col gap-6 max-w-2xl mx-auto">
+        <h1 className="text-3xl font-bold">My Account</h1>
+        <Card>
+          <CardHeader>
+            <CardTitle>Profile Information</CardTitle>
+            <CardDescription>
+              Manage your personal information.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Full Name</Label>
+              <Skeleton className="h-10 w-full" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email Address</Label>
+              <Skeleton className="h-10 w-full" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl mx-auto">
@@ -30,11 +59,11 @@ export default function AccountPage() {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">Full Name</Label>
-            <Input id="name" defaultValue={'John Doe'} />
+            <Input id="name" defaultValue={session?.user?.name ?? 'John Doe'} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email Address</Label>
-            <Input id="email" type="email" defaultValue={'user@example.com'} disabled />
+            <Input id="email" type="email" defaultValue={session?.user?.email ?? 'user@example.com'} disabled />
           </div>
            <Button>Save Changes</Button>
         </CardContent>

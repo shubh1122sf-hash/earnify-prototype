@@ -10,6 +10,7 @@ import { Nav } from "@/components/nav";
 import Link from "next/link";
 import { useSimulation } from "@/hooks/use-simulation";
 import { MentorContext } from "@/hooks/use-mentor";
+import { Providers } from "@/components/providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -129,9 +130,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <MentorProvider>
-          <AppLayoutContent>{children}</AppLayoutContent>
-        </MentorProvider>
+        <Providers>
+          <MentorProvider>
+            <AppLayoutContent>{children}</AppLayoutContent>
+          </MentorProvider>
+        </Providers>
         <Toaster />
       </body>
     </html>

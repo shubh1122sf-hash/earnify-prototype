@@ -1,9 +1,6 @@
 
 "use client"
 
-import *派生代码
-"use client"
-
 import * as React from "react"
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
 import { Check, ChevronRight, Circle } from "lucide-react"
