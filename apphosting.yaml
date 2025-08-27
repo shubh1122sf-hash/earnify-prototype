@@ -5,13 +5,7 @@ runConfig:
   # Increase this value if you'd like to automatically spin up
   # more instances in response to increased traffic.
   maxInstances: 1
-  # IMPORTANT: Paste your actual secret values here.
-  # For a production app, it is strongly recommended to use Secret Manager
-  # (which requires a billing account) instead of hardcoding secrets.
-  env:
-    - variable: GOOGLE_CLIENT_ID
-      value: "PASTE_YOUR_GOOGLE_CLIENT_ID_HERE"
-    - variable: GOOGLE_CLIENT_SECRET
-      value: "PASTE_YOUR_GOOGLE_CLIENT_SECRET_HERE"
-    - variable: NEXTAUTH_SECRET
-      value: "PASTE_YOUR_NEXTAUTH_SECRET_HERE"
+# IMPORTANT: Paste your actual secret values in the .env file.
+# For a production app, it is strongly recommended to use Secret Manager
+# (which requires a billing account) instead of hardcoding secrets.
+# We are using an .env file for this simulation to avoid billing requirements.
