@@ -166,12 +166,6 @@ export default function TradePage() {
 
 
   useEffect(() => {
-    if (asset) {
-        generateHistoricalData(timeRange, asset.basePrice, asset.volatility);
-    }
-  }, [timeRange, asset, generateHistoricalData]);
-  
-  useEffect(() => {
     if (timeRange !== '1H' || !asset || !isClient) return;
     setRegimeAreas([]);
 
