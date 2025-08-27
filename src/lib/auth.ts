@@ -6,13 +6,6 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "./db";
 import { requireEnv } from "./env";
 
-// Ensure required environment variables are present
-requireEnv(
-  "GOOGLE_CLIENT_ID",
-  "GOOGLE_CLIENT_SECRET",
-  "NEXTAUTH_SECRET"
-);
-
 export const authOptions: NextAuthOptions = {
   // The adapter is instantiated here and will only be used in a Node.js environment
   adapter: PrismaAdapter(prisma),
@@ -46,6 +39,15 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
   },
+  events: {
+    signIn() {
+        requireEnv(
+            "GOOGLE_CLIENT_ID",
+            "GOOGLE_CLIENT_SECRET",
+            "NEXTAUTH_SECRET"
+        );
+    }
+  }
 };
 
 /**
