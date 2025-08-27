@@ -1,6 +1,14 @@
+
 import { NextResponse, type NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
+  // If essential auth variables are missing, bypass all middleware logic.
+  // This prevents the app from crashing in environments like the Studio Preview.
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET || !process.env.NEXTAUTH_SECRET) {
+    console.warn("Auth environment variables are missing. Bypassing middleware.");
+    return NextResponse.next();
+  }
+
   const isProd = process.env.NODE_ENV === "production";
   const cookieName = isProd
     ? "__Secure-next-auth.session-token"
@@ -9,13 +17,13 @@ export function middleware(request: NextRequest) {
   const sessionToken = request.cookies.get(cookieName);
   const { pathname } = request.nextUrl;
 
-  // If user is authenticated, redirect them away from the login page.
-  if (sessionToken && pathname === "/login") {
+  const isAuthPage = pathname === "/login";
+
+  if (sessionToken && isAuthPage) {
     return NextResponse.redirect(new URL("/", request.url));
   }
   
-  // If user is not authenticated, redirect them to the login page.
-  if (!sessionToken) {
+  if (!sessionToken && !isAuthPage) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
@@ -27,13 +35,13 @@ export const config = {
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
-     * - api/auth (NextAuth routes)
-     * - login (the login page)
+     * - api/auth (NextAuth API routes)
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     * - public assets
+     * - assets (public assets)
+     * - public (public assets)
      */
-    "/((?!api/auth|login|_next/static|_next/image|favicon.ico|assets|public).*)",
+    "/((?!api/auth|_next/static|_next/image|favicon.ico|assets|public).*)",
   ],
 };
