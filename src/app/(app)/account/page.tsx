@@ -46,7 +46,7 @@ export default function AccountPage() {
             <CardDescription>
                 Choose what you want to be notified about.
             </CardDescription>
-        </Header>
+        </CardHeader>
         <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
                 <div>
