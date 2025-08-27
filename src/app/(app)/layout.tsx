@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useCallback, ReactNode } from "react";
@@ -6,9 +7,6 @@ import { Nav } from "@/components/nav";
 import Link from "next/link";
 import { useSimulation } from "@/hooks/use-simulation";
 import { MentorContext } from "@/hooks/use-mentor";
-import { useRouter } from 'next/navigation';
-import { signOut } from "@/lib/auth";
-import { useAuth } from "../auth-provider";
 
 const MENTOR_KEY = 'earnify-mentor';
 
@@ -17,26 +15,6 @@ const AppIcon = () => (
         <path d="M12 2L1 9l4 2.5V17h14v-5.5L23 9l-3-2.1V4h-4v2.9L12 2zm0 8.5c-1.93 0-3.5-1.57-3.5-3.5S10.07 3.5 12 3.5s3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z" />
     </svg>
 )
-
-const AppLoaderIcon = () => (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      className="h-12 w-12 fill-primary animate-pulse"
-    >
-      <path d="M12 2L1 9l4 2.5V17h14v-5.5L23 9l-3-2.1V4h-4v2.9L12 2zm0 8.5c-1.93 0-3.5-1.57-3.5-3.5S10.07 3.5 12 3.5s3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z" />
-    </svg>
-  );
-
-const FullPageLoader = () => (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <div className="flex flex-col items-center gap-4">
-        <AppLoaderIcon />
-        <p className="text-muted-foreground">Initializing...</p>
-      </div>
-    </div>
-);
-
 
 function MentorProvider({ children }: { children: ReactNode }) {
   const [selectedMentor, setSelectedMentor] = useState<string | null>(null);
@@ -132,7 +110,6 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
           <p>This is a simulation. All data is virtual.</p>
           <div className="flex justify-center gap-4 mt-2">
               <Link href="/account" className="hover:text-primary">Account</Link>
-              <button onClick={() => { signOut().then(() => {}) }} className="hover:text-primary">Log Out</button>
           </div>
         </footer>
       </main>
@@ -141,19 +118,6 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
 }
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push('/login');
-    }
-  }, [user, loading, router]);
-
-  if (loading || !user) {
-    return <FullPageLoader />;
-  }
-
   return (
     <MentorProvider>
         <AppLayoutContent>{children}</AppLayoutContent>

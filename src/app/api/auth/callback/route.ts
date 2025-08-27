@@ -12,9 +12,7 @@ export async function GET(req: NextRequest) {
         }
         
         // Process the OAuth 2.0 authorization code.
-        const { idToken } = await auth.processAuthorizationCode(code, {
-            redirectUri: `${req.nextUrl.origin}/api/auth/callback`,
-        });
+        const { idToken } = await auth.processAuthorizationCode(code);
 
         // Use the ID token to create a session cookie.
         // The session cookie will be used to authenticate subsequent requests.

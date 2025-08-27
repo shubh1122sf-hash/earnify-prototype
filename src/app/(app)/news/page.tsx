@@ -7,31 +7,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import { newsArticles, type NewsArticle } from '@/lib/news';
-import { summarizeNewsArticle } from '@/ai/flows/summarize-news-flow';
 import { Loader2, Sparkles } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
 
 type NewsFilter = 'All' | 'Markets' | 'Technology' | 'Crypto' | 'Policy';
 
 export default function NewsPage() {
   const [filter, setFilter] = useState<NewsFilter>('All');
-  const [summaries, setSummaries] = useState<Record<string, string>>({});
-  const [loadingSummary, setLoadingSummary] = useState<string | null>(null);
-
-  const handleSummarize = async (article: NewsArticle) => {
-    if (summaries[article.id]) return; // Don't fetch if summary exists
-
-    setLoadingSummary(article.id);
-    try {
-      const summary = await summarizeNewsArticle(article.content);
-      setSummaries((prev) => ({ ...prev, [article.id]: summary }));
-    } catch (error) {
-      console.error('Error summarizing article:', error);
-      setSummaries((prev) => ({ ...prev, [article.id]: 'Could not generate summary.' }));
-    } finally {
-      setLoadingSummary(null);
-    }
-  };
 
   const filteredArticles = newsArticles.filter(
     (article) => filter === 'All' || article.category === filter
@@ -94,31 +75,15 @@ export default function NewsPage() {
               <CardTitle className="text-lg">{article.title}</CardTitle>
             </CardHeader>
             <CardContent className="flex-grow">
-              {summaries[article.id] ? (
-                 <div className="text-sm text-muted-foreground bg-secondary/50 p-3 rounded-md border border-secondary">
-                    <p className="font-semibold text-foreground mb-2 flex items-center gap-2"><Sparkles className="h-4 w-4 text-primary"/> AI Summary</p>
-                    {summaries[article.id]}
-                 </div>
-              ) : (
-                <p className="text-sm text-muted-foreground line-clamp-3">{article.content}</p>
-              )}
+              <p className="text-sm text-muted-foreground line-clamp-3">{article.content}</p>
             </CardContent>
             <CardFooter className="flex justify-between items-center">
               <span className="text-xs text-muted-foreground">{article.source} &bull; {article.date}</span>
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => handleSummarize(article)}
-                disabled={loadingSummary === article.id}
               >
-                {loadingSummary === article.id ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Summarizing...
-                  </>
-                ) : (
-                   summaries[article.id] ? 'View Full Article' : 'Summarize with AI'
-                )}
+                View Full Article
               </Button>
             </CardFooter>
           </Card>

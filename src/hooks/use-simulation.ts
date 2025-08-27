@@ -3,9 +3,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { initialAssets } from '@/lib/assets';
-import { useAuth } from '@/app/auth-provider';
-import { db } from '@/lib/firebase';
-import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
 
 type Holding = {
   ticker: string;
@@ -19,6 +16,8 @@ type SimulationState = {
   tradeCount: number;
 };
 
+const SIMULATION_KEY = 'earnify-simulation';
+
 const getInitialState = (): SimulationState => ({
   balance: 10000,
   holdings: [],
@@ -26,49 +25,43 @@ const getInitialState = (): SimulationState => ({
 });
 
 export function useSimulation() {
-  const { user, loading: authLoading } = useAuth();
   const [simulation, setSimulation] = useState<SimulationState>(getInitialState());
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) {
-      if (!authLoading) {
-        setSimulation(getInitialState());
-        setLoading(false);
-      }
-      return;
-    }
-
-    setLoading(true);
-    const simDocRef = doc(db, 'simulations', user.uid);
-
-    const unsubscribe = onSnapshot(simDocRef, (docSnap) => {
-      if (docSnap.exists()) {
-        const data = docSnap.data() as SimulationState;
-        setSimulation({
-          balance: data.balance ?? 10000,
-          holdings: data.holdings ?? [],
-          tradeCount: data.tradeCount ?? 0
-        });
+    try {
+      const savedState = localStorage.getItem(SIMULATION_KEY);
+      if (savedState) {
+        const parsedState = JSON.parse(savedState);
+        // Basic validation
+        if(parsedState && typeof parsedState.balance === 'number' && Array.isArray(parsedState.holdings)) {
+          setSimulation(parsedState);
+        } else {
+          setSimulation(getInitialState());
+        }
       } else {
-        const initialState = getInitialState();
-        setDoc(simDocRef, initialState);
-        setSimulation(initialState);
+        setSimulation(getInitialState());
       }
-      setLoading(false);
-    }, (error) => {
-      console.error("Error fetching simulation state from Firestore:", error);
+    } catch (error) {
+      console.error("Failed to load simulation state from localStorage:", error);
       setSimulation(getInitialState());
+    } finally {
       setLoading(false);
-    });
+    }
+  }, []);
 
-    return () => unsubscribe();
-  }, [user, authLoading]);
+  useEffect(() => {
+    if(!loading) {
+      try {
+        localStorage.setItem(SIMULATION_KEY, JSON.stringify(simulation));
+      } catch (error) {
+        console.error("Failed to save simulation state to localStorage:", error);
+      }
+    }
+  }, [simulation, loading]);
 
 
-  const buyAsset = useCallback(async (ticker: string, quantity: number, price: number) => {
-    if (!user) return;
-    
+  const buyAsset = useCallback((ticker: string, quantity: number, price: number) => {
     const cost = quantity * price;
     
     setSimulation(prevState => {
@@ -100,22 +93,16 @@ export function useSimulation() {
         });
       }
       
-      const newState: SimulationState = {
+      return {
           balance: newBalance,
           holdings: newHoldings,
           tradeCount: prevState.tradeCount + 1
       };
-
-      const simDocRef = doc(db, 'simulations', user.uid);
-      setDoc(simDocRef, newState, { merge: true });
-      return newState;
     });
 
-  }, [user]);
+  }, []);
   
-  const sellAsset = useCallback(async (ticker: string, quantity: number, price: number) => {
-    if (!user) return;
-    
+  const sellAsset = useCallback((ticker: string, quantity: number, price: number) => {
     setSimulation(prevState => {
       const existingHolding = prevState.holdings.find(h => h.ticker === ticker);
       if (!existingHolding || existingHolding.quantity < quantity) {
@@ -133,18 +120,14 @@ export function useSimulation() {
         return h;
       }).filter(h => h.quantity > 0.00001); // Use a small epsilon for float comparison
 
-      const newState: SimulationState = {
+      return {
           balance: newBalance,
           holdings: newHoldings,
           tradeCount: prevState.tradeCount + 1
       };
-      
-      const simDocRef = doc(db, 'simulations', user.uid);
-      setDoc(simDocRef, newState, { merge: true });
-      return newState;
     });
 
-  }, [user]);
+  }, []);
 
   const getPortfolioValue = useCallback(() => {
     return simulation.holdings.reduce((total, holding) => {

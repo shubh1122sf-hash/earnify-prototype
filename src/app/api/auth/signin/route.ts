@@ -6,7 +6,7 @@ export async function GET(req: NextRequest) {
     try {
         const auth = adminAuth();
         // The providerId for Google is 'google.com'
-        const provider = auth.provider('google.com');
+        const provider = auth.getProvider('google.com');
 
         // Generate a sign-in URL. The redirect URI must be whitelisted in your GCP OAuth client settings.
         // It points to our callback handler.
