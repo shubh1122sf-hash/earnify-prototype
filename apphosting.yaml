@@ -11,8 +11,10 @@ runConfig:
 # We are using apphosting.yaml for this simulation to avoid billing requirements.
 env:
   - variable: GOOGLE_CLIENT_ID
-    value: "7497742774-7nl9o5pvr54erlv5qpepguc9cn9f1o73.apps.googleusercontent.com"
+    value: "PASTE_YOUR_GOOGLE_CLIENT_ID_HERE"
   - variable: GOOGLE_CLIENT_SECRET
-    value: "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"
+    value: "PASTE_YOUR_GOOGLE_CLIENT_SECRET_HERE"
   - variable: NEXTAUTH_SECRET
-    value: "bwhdw@12ifsfjsjrdhs!djsjencc993mdmjr4j22fnfnigga28219191"
+    value: "PASTE_YOUR_NEXTAUTH_SECRET_HERE"
+  - variable: NEXTAUTH_URL
+    value: "PASTE_YOUR_APPLICATION_URL_HERE"
