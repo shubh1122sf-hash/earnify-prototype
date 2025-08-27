@@ -5,12 +5,12 @@ This is a production-ready Next.js 14+ application with a leaderboard, user auth
 
 ## Required Environment Variables
 
-Create a `.env.local` file in your project root. For Vercel, set these in **Project Settings → Environment Variables**.
+Create a `.env.local` file in your project root. For Vercel, set these in **Project Settings → Environment Variables**. Vercel will automatically provide the `NEXTAUTH_URL`.
 
 | Variable | Description | Example (local) |
 | :--- | :--- | :--- |
 | `DATABASE_URL` | Your database connection string. | `file:./dev.db` (for SQLite) |
-| `NEXTAUTH_URL`| The canonical URL of your app. | `http://localhost:3000` |
+| `NEXTAUTH_URL`| The canonical URL of your app. (Vercel sets this automatically) | `http://localhost:3000` |
 | `NEXTAUTH_SECRET` | A random string for signing JWTs. | Generate one: `openssl rand -base64 32` |
 | `GOOGLE_CLIENT_ID` | Your Google OAuth Client ID. | `...apps.googleusercontent.com` |
 | `GOOGLE_CLIENT_SECRET` | Your Google OAuth Client Secret. | `GOCSPX-...` |
@@ -44,7 +44,7 @@ Create a `.env.local` file in your project root. For Vercel, set these in **Proj
 ## Production Deployment (Vercel Postgres)
 
 1.  **Connect Vercel Postgres:** In your Vercel project dashboard, go to the **Storage** tab and connect a Postgres database. Vercel will automatically add the `DATABASE_URL` environment variable.
-2.  **Set other environment variables** in Vercel.
+2.  **Set other environment variables** in Vercel. `NEXTAUTH_URL` is set automatically by Vercel's build process.
 3.  **Run production migration:** Before deploying, or as part of your build process if configured, you may need to run `npx prisma migrate deploy`. Vercel's default build command will typically run `prisma generate`.
 
 ## Troubleshooting
@@ -54,3 +54,4 @@ Create a `.env.local` file in your project root. For Vercel, set these in **Proj
     *   Enable debug logs by setting `NEXTAUTH_DEBUG=true` in Vercel and check the **Functions** logs for your deployment.
 *   **Infinite redirect loop**: Your `middleware.ts` matcher might be incorrectly blocking the `/login` or `/api/auth` paths. The one in this project is configured correctly.
 *   **Prisma Edge/Node.js Errors**: Prisma does not work in the Edge runtime. All API routes that use Prisma (`/api/auth`, `/api/score`, etc.) **must** have `export const runtime = "nodejs";` at the top.
+
