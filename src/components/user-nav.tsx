@@ -25,9 +25,11 @@ export function UserNav() {
 
   if (status === 'unauthenticated' || !session) {
     return (
-      <Button onClick={() => signIn('google')}>
-        Sign In with Google
-      </Button>
+      <Link href="/login">
+        <Button>
+          Sign In
+        </Button>
+      </Link>
     );
   }
 
